@@ -1,54 +1,75 @@
 import { Link } from "react-router-dom";
-export const Footer = () => (
-	<footer className="fixed-bottom py-3 bg-dark text-white">
-		<div className="container">
-			<div className="row">
-				<div className="col-12 col-md-4 ">
-					<h4>Catergorias</h4>
-					<ul className="list-unstyled">
-						<li className="pb-1">
-							<Link to="/quienes-somos" className="link-light link-offset-2">agregar categorias xd</Link>
-						</li>
-					</ul>
-				</div>
-				<div className="col-12 col-md-4 ">
-					<h4>Acerca de nosotros</h4>
-					<ul className="list-unstyled">
-						<li className="pb-1">
-							<Link to="/quienes-somos" className="link-light link-offset-2">Quiénes somos</Link>
-						</li>
-						<li className="pb-1">
-							<Link to="/contactanos" className="link-light link-offset-2">Contáctanos</Link>
-						</li>
-						<li className="pb-1">
-							<Link to="/preguntas-frecuentes" className="link-light link-offset-2">Preguntas frecuentes</Link>
-						</li>
-					</ul>
-				</div>
-				<div className="col-12 col-md-4">
-					<h4>Nuestras politicas</h4>
-					<ul className="list-unstyled">
-						<li className="pb-1">
-							<Link to="/politica-de-cancelacion" className="link-light link-offset-2">Política de cancelación</Link>
-						</li>
-						<li className="pb-1">
-							<Link to="/politica-de-reembolso" className="link-light link-offset-2">Política de reembolsos</Link>
-						</li>
-						<li className="pb-1">
-							<Link to="/politica-de-privacidad" className="link-light link-offset-2">Política de cancelación</Link>
-						</li>
-						<li className="pb-1">
-							<Link to="/terminos-y-co" className="link-light link-offset-2">Terminos y condiciones</Link>
-						</li>
-					</ul>
-				</div>
 
-				<div className="col-12 text-center py-3">
-					<p>
-						© 2025, nombre de la tienda-xd
-					</p>
-				</div>
-			</div>
-		</div>
-	</footer >
-);
+export const Footer = () => (
+  <footer className="row row-cols-1 row-cols-sm-2 row-cols-md-5 py-5 my-5 border-top bg-dark text-white px-4">
+    <div className="col mb-3">
+      <Link
+        to="/"
+        className="d-flex align-items-center mb-3 link-light text-decoration-none"
+        aria-label="Inicio"
+      >
+        {/* Aquí puedes insertar tu logo SVG o un ícono */}
+        <svg className="bi me-2" width="40" height="32" aria-hidden="true">
+          <use xlinkHref="#bootstrap"></use>
+        </svg>
+      </Link>
+      <p className="text-light">© 2025 Nombre de la tienda</p>
+    </div>
+
+    <div className="col mb-3"></div>
+
+    <div className="col mb-3">
+      <h5>Categorías</h5>
+      <ul className="nav flex-column">
+        <li className="nav-item mb-2">
+          <Link to="/categorias" className="nav-link p-0 text-light">
+            Explorar categorías
+          </Link>
+        </li>
+      </ul>
+    </div>
+
+    <div className="col mb-3">
+      <h5>Acerca de nosotros</h5>
+      <ul className="nav flex-column">
+        <li className="nav-item mb-2">
+          <Link to="/quienes-somos" className="nav-link p-0 text-light">
+            Quiénes somos
+          </Link>
+        </li>
+        <li className="nav-item mb-2">
+          <Link to="/contactanos" className="nav-link p-0 text-light">
+            Contáctanos
+          </Link>
+        </li>
+        <li className="nav-item mb-2">
+          <Link to="/preguntas-frecuentes" className="nav-link p-0 text-light">
+            Preguntas frecuentes
+          </Link>
+        </li>
+      </ul>
+    </div>
+
+    <div className="col mb-3">
+      <h5>Nuestras políticas</h5>
+      <ul className="nav flex-column">
+        <li className="nav-item mb-2">
+          <Link to="/politica-de-privacidad" className="nav-link p-0 text-light">
+            Política de privacidad
+          </Link>
+        </li>
+        <li className="nav-item mb-2">
+          <Link to="/politica-de-cancelacion" className="nav-link p-0 text-light">
+            Política de cancelación
+          </Link>
+        </li>
+    
+        <li className="nav-item mb-2">
+          <Link to="/terminos-y-condiciones" className="nav-link p-0 text-light">
+            Términos y condiciones
+          </Link>
+        </li>
+      </ul>
+    </div>
+  </footer>
+)
