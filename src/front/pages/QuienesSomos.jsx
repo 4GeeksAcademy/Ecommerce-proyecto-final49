@@ -2,7 +2,7 @@ export const QuienesSomos = () => (
     <>
         <div className="container-fluid">
             <div className="container">
-                <div className="col-12 text-center py-3 my-3 bg-dark">
+                <div className="col-12 text-center py-3 my-3 bg-dark text-white">
                     <h1>Quienes Somos</h1>
                 </div>
             <div className="row">
