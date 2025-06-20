@@ -14,6 +14,8 @@ import { PreguntasFrecuentes } from "./pages/PreguntasFrecuentes";
 import { PoliticaPrivacidad } from "./pages/PoliticaPrivacidad";
 import { TerminosCondiciones } from "./pages/TerminosCondiciones";
 import { PoliticaCancelacion } from "./pages/PoliticaCancelacion";
+import { VistaProducto } from "./pages/VistaProducto";
+import { ConfirmacionCompra } from "./pages/ConfirmacionCompra";
 
 export const router = createBrowserRouter(
   createRoutesFromElements(
@@ -35,6 +37,8 @@ export const router = createBrowserRouter(
       <Route path="/politica-de-privacidad" element={<PoliticaPrivacidad />} />
       <Route path="/politica-de-cancelacion" element={<PoliticaCancelacion />} />
       <Route path="/terminos-y-condiciones" element={<TerminosCondiciones />} />
+      <Route path="/producto/:id" element={<VistaProducto />} />
+      <Route path="/confirmacion" element={<ConfirmacionCompra />} />
     </Route>
   )
 );

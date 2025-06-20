@@ -1,6 +1,7 @@
 import React, { useEffect } from "react"
 import rigoImageUrl from "../assets/img/rigo-baby.jpg";
 import useGlobalReducer from "../hooks/useGlobalReducer.jsx";
+import { Link } from "react-router-dom"
 
 export const Home = () => {
 
@@ -38,6 +39,7 @@ export const Home = () => {
 			<p className="lead">
 				<img src={rigoImageUrl} className="img-fluid rounded-circle mb-3" alt="Rigo Baby" />
 			</p>
+			<p>Este es un <Link to="/producto/123">enlace para vista de un producto</Link></p> {/*Enlace de prueba, debe reemplazarse por los productos reales*/}
 			<div className="alert alert-info">
 				{store.message ? (
 					<span>{store.message}</span>
