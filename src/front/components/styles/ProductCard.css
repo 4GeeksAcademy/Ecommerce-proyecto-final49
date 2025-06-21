@@ -1,0 +1,20 @@
+.product-card {
+    background: grey;
+    border: 1px solid black;
+    border-radius: 4px;
+    text-align: center;
+}
+
+.product-card__image {
+    width: 250px;
+    height: 300px;
+    border-radius: 4px;
+}
+
+.product-card__name {
+    font-size: medium;
+}
+
+.product-card__price {
+    color: blue;
+}

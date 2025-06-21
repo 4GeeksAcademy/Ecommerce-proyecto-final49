@@ -1,0 +1,14 @@
+.home-container {
+text-align: center;
+}
+
+.home-container {
+
+
+}
+
+.product-grid {
+    display: flex,
+    flex-wrap: nowrap;
+    
+}
