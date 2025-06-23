@@ -6,7 +6,7 @@ import './styles/ProductCard.css';
 
 const ProductCard = ({ product, onAddToCart }) => {
     return (
-        <div classname='product-card'>
+        <div className='product-card'>
 
 
             <img
@@ -17,7 +17,7 @@ const ProductCard = ({ product, onAddToCart }) => {
 
             <h3 className='product-card__name'>{product.name}</h3>
             <p className='product-card__price'>${product.price.toFixed(2)}</p>
-            <button classname='product-card__button'
+            <button className='product-card__button'
                 onClick={() => onAddToCart(product)}
             >Agregar al Carrito
             </button>
