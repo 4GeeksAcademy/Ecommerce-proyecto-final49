@@ -14,6 +14,7 @@ import { PreguntasFrecuentes } from "./pages/PreguntasFrecuentes";
 import { PoliticaPrivacidad } from "./pages/PoliticaPrivacidad";
 import { TerminosCondiciones } from "./pages/TerminosCondiciones";
 import { PoliticaCancelacion } from "./pages/PoliticaCancelacion";
+import { IniciarSesion } from "./pages/IniciarSesion"
 
 export const router = createBrowserRouter(
   createRoutesFromElements(
@@ -30,6 +31,7 @@ export const router = createBrowserRouter(
       <Route path="/" element={<Home />} />
       <Route path="/single/:theId" element={<Single />} />  {/* Dynamic route for single items */}
       <Route path="/demo" element={<Demo />} />
+      <Route path="/iniciar-sesion" element={<IniciarSesion />} />
       <Route path="/quienes-somos" element={<QuienesSomos />} />
       <Route path="/preguntas-frecuentes" element={<PreguntasFrecuentes />} />
       <Route path="/politica-de-privacidad" element={<PoliticaPrivacidad />} />
