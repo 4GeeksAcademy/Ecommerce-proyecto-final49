@@ -1,5 +1,5 @@
 import React from 'react';
-import './styles/Banner.css';
+import '../styles/Banner.css';
 
 const Banner = ({ title, subtitle, onSearch, categories }) => (
     <section className='banner'>
