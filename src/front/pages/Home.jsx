@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react"
 import useGlobalReducer from "../hooks/useGlobalReducer.jsx";
 import Banner from '../components/Banner.jsx';
 import ProductCard from '../components/ProductCard.jsx';
-import './styles/Home.css';
+
 
 export const Home = () => {
 
