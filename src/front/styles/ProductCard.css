@@ -1,0 +1,28 @@
+.product-card {
+    background: rgb(13, 184, 214);
+    border: 1px solid black;
+    border-radius: 4px;
+    text-align: center;
+    padding: 15px;
+    box-shadow: 0 4px 8px rgb(21, 85, 138);
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.product-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 8px 16px rgb(21, 85, 138);
+}
+
+.product-card__image {
+    width: 250px;
+    height: 300px;
+    border-radius: 4px;
+
+
+.product-card__name {
+    font-size: medium;
+}
+
+.product-card__price {
+    color: blue;
+}

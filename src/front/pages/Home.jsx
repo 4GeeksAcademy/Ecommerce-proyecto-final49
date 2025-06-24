@@ -1,52 +1,77 @@
-import React, { useEffect } from "react"
-import rigoImageUrl from "../assets/img/rigo-baby.jpg";
+import React, { useEffect, useState } from "react"
 import useGlobalReducer from "../hooks/useGlobalReducer.jsx";
+import Banner from '../components/Banner.jsx';
+import ProductCard from '../components/ProductCard.jsx';
+
 
 export const Home = () => {
 
 	const { store, dispatch } = useGlobalReducer()
+	const [products, setProducts] = useState([]);
 
-	const loadMessage = async () => {
-		try {
-			const backendUrl = import.meta.env.VITE_BACKEND_URL
-
-			if (!backendUrl) throw new Error("VITE_BACKEND_URL is not defined in .env file")
-
-			const response = await fetch(backendUrl + "/api/hello")
-			const data = await response.json()
-
-			if (response.ok) dispatch({ type: "set_hello", payload: data.message })
-
-			return data
-
-		} catch (error) {
-			if (error.message) throw new Error(
-				`Could not fetch the message from the backend.
-				Please check if the backend is running and the backend port is public.`
-			);
-		}
-
-	}
+	const categories = ['Celulates', 'Audifonos', 'Cornetas'];
+	const handleSearch = (searchValue) => {
+		console.log('Buscando:', searchValue);
+	};
 
 	useEffect(() => {
-		loadMessage()
-	}, [])
+		const loadProducts = async () => {
+			try {
+				const bkUrl = import.meta.env.VITE_BACKEND_URL;
+				const response = await fetch(`${bkUrl}/api/products`);
+				const data = await response.json();
+				if (response.ok) setProducts(data);
+
+			} catch (err) {
+				console.error("Error al cargar caracteristicas del producto:", err);
+			}
+		};
+		loadProducts();
+	}, []);
 
 	return (
-		<div className="text-center mt-5">
-			<h1 className="display-4">Hello Rigo!!</h1>
-			<p className="lead">
-				<img src={rigoImageUrl} className="img-fluid rounded-circle mb-3" alt="Rigo Baby" />
-			</p>
-			<div className="alert alert-info">
-				{store.message ? (
-					<span>{store.message}</span>
-				) : (
-					<span className="text-danger">
-						Loading message from the backend (make sure your python 🐍 backend is running)...
-					</span>
-				)}
-			</div>
+		<div className='home-container text-center mt-5'>
+			<div className='container text-center mt-5'>
+
+				<Banner
+					title="No te pierdas estas ofertas"
+					subtitle='Con la compra de mas de $50 el envio es gratis'
+					onSearch={handleSearch}
+					categories={categories}
+				/>
+
+
+				<h2> Productos destacados</h2>
+
+				<div className='row product-grid'>
+					{products.map((p) => {
+						return p.is_featured && (
+							(
+								<div key={p.id} className='col-12 col-sm-6 col-md-3 mb-4'>
+									<ProductCard product={p} />
+								</div>
+							)
+						)
+					})}
+
+				</div>
+
+				<h2> Todos los productos </h2>
+				<div className='row product-grid'>
+					{products.map((p) => {
+						return (
+							(
+								<div key={p.id} className='col-12 col-sm-6 col-md-3 mb-4'>
+									<ProductCard product={p} />
+								</div>
+
+							)
+						)
+					})}
+
+				</div>
+			</div >
 		</div>
-	);
+	)
+
 }; 

@@ -1,0 +1,36 @@
+.banner {
+position:relative;
+background: white ;
+color: aqua;
+padding: auto;
+text-align: center;
+border: 1px solid black;
+
+}
+
+.banner__overlay {
+    background: rgb(4, 73, 73);
+    padding: 4px;
+    border-radius: 8px;
+
+}
+
+.banner__title {
+    font-size: 35px;
+    margin-bottom: 5px;
+    
+}
+
+.banner__search {
+    display: flex;
+    max-width: 400px;
+
+}
+
+.banner__search input {
+  padding: 3px
+}
+
+.banner__search button {
+  margin-left: 10px;
+}
