@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import React, { useState } from "react";
+import '../styles/vistaproducto.css';
 
 export const VistaProducto = () => {
 
