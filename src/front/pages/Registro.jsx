@@ -2,10 +2,9 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 const initialStateUser = {
-  lastname: "",
+  name: "",
   email: "",
   password: "",
-  avatar: null,
 };
 
 export const Registro = () => {
@@ -23,7 +22,7 @@ export const Registro = () => {
     event.preventDefault();
 
     const formData = new FormData();
-    formData.append("lastname", user.lastname);
+    formData.append("name", user.name);
     formData.append("email", user.email);
     formData.append("password", user.password);
 
@@ -76,8 +75,11 @@ export const Registro = () => {
                 placeholder="Ingrese su nombre completo"
                 className="form-control border-dark"
                 id="btnName"
-                name="lastname"
-                value={user.lastname}
+                name="name"
+                value={user.name
+
+                  
+                }
                 onChange={handleChange}
                 required
               />
@@ -94,23 +96,6 @@ export const Registro = () => {
                 value={user.email}
                 onChange={handleChange}
                 required
-              />
-            </div>
-
-            <div className="form-group mb-3">
-              <label htmlFor="btnAvatar">Imagen de perfil: </label>
-              <input
-                type="file"
-                className="form-control border-dark"
-                id="btnAvatar"
-                name="avatar"
-                accept="image/*"
-                onChange={(event) => {
-                  setUser({
-                    ...user,
-                    avatar: event.target.files[0],
-                  });
-                }}
               />
             </div>
 
