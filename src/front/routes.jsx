@@ -15,6 +15,7 @@ import { PoliticaPrivacidad } from "./pages/PoliticaPrivacidad";
 import { TerminosCondiciones } from "./pages/TerminosCondiciones";
 import { PoliticaCancelacion } from "./pages/PoliticaCancelacion";
 import { IniciarSesion } from "./pages/IniciarSesion"
+import { Registro } from "./pages/Registro"
 import { VistaProducto } from "./pages/VistaProducto";
 import { ConfirmacionCompra } from "./pages/ConfirmacionCompra";
 
@@ -35,6 +36,7 @@ export const router = createBrowserRouter(
       <Route path="/single/:theId" element={<Single />} />  {/* Dynamic route for single items */}
       <Route path="/demo" element={<Demo />} />
       <Route path="/iniciar-sesion" element={<IniciarSesion />} />
+      <Route path="/registro" element={<Registro />} />
       <Route path="/quienes-somos" element={<QuienesSomos />} />
       <Route path="/preguntas-frecuentes" element={<PreguntasFrecuentes />} />
       <Route path="/politica-de-privacidad" element={<PoliticaPrivacidad />} />

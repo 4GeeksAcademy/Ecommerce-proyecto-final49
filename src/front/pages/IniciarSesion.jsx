@@ -56,42 +56,44 @@ export const IniciarSesion = () => {
   return (
     <div className="container-fluid">
       <div className="row">
-        <div className="col-12 col-md-6 text-center my-5 justify-content-center p-5 h-100">
+        <div className="col-12 col-md-6 text-center justify-content-center p-5 h-100">
           <h1>Ingresa tu correo electrónico y contraseña para iniciar sesión</h1>
         </div>
-        <form onSubmit={handleSubmit} className="col-12 col-md-6 text-center">
-          <div className="text-center m-5">
-            <div className="form-group">
-              <label htmlFor="email">Correo electrónico</label>
-              <input
-                type="email"
-                placeholder="Ingresa tu correo electrónico"
-                className="form-control border border-dark my-2"
-                id="email"
-                name="email"
-                onChange={handleChange}
-                value={user.email}
-                required
-              />
-            </div>
-            <div className="form-group">
-              <label htmlFor="password" className="my-2">Contraseña</label>
-              <input
-                type="password"
-                placeholder="Ingresa tu contraseña"
-                className="form-control border-dark my-2"
-                id="password"
-                name="password"
-                onChange={handleChange}
-                value={user.password}
-                required
-              />
-            </div>
-            <button type="submit" className="my-4 btn btn-success">
-              Iniciar sesión
-            </button>
-          </div>
-        </form>
+        <div className="col-12 col-md-6" >
+          <form
+            onSubmit={handleSubmit}
+            className="border m-2 p-3">
+              <div className="form-group mb-3">
+                <label htmlFor="email">Correo electrónico</label>
+                <input
+                  type="email"
+                  placeholder="Ingresa tu correo electrónico"
+                  className="form-control border border-dark my-2"
+                  id="email"
+                  name="email"
+                  onChange={handleChange}
+                  value={user.email}
+                  required
+                />
+              </div>
+              <div className="form-group mb-3">
+                <label htmlFor="password" className="">Contraseña</label>
+                <input
+                  type="password"
+                  placeholder="Ingresa tu contraseña"
+                  className="form-control border-dark"
+                  id="password"
+                  name="password"
+                  onChange={handleChange}
+                  value={user.password}
+                  required
+                />
+              </div>
+              <button type="submit" className="btn btn-success w-100">
+                Iniciar sesión
+              </button>
+          </form>
+        </div>
         <h5 className="text-center mb-5">
           ¿No tienes cuenta? <Link to="/registro">Crea una</Link>
         </h5>
