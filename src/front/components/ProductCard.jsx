@@ -1,5 +1,6 @@
 import React from 'react';
 import '../styles/ProductCard.css';
+import { Link } from 'react-router-dom';
 
 
 
@@ -17,10 +18,12 @@ const ProductCard = ({ product, onAddToCart }) => {
 
             <h3 className='product-card__name'>{product.name}</h3>
             <p className='product-card__price'>${product.price.toFixed(2)}</p>
+            <Link to={`/producto/${product.id}`}>
             <button className='product-card__button'
-                onClick={() => onAddToCart(product)}
+                // onClick={() => onAddToCart(product)}
             >Agregar al Carrito
             </button>
+            </Link>
         </div>
     );
 };
