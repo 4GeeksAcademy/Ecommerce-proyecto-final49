@@ -26,7 +26,7 @@ export const IniciarSesion = () => {
 
     const url = import.meta.env.VITE_BACKEND_URL;
 
-    const response = await fetch(`${url}/login`, {
+    const response = await fetch(`${url}/api/login`, {
       method: "POST",
       headers: {
         "Content-type": "application/json",

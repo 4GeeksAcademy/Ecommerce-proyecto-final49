@@ -33,7 +33,7 @@ export const Registro = () => {
     const url = import.meta.env.VITE_BACKEND_URL;
 
     try {
-      const response = await fetch(`${url}/register`, {
+      const response = await fetch(`${url}/api/register`, {
         method: "POST",
         body: formData,
       });
@@ -41,7 +41,7 @@ export const Registro = () => {
       if (response.status === 201) {
         setUser(initialStateUser);
         setTimeout(() => {
-          navigate("/login");
+          navigate("/iniciar-sesion");
         }, 2000);
       } else if (response.status === 400) {
         alert("El usuario ya existe");
@@ -76,10 +76,7 @@ export const Registro = () => {
                 className="form-control border-dark"
                 id="btnName"
                 name="name"
-                value={user.name
-
-                  
-                }
+                value={user.name}
                 onChange={handleChange}
                 required
               />
