@@ -5,6 +5,7 @@ from flask import Flask, request, jsonify, url_for, Blueprint
 from api.models import db, User, Product
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
+import cloudinary.uploader as upload
 from werkzeug.security import generate_password_hash, check_password_hash
 from base64 import b64encode
 import os
@@ -48,6 +49,13 @@ def get_products():
         return jsonify({'msg': 'No hay productos'}), 404
 
     return jsonify([product.serialize() for product in products]), 200
+
+@api.route('/products/<int:id>', methods=['GET'])
+def get_product(id):
+    product = Product.query.get(id)
+    if not product:
+        return jsonify({'error': 'Producto no encontrado'}), 404
+    return jsonify(product.serialize()), 200
 
 
 @api.route('/register', methods=['POST'])
