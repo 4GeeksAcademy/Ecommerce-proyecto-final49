@@ -14,6 +14,9 @@ import { PreguntasFrecuentes } from "./pages/PreguntasFrecuentes";
 import { PoliticaPrivacidad } from "./pages/PoliticaPrivacidad";
 import { TerminosCondiciones } from "./pages/TerminosCondiciones";
 import { PoliticaCancelacion } from "./pages/PoliticaCancelacion";
+import { Registro } from "./pages/Registro";
+import { IniciarSesion } from "./pages/IniciarSesion";
+import { RecuperarContraseña } from "./pages/RecuperarContraseña";
 import { VistaProducto } from "./pages/VistaProducto";
 import { ConfirmacionCompra } from "./pages/ConfirmacionCompra";
 
@@ -26,16 +29,22 @@ export const router = createBrowserRouter(
     // Note: The child paths of the Layout element replace the Outlet component with the elements contained in the "element" attribute of these child paths.
 
     // Root Route: All navigation will start from here.
-    <Route path="/" element={<Layout />} errorElement={<h1>Not found!</h1>} >
-
+    <Route path="/" element={<Layout />} errorElement={<h1>Not found!</h1>}>
       {/* Nested Routes: Defines sub-routes within the BaseHome component. */}
       <Route path="/" element={<Home />} />
-      <Route path="/single/:theId" element={<Single />} />  {/* Dynamic route for single items */}
+      <Route path="/single/:theId" element={<Single />} />{" "}
+      {/* Dynamic route for single items */}
       <Route path="/demo" element={<Demo />} />
+      <Route path="/registro" element={<Registro />} />
+      <Route path="/iniciar-sesion" element={<IniciarSesion />} />
+      <Route path="/recuperar-contraseña" element={<RecuperarContraseña />} />
       <Route path="/quienes-somos" element={<QuienesSomos />} />
       <Route path="/preguntas-frecuentes" element={<PreguntasFrecuentes />} />
       <Route path="/politica-de-privacidad" element={<PoliticaPrivacidad />} />
-      <Route path="/politica-de-cancelacion" element={<PoliticaCancelacion />} />
+      <Route
+        path="/politica-de-cancelacion"
+        element={<PoliticaCancelacion />}
+      />
       <Route path="/terminos-y-condiciones" element={<TerminosCondiciones />} />
       <Route path="/producto/:id" element={<VistaProducto />} />
       <Route path="/confirmacion" element={<ConfirmacionCompra />} />

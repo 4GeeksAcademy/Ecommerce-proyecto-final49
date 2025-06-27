@@ -1,5 +1,6 @@
-import { Link } from "react-router-dom";
-import React, { useState } from "react";
+import { Link, useParams } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import '../styles/vistaproducto.css';
 
 export const VistaProducto = () => {
 
@@ -59,7 +60,7 @@ export const VistaProducto = () => {
                     <span className="small_font_size">Tienes 30 días para devolverlo</span>
                     <span>Stock disponible</span>
                     <span className="mb-5">Cantidad: 1 unidad (+5 disponibles)</span>
-                    <button type="button" class="btn btn-primary">Comprar ahora</button>
+                    <button type="button" class="btn btn-warning">Comprar ahora</button>
                     <button type="button" class="btn btn-primary">Agregar al carrito</button>
                 </div>
             </div>
