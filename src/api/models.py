@@ -43,6 +43,11 @@ class Product(db.Model):
     price: Mapped[float] = mapped_column(Float, nullable=False)
     image_url: Mapped[str] = mapped_column(String(255), nullable=False)
     is_featured: Mapped[bool] = mapped_column(Boolean, nullable=False)
+    description: Mapped[str] = mapped_column(Text, nullable=True)
+    detail_images: Mapped[list] = mapped_column(JSON, nullable=True)
+    rating: Mapped[int] = mapped_column(Integer, nullable=True)
+    category: Mapped[str] = mapped_column(String(80), nullable=False, default='General')
+    
 
     def serialize(self):
         return{
@@ -54,5 +59,6 @@ class Product(db.Model):
             'is_featured': self.is_featured,
             'description': self.description,
             'detail_images': self.detail_images,    #fotos miniatura
-            'rating': self.rating
+            'rating': self.rating,
+            'category': self.category
         }
