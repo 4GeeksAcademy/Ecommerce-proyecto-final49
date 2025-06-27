@@ -1,0 +1,12 @@
+              List of relations
+ Schema |      Name       |   Type   | Owner  
+--------+-----------------+----------+--------
+ public | alembic_version | table    | gitpod
+ public | product         | table    | gitpod
+ public | product_id_seq  | sequence | gitpod
+ public | role            | table    | gitpod
+ public | role_id_seq     | sequence | gitpod
+ public | user            | table    | gitpod
+ public | user_id_seq     | sequence | gitpod
+(7 rows)
+

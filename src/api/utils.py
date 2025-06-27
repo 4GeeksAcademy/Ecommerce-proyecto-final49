@@ -5,6 +5,7 @@ from email.mime.multipart import MIMEMultipart
 import smtplib
 import ssl
 
+
 class APIException(Exception):
     status_code = 400
 
@@ -48,16 +49,21 @@ def generate_sitemap(app):
         <p>Remember to specify a real endpoint path like: </p>
         <ul style="text-align: left;">"""+links_html+"</ul></div>"
 
-smtp_address = os.getenv("SMTP_ADDRESS")
-smtp_port = int(os.getenv("SMTP_PORT"))
-email_address = os.getenv("EMAIL_ADDRESS")
-email_password = os.getenv("EMAIL_PASSWORD")
+
+
+
 
 def send_email(subject, to, body):
+    smtp_address = os.getenv("SMTP_ADDRESS")
+    smtp_port = int(os.getenv("SMTP_PORT"))
+    email_address = os.getenv("EMAIL_ADDRESS")
+    email_password = os.getenv("EMAIL_PASSWORD")
+
+
     message = MIMEMultipart("alternative")
-    message ["subject"] = subject
-    message ["From"] = "blacklottus.programacion@gmail.com"
-    message ["to"] = to
+    message["subject"] = subject
+    message["From"] = "blacklottus.programacion@gmail.com"
+    message["to"] = to
 
     html = f"""<html> 
                     <body>
@@ -76,6 +82,5 @@ def send_email(subject, to, body):
             server.sendmail(email_address, to, message.as_string())
             return True
     except Exception as error:
-        print (str(error))
+        print(str(error))
         return False
-    
