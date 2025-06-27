@@ -17,15 +17,14 @@ import stripe
 stripe.api_key = os.getenv("STRIPE_SECRET_KEY")
 api = Blueprint('api', __name__)
 CORS(api)
+# Allow CORS requests to this API
 
 
 def set_password(password, salt):
     return generate_password_hash(f'{password}{salt}')
 
-
 def check_password(pass_hash, password, salt):
     return check_password_hash(pass_hash, f'{password}{salt}')
-
 
 expire_in_minutes = 10
 expires_delta = timedelta(minutes=expire_in_minutes)
@@ -47,7 +46,7 @@ def get_products():
     return jsonify([product.serialize() for product in products]), 200
 
 
-@api.route('/products/<int:id>', methods=['GET'])
+@api.route('/product/<int:id>', methods=['GET'])
 def get_product(id):
     product = Product.query.get(id)
     if not product:
