@@ -43,6 +43,7 @@ def get_products():
         return jsonify({'msg': 'No hay productos'}), 404
     return jsonify([product.serialize() for product in products]), 200
 
+
 @api.route('/products/<int:id>', methods=['GET'])
 def get_product(id):
     product = Product.query.get(id)
@@ -66,7 +67,7 @@ def add_user():
     user.name = name
     user.password = set_password(password, salt)
     user.salt = salt
-
+    # user.role_id = 2
     db.session.add(user)
     try:
         db.session.commit()
@@ -102,21 +103,21 @@ def forgot_password():
 
     if user:
         additional_claims = {"purpose": "password_reset"}
-        reset_token = create_access_token(
-            identity=str(user.id),
-            additional_claims=additional_claims,
-            expires_delta=timedelta(hours=1)
-        )
+    reset_token = create_access_token(
+        identity=str(user.id),
+        additional_claims=additional_claims,
+        expires_delta=timedelta(hours=1)
+    )
 
-        reset_url = f'{os.getenv("FRONTEND_URL")}recuperar-contraseña?token={reset_token}'
-        message = f"""
-            <div>
-                <h1>Recupera tu contraseña</h1>
-                <p>Haz clic en el siguiente enlace para restablecer tu contraseña:</p>
-                <a href="{reset_url}" target="_blank">Restablecer Contraseña</a>
-                <p>Si no solicitaste esto, por favor ignora este correo.</p>
-            </div>
-        """
+    reset_url = f'{os.getenv("FRONTEND_URL")}/recuperar-contraseña?token={reset_token}'
+    message = f"""
+        <div>
+            <h1>Recupera tu contraseña</h1>
+            <p>Haz clic en el siguiente enlace para restablecer tu contraseña:</p>
+            <a href="{reset_url}" target="_blank">Restablecer Contraseña</a>
+            <p>Si no solicitaste esto, por favor ignora este correo.</p>
+        </div>
+    """
     data = {
         "subject": "Recuperación de contraseña",
         "to": body,
