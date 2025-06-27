@@ -18,7 +18,7 @@ export const Home = () => {
 		const loadProducts = async () => {
 			try {
 				const bkUrl = import.meta.env.VITE_BACKEND_URL;
-				const response = await fetch(`${bkUrl}/api/products`);
+				const response = await fetch(`${bkUrl}/products`);
 				const data = await response.json();
 				if (response.ok) setProducts(data);
 
