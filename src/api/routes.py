@@ -19,6 +19,7 @@ api = Blueprint('api', __name__)
 CORS(api)
 # Allow CORS requests to this API
 
+
 def set_password(password, salt):
     return generate_password_hash(f'{password}{salt}')
 
@@ -45,7 +46,7 @@ def get_products():
     return jsonify([product.serialize() for product in products]), 200
 
 
-@api.route('/products/<int:id>', methods=['GET'])
+@api.route('/product/<int:id>', methods=['GET'])
 def get_product(id):
     product = Product.query.get(id)
     if not product:
