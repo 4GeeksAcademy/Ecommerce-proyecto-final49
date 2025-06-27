@@ -17,8 +17,10 @@ import { PoliticaCancelacion } from "./pages/PoliticaCancelacion";
 import { Registro } from "./pages/Registro";
 import { IniciarSesion } from "./pages/IniciarSesion";
 import { RecuperarContraseña } from "./pages/RecuperarContraseña";
+import { ActualizarPerfil } from "./pages/ActualizarPerfil";
 import { VistaProducto } from "./pages/VistaProducto";
 import { ConfirmacionCompra } from "./pages/ConfirmacionCompra";
+import { OlvidoContraseña } from "./pages/OlvidoContraseña";
 
 export const router = createBrowserRouter(
   createRoutesFromElements(
@@ -37,7 +39,9 @@ export const router = createBrowserRouter(
       <Route path="/demo" element={<Demo />} />
       <Route path="/registro" element={<Registro />} />
       <Route path="/iniciar-sesion" element={<IniciarSesion />} />
+      <Route path="/olvido-su-contraseña" element={<OlvidoContraseña/>} />
       <Route path="/recuperar-contraseña" element={<RecuperarContraseña />} />
+      <Route path="/actualizar-perfil" element={<ActualizarPerfil />} />
       <Route path="/quienes-somos" element={<QuienesSomos />} />
       <Route path="/preguntas-frecuentes" element={<PreguntasFrecuentes />} />
       <Route path="/politica-de-privacidad" element={<PoliticaPrivacidad />} />

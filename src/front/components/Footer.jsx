@@ -2,8 +2,8 @@ import { Link } from "react-router-dom";
 
 export const Footer = () => (
   <div className="container-fluid">
-    <footer className="row row-cols-1 row-cols-sm-2 row-cols-md-5 py-4 border-top bg-dark text-white px-5">
-      <div className="col mb-4">
+    <footer className="row row-cols-1 row-cols-sm-2 row-cols-md-5 py-5 border-top bg-dark text-white px-5">
+      <div className="col ">
         <Link
           to="/"
           className="d-flex align-items-center mb-4 link-light text-decoration-none"
@@ -17,9 +17,9 @@ export const Footer = () => (
         <p className="text-light">© 2025 Nombre de la tienda</p>
       </div>
 
-      <div className="col mb-4"></div>
+      <div className="col"></div>
 
-      <div className="col mb-4">
+      <div className="col ">
         <h5>Categorías</h5>
         <ul className="nav flex-column">
           <li className="nav-item mb-2">
@@ -30,7 +30,7 @@ export const Footer = () => (
         </ul>
       </div>
 
-      <div className="col mb-4">
+      <div className="col ">
         <h5>Acerca de nosotros</h5>
         <ul className="nav flex-column">
           <li className="nav-item mb-2">
@@ -54,7 +54,7 @@ export const Footer = () => (
         </ul>
       </div>
 
-      <div className="col mb-4">
+      <div className="col ">
         <h5>Nuestras políticas</h5>
         <ul className="nav flex-column">
           <li className="nav-item mb-2">
