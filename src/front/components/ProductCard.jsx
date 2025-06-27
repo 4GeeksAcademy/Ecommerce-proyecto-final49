@@ -19,7 +19,7 @@ const ProductCard = ({ product, onAddToCart }) => {
             <p className='product-card__price'>${product.price.toFixed(2)}</p>
             <button className='product-card__button'
                 onClick={() => onAddToCart(product)}
-            >Agregar al Carrito
+            >Ver mas detalles
             </button>
         </div>
     );
