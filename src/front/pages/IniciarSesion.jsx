@@ -89,7 +89,7 @@ export const IniciarSesion = () => {
                 value={user.password}
                 required
               />
-              <Link to="/recuperar-contraseña"></Link>
+              <Link to="/olvido-su-contraseña">¿Olvidaste tu contraseña?</Link>
             </div>
             <button type="submit" className="btn btn-success w-100">
               Iniciar sesión

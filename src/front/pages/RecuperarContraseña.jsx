@@ -1,58 +1,56 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useSearchParams, Link, useNavigate } from "react-router-dom";
 
 export const RecuperarContraseña = () => {
-  const [email, setEmail] = useState("");
+  const [newPass, setNewPass] = useState("");
+  const [searchParams, _] = useSearchParams();
+  const navigate = useNavigate();
 
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    if (!email) {
-      alert("Por favor ingrese un correo valido");
-      return;
-    }
     const url = import.meta.env.VITE_BACKEND_URL;
 
-    const response = await fetch(`${url}/reset-password`, {
-      method: "POST",
-      headers: {
+    const response = await fetch(`${url}/api/reset-password`, {
+    method: "PUT",
+    headers: {
+        "Authorization": `Bearer ${searchParams.get("token")}`,
         "Content-Type": "application/json",
-      },
-      body: JSON.stringify(email),
-    });
+    },
+    body: JSON.stringify({ "password": newPass }),
+});
+
     if (response.ok) {
-      alert("Se envio un email de restauración de la contraseña");
+      navigate("/iniciar-sesion");
     }
   };
 
   return (
-    <div className="container-fluid ">
-      <div className="row py-5">
+    <div className="container-fluid">
+      <div className="row py-5 justify-content-center">
         <div className="col-12 col-md-6 d-flex align-items-center justify-content-center">
           <h1 className="text-center">Recuperar contraseña</h1>
         </div>
         <div className="col-12 col-md-6">
-          <form onSubmit={handleSubmit} className="border m-2 p-3">
+          <form className="border m-2 p-3" onSubmit={handleSubmit}>
             <div className="form-group mb-3">
-              <label htmlFor="btnEmail">Correo electronico: </label>
+              <label htmlFor="btnPassword">Nueva contraseña: </label>
               <input
-                type="text"
-                placeholder="ingrese su correo electronico"
+                type="password"
+                placeholder="contraseña"
                 className="form-control"
-                id="btnEmail"
-                name="email"
-                onChange={(event) => setEmail(event.target.value)}
-                value={email}
+                id="btnPassword"
+                name="password"
+                onChange={(event) => setNewPass(event.target.value)}
+                value={newPass}
               />
             </div>
-            <button type="submit" className="btn btn-success w-100">
-              Enviar link de recuperación
+            <button className="btn btn-success w-100">
+              Actualizar contraseña
             </button>
           </form>
         </div>
-        <h5 className="text-center my-4">
-          ¿No tienes cuenta? <Link to="/registro">Crea una</Link>
-        </h5>
+        <div className="w-100"></div>
       </div>
     </div>
   );
