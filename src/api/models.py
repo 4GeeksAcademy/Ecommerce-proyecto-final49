@@ -35,6 +35,7 @@ class Product(db.Model):
     description: Mapped[str] = mapped_column(Text, nullable=True)
     detail_images: Mapped[list] = mapped_column(JSON, nullable=True)
     rating: Mapped[int] = mapped_column(Integer, nullable=True)
+    category: Mapped[str] = mapped_column(String(80), nullable=False, default='General')
 
     @validates('rating')
     def validate_rating(self, key, value):
@@ -50,6 +51,6 @@ class Product(db.Model):
             'image_url': self.image_url,  # foto principal
             'is_featured': self.is_featured,
             'description': self.description,
-            'detail_images': self.detail_images,  # fotos miniatura
+            'detail_images': self.detail_images,    #fotos miniatura
             'rating': self.rating
         }
