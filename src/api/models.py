@@ -1,7 +1,8 @@
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import String, Boolean, Float, Integer, ForeignKey
+from sqlalchemy import String, Boolean, Float, Integer , Text, JSON, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 import datetime
+
 
 db = SQLAlchemy()
 
@@ -42,12 +43,16 @@ class Product(db.Model):
     price: Mapped[float] = mapped_column(Float, nullable=False)
     image_url: Mapped[str] = mapped_column(String(255), nullable=False)
     is_featured: Mapped[bool] = mapped_column(Boolean, nullable=False)
+
     def serialize(self):
         return{
             'id': self.id,
             'name': self.name,
             'price': self.price,
-            'image_url': self.image_url,
-            'is_featured': self.is_featured
 
+            'image_url': self.image_url,            #foto principal
+            'is_featured': self.is_featured,
+            'description': self.description,
+            'detail_images': self.detail_images,    #fotos miniatura
+            'rating': self.rating
         }
