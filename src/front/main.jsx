@@ -1,3 +1,4 @@
+// import 'bootstrap/dist/css/bootstrap.min.css';
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import './main.css'  // Global styles for your application

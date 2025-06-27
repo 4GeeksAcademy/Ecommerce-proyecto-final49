@@ -20,7 +20,8 @@ const ProductCard = ({ product, onAddToCart }) => {
             <p className='product-card__price'>${product.price.toFixed(2)}</p>
             <Link to={`/producto/${product.id}`}>
             <button className='product-card__button'
-            >Ver mas
+                onClick={() => onAddToCart(product)}
+            >Ver mas detalles
             </button>
             </Link>
         </div>
