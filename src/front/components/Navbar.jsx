@@ -1,19 +1,200 @@
+import React from "react";
 import { Link } from "react-router-dom";
 
 export const Navbar = () => {
+  return (
+    <nav className="navbar navbar-expand-lg navbar-light bg-light">
+      <div className="container-fluid">
+        <button
+          className="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+          aria-controls="navbarNav"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span className="navbar-toggler-icon"></span>
+        </button>
 
-	return (
-		<nav className="navbar navbar-light bg-light">
-			<div className="container">
-				<Link to="/">
-					<span className="navbar-brand mb-0 h1">React Boilerplate</span>
-				</Link>
-				<div className="ml-auto">
-					<Link to="/demo">
-						<button className="btn btn-primary">Check the Context in action</button>
-					</Link>
-				</div>
-			</div>
-		</nav>
-	);
+        <Link className="navbar-brand mx-auto order-lg-first" to="/">
+          <img
+            src="src/front/assets/img/mil_paginas.png"
+            alt="Mil páginas logo"
+            height="50"
+          />
+        </Link>
+
+        <div className="collapse navbar-collapse" id="navbarNav">
+          <ul className="navbar-nav me-auto mb-2 mb-lg-0 order-lg-1">
+            <li className="nav-item dropdown">
+              <a
+                className="nav-link dropdown-toggle"
+                href="#"
+                id="navbarDropdownCategories"
+                role="button"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+              >
+                Categorías
+              </a>
+
+              <ul
+                className="dropdown-menu"
+                aria-labelledby="navbarDropdownCategories"
+              >
+                <li>
+                  <Link className="dropdown-item" to="/category/fiction">
+                    Ficción
+                  </Link>
+                </li>
+
+                <li>
+                  <Link className="dropdown-item" to="/category/non-fiction">
+                    No Ficción
+                  </Link>
+                </li>
+
+                <li>
+                  <Link className="dropdown-item" to="/category/scifi">
+                    Ciencia Ficción
+                  </Link>
+                </li>
+
+                <li>
+                  <hr className="dropdown-divider" />
+                </li>
+
+                <li>
+                  <Link className="dropdown-item" to="/category/all">
+                    Ver Todas
+                  </Link>
+                </li>
+              </ul>
+            </li>
+
+            <li className="nav-item">
+              <Link className="nav-link" to="/new-arrivals">
+                Novedades
+              </Link>
+            </li>
+
+            <li className="nav-item">
+              <Link className="nav-link" to="/deals">
+                Ofertas
+              </Link>
+            </li>
+          </ul>
+
+          <form
+            className="d-flex mx-0 mx-lg-5 mb-3 my-lg-0 order-lg-2 flex-grow-1"
+            role="search"
+          >
+            <div className="input-group">
+              <input
+                className="form-control"
+                type="search"
+                placeholder="Buscar libros, autores, géneros..."
+                aria-label="Search"
+              />
+
+              <button className="btn btn-primary" type="submit">
+                <i className="fa-solid fa-magnifying-glass"></i>
+              </button>
+            </div>
+          </form>
+        </div>
+        <div className="btn-group ms-auto">
+          <button
+            type="button"
+            className="btn border-0"
+            data-bs-toggle="dropdown"
+            data-bs-display="static"
+            aria-expanded="false"
+          >
+            <i className="fa-solid fa-user"></i>
+          </button>
+
+          <ul className="dropdown-menu dropdown-menu-end dropdown-menu-lg-start">
+            <li>
+              <Link className="dropdown-item" to="/login">
+                Iniciar sesión
+              </Link>
+            </li>
+
+            <li>
+              <Link className="dropdown-item" to="/register">
+                Registrarse
+              </Link>
+            </li>
+
+            <li><hr className="dropdown-divider" /></li>
+
+            <li>
+              <Link className="dropdown-item" to="/iniciar-sesion">
+                Mi perfil
+              </Link>
+            </li>
+
+            <li>
+              <Link className="dropdown-item" to="/favorites">
+                Favoritos
+              </Link>
+            </li>
+
+            <li>
+              <Link className="dropdown-item" to="/purchase-history">
+                Mi historial de compras
+              </Link>
+            </li>
+
+            <li><hr className="dropdown-divider" /></li>
+
+            <li>
+              <Link className="dropdown-item" to="/logout">
+                Cerrar sesión
+              </Link>
+            </li>
+          </ul>
+        </div>
+        <div className="btn-group me-3">
+          <button
+            type="button"
+            className="btn border-0"
+            data-bs-toggle="dropdown"
+            data-bs-display="static"
+            aria-expanded="false"
+          >
+            <i className="fa-solid fa-cart-shopping"></i>
+
+            <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+              0 <span className="visually-hidden">items in cart</span>
+            </span>
+          </button>
+
+          <ul className="dropdown-menu dropdown-menu-end dropdown-menu-lg-start">
+            <li>
+              <h6 className="dropdown-header">Carrito de Compras</h6>
+            </li>
+
+            <li><hr className="dropdown-divider" /></li>
+
+            <li>
+              <span className="dropdown-item text-muted">
+                Aún no hay artículos en el carrito.
+              </span>
+            </li>
+
+            <li><hr className="dropdown-divider" /></li>
+
+            <li>
+              <Link className="dropdown-item text-center" to="/cart-details">
+                Ver Carrito Completo
+              </Link>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+  );
 };
