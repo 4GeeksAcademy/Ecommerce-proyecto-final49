@@ -1,8 +1,30 @@
 import { Link, useParams } from "react-router-dom";
 import React, { useState, useEffect } from "react";
 import "../styles/vistaproducto.css";
+import "../styles/vistaproducto.css";
 
 export const VistaProducto = () => {
+  const { id } = useParams();
+  const [product, setProduct] = useState(null);
+  const [imgSelected, setImgSelected] = useState("");
+  const backendUrl = import.meta.env.VITE_BACKEND_URL;
+
+  useEffect(() => {
+    // fetch al backend para obtener producto por id
+    fetch(`${backendUrl}/product/${id}`)
+      .then((res) => res.json())
+      .then((data) => {
+        setProduct(data);
+        if (data.image_url) setImgSelected(data.image_url);
+      })
+      .catch((err) => console.error(err));
+  }, [id]);
+
+  if (!product) return <div>Cargando producto...</div>;
+
+  const ratingValue = product.rating || 0;
+  const stars = "★".repeat(ratingValue) + "☆".repeat(5 - ratingValue);
+  const totalReviews = 20; // Este valor puede ser dinámico
   const { id } = useParams();
   const [product, setProduct] = useState(null);
   const [imgSelected, setImgSelected] = useState("");
