@@ -8,8 +8,12 @@ export const Home = () => {
 
 	const { store, dispatch } = useGlobalReducer()
 	const [products, setProducts] = useState([]);
+	const [categories, setCategories] = useState([]);
+	const [authors, setAuthors] = useState([]);
+	const [selectedCategoryId, setSelectedCategoryId] = useState(null);
+	const [selectedAuthorId, setSelectedAuthorId] = useState(null);
 
-	const categories = ['Celulates', 'Audifonos', 'Cornetas'];
+	
 	const handleSearch = (searchValue) => {
 		console.log('Buscando:', searchValue);
 	};

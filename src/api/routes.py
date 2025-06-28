@@ -2,7 +2,7 @@
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 '''
 from flask import Flask, request, jsonify, url_for, Blueprint
-from api.models import db, User, Product
+from api.models import db, User, Product, Category, Author
 from api.utils import generate_sitemap, APIException, send_email
 from flask_cors import CORS
 import cloudinary.uploader as upload
@@ -38,18 +38,43 @@ def handle_hello():
 
 @api.route('/products', methods=['GET'])
 def get_products():
-    products = Product.query.all()
-    if len(products) <= 0:
-        return jsonify({'msg': 'No hay productos'}), 404
-    return jsonify([product.serialize() for product in products]), 200
+    query = Product.query
+    category_id =request.args.get('category_id', type=int)
+    if category_id is not None:
+        query =query.filter_by(category_id=category_id)
 
+    author_id = request.args.get('author_id', type=int)
+    if author_id is not None:
+        query =query.join(Product.authors).filter(Author.id == author_id)
 
+    products_list = query.all()
+
+    if not products_list:
+        return jsonify({'message': 'No hay productos'}), 404
+    return jsonify([product.serialize() for product in products_list]), 200
+
+     
 @api.route('/products/<int:id>', methods=['GET'])
 def get_product(id):
     product = Product.query.get(id)
     if not product:
         return jsonify({'error': 'Producto no encontrado'}), 404
     return jsonify(product.serialize()), 200
+
+@api.route('/categories', methods=['GET'])
+def list_categories():
+    categories = Category.query.all()
+    if not categories:
+        return jsonify({'message': 'No hay categorías'}), 404
+    return jsonify([category.serialize() for category in categories]), 200
+
+@api.route('/authors', methods=['GET'])
+def list_authors():
+    authors = Author.query.all()
+    if not authors:
+        return jsonify({'message': 'No hay autores'}), 404
+    return jsonify([author.serialize() for author in authors]), 200
+
 
 
 @api.route('/register', methods=['POST'])
