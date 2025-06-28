@@ -11,6 +11,7 @@ from base64 import b64encode
 import os
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt, get_jwt_identity
 from datetime import timedelta
+from api.models import db, CartItem, Product
 
 api = Blueprint('api', __name__)
 CORS(api)
@@ -220,3 +221,60 @@ def change_email():
     db.session.commit()
 
     return jsonify({"msg": "Email actualizado exitosamente"}), 200
+
+# RUTAS CARRITO DE COMPRAS
+api = Blueprint('api', __name__)
+
+@api.route('/cart/<int:user_id>', methods=['GET'])
+def get_cart(user_id):
+    cart_items = CartItem.query.filter_by(user_id=user_id).all()
+    result = []
+    for item in cart_items:
+        result.append({
+            "id": item.id,
+            "product_id": item.product_id,
+            "product_name": item.product.name,
+            "quantity": item.quantity,
+            "price": item.product.price
+        })
+    return jsonify(result), 200
+
+
+@api.route('/cart', methods=['POST'])
+def add_to_cart():
+    data = request.json
+    user_id = data.get('user_id')
+    product_id = data.get('product_id')
+    quantity = data.get('quantity', 1)
+
+    if not user_id or not product_id:
+        return jsonify({"msg": "Faltan datos"}), 400
+
+    existing_item = CartItem.query.filter_by(user_id=user_id, product_id=product_id).first()
+    if existing_item:
+        existing_item.quantity += quantity
+    else:
+        new_item = CartItem(user_id=user_id, product_id=product_id, quantity=quantity)
+        db.session.add(new_item)
+
+    db.session.commit()
+    return jsonify({"msg": "Producto agregado al carrito"}), 201
+
+
+@api.route('/cart/<int:item_id>', methods=['DELETE'])
+def delete_cart_item(item_id):
+    item = CartItem.query.get(item_id)
+    if not item:
+        return jsonify({"msg": "Item no encontrado"}), 404
+    db.session.delete(item)
+    db.session.commit()
+    return jsonify({"msg": "Item eliminado del carrito"}), 200
+
+
+@api.route('/cart/clear/<int:user_id>', methods=['DELETE'])
+def clear_cart(user_id):
+    items = CartItem.query.filter_by(user_id=user_id).all()
+    for item in items:
+        db.session.delete(item)
+    db.session.commit()
+    return jsonify({"msg": "Carrito vaciado"}), 200
