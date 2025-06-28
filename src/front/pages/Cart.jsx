@@ -47,6 +47,32 @@ export const Cart = () => {
         return cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0).toFixed(2);
     };
 
+    // Crear sesión de Stripe
+    const handleCheckout = () => {
+        fetch(`${BACKEND_URL}/api/create-checkout-session`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                items: cartItems.map(item => ({
+                    product_name: item.product_name,
+                    price: item.price,
+                    quantity: item.quantity
+                }))
+            })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.url) {
+                window.location.href = data.url;
+            }
+        })
+        .catch(err => {
+            console.error("Error al crear sesión de Stripe:", err);
+        });
+    };
+
     return (
         <div className="container mt-4">
             <h2>🛒 Tu Carrito</h2>
@@ -72,8 +98,11 @@ export const Cart = () => {
 
                     <hr />
                     <h4>Total: ${getTotal()}</h4>
-                    <button className="btn btn-warning mt-2" onClick={clearCart}>
+                    <button className="btn btn-warning mt-2 me-2" onClick={clearCart}>
                         Vaciar carrito
+                    </button>
+                    <button className="btn btn-success mt-2" onClick={handleCheckout}>
+                        PAGAR
                     </button>
                 </>
             )}

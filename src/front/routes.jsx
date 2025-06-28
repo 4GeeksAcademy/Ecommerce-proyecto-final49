@@ -22,6 +22,7 @@ import { VistaProducto } from "./pages/VistaProducto";
 import { ConfirmacionCompra } from "./pages/ConfirmacionCompra";
 import { OlvidoContraseña } from "./pages/OlvidoContraseña";
 import { Cart } from "./pages/Cart";  
+import { Checkout } from "./pages/Checkout";
 
 export const router = createBrowserRouter(
   createRoutesFromElements(
@@ -55,6 +56,7 @@ export const router = createBrowserRouter(
       <Route path="/terminos-y-condiciones" element={<TerminosCondiciones />} />
       <Route path="/cart" element={<Cart />} />
       <Route path="/producto/:id" element={<VistaProducto />} />
+      <Route path="/checkout" element={<Checkout />} />
       <Route path="/confirmacion" element={<ConfirmacionCompra />} />
     </Route>
   )
