@@ -289,7 +289,10 @@ def create_checkout_session():
             'price_data': {
                 'currency': 'usd',
                 'product_data': {
-                    'name': item['product_name']
+                    'name': item['product_name'],
+                    'metadata': {
+                        'product_id': item['product_id']
+                 }
                 },
                 'unit_amount': int(item['price'] * 100)  # Stripe usa centavos
             },

@@ -57,6 +57,7 @@ export const Cart = () => {
             body: JSON.stringify({
                 items: cartItems.map(item => ({
                     product_name: item.product_name,
+                    product_id: item.product_id, // Agregado como metada de Stripe
                     price: item.price,
                     quantity: item.quantity
                 }))
