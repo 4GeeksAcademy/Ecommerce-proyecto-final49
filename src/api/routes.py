@@ -12,7 +12,9 @@ import os
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt, get_jwt_identity
 from datetime import timedelta
 from api.models import db, CartItem, Product
+import stripe
 
+stripe.api_key = os.getenv("STRIPE_SECRET_KEY")
 api = Blueprint('api', __name__)
 CORS(api)
 
@@ -223,8 +225,6 @@ def change_email():
     return jsonify({"msg": "Email actualizado exitosamente"}), 200
 
 # RUTAS CARRITO DE COMPRAS
-api = Blueprint('api', __name__)
-
 @api.route('/cart/<int:user_id>', methods=['GET'])
 def get_cart(user_id):
     cart_items = CartItem.query.filter_by(user_id=user_id).all()
@@ -278,3 +278,37 @@ def clear_cart(user_id):
         db.session.delete(item)
     db.session.commit()
     return jsonify({"msg": "Carrito vaciado"}), 200
+
+# CHECKOUT
+@api.route('/create-checkout-session', methods=['POST'])
+def create_checkout_session():
+    data = request.json
+    items = data.get('items', [])
+
+    line_items = []
+    for item in items:
+        line_items.append({
+            'price_data': {
+                'currency': 'usd',
+                'product_data': {
+                    'name': item['product_name'],
+                    'metadata': {
+                        'product_id': item['product_id']
+                 }
+                },
+                'unit_amount': int(item['price'] * 100)  # Stripe usa centavos
+            },
+            'quantity': item['quantity'],
+        })
+
+    try:
+        session = stripe.checkout.Session.create(
+            payment_method_types=['card'],
+            line_items=line_items,
+            mode='payment',
+            success_url=os.getenv("FRONTEND_URL") + '/success',
+            cancel_url=os.getenv("FRONTEND_URL") + '/cancel'
+        )
+        return jsonify({'url': session.url})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
