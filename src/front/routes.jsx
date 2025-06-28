@@ -41,6 +41,8 @@ export const router = createBrowserRouter(
       <Route path="/quienes-somos" element={<QuienesSomos />} />
       <Route path="/preguntas-frecuentes" element={<PreguntasFrecuentes />} />
       <Route path="/politica-de-privacidad" element={<PoliticaPrivacidad />} />
+      <Route path="/confirmacion-compra" element={<ConfirmacionCompra />} />
+
       <Route
         path="/politica-de-cancelacion"
         element={<PoliticaCancelacion />}
