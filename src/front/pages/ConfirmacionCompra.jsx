@@ -10,23 +10,13 @@ export const ConfirmacionCompra = () => {
     useEffect(() => {
         const paymentId = searchParams.get("payment_intent");
         
-        // if (paymentIntent) {
-        //     fetch(`${backendUrl}/verifica-pago/${paymentIntent}`)
-        //         .then(response => response.json())
-        //         .then(data => setDatosPago(data))
-        //         .catch(err => console.error("Error al verificar el pago:", err))
-        // }
-    // }, [])
-
-    // MODO TEST
-        setDatosPago({
-            status: "succeeded",
-            amount: 49.99,
-            currency: "usd",
-            payment_method: "card",
-            created: Date.now() / 1000
-        });
-        }, []);
+        if (paymentId) {
+            fetch(`${backendUrl}/verifica-pago/${paymentIntent}`)
+                .then(response => response.json())
+                .then(data => setDatosPago(data))
+                .catch(err => console.error("Error al verificar el pago:", err))
+        }
+    }, [])
 
     if (!datosPago) return <div>Verificando el pago ...</div>
 
