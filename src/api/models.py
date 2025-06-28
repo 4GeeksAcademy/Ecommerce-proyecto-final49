@@ -1,8 +1,7 @@
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import String, Boolean, Float, Integer , Text, JSON, ForeignKey
+from sqlalchemy import String, Boolean, Float, Integer, ForeignKey, Text, JSON
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-import datetime
-
+import datetime, validates
 
 db = SQLAlchemy()
 # necesita de conexion con la base de datos antes de ser implementado
@@ -36,8 +35,10 @@ class User(db.Model):
             "role": self.role.name if self.role else 2
         }
 
+
 class Product(db.Model):
-    __tablename__='product'
+    __tablename__ = 'product'
+
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String(120), unique=True, nullable=False)
     price: Mapped[float] = mapped_column(Float, nullable=False)
@@ -47,20 +48,23 @@ class Product(db.Model):
     detail_images: Mapped[list] = mapped_column(JSON, nullable=True)
     rating: Mapped[int] = mapped_column(Integer, nullable=True)
     category: Mapped[str] = mapped_column(String(80), nullable=False, default='General')
-    
+
+    @validates('rating')
+    def validate_rating(self, key, value):
+        if value < 0 or value > 5:
+            raise ValueError("El rating debe estar entre 0 y 5")
+        return value
 
     def serialize(self):
-        return{
+        return {
             'id': self.id,
             'name': self.name,
             'price': self.price,
-
-            'image_url': self.image_url,            #foto principal
+            'image_url': self.image_url,  # foto principal
             'is_featured': self.is_featured,
             'description': self.description,
             'detail_images': self.detail_images,    #fotos miniatura
-            'rating': self.rating,
-            'category': self.category
+            'rating': self.rating
         }
     # CARRITO DE COMPRAS 
 class CartItem(db.Model):
