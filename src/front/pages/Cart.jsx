@@ -9,7 +9,7 @@ export const Cart = () => {
 
     // Obtener carrito del backend
     const fetchCart = () => {
-        fetch(`${BACKEND_URL}/api/cart/${userId}`)
+        fetch(`${BACKEND_URL}/cart/${userId}`)
             .then(res => res.json())
             .then(data => {
                 console.log("Carrito recibido:", data);

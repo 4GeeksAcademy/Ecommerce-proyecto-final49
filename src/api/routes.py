@@ -11,10 +11,10 @@ from base64 import b64encode
 import os
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt, get_jwt_identity
 from datetime import timedelta
-from api.models import db, CartItem, Product
-import stripe
+from api.models import db, CartItem, Product, ContactMessage
+# import stripe
 
-stripe.api_key = os.getenv("STRIPE_SECRET_KEY")
+# stripe.api_key = os.getenv("STRIPE_SECRET_KEY")
 api = Blueprint('api', __name__)
 CORS(api)
 # Allow CORS requests to this API
@@ -311,3 +311,69 @@ def create_checkout_session():
         return jsonify({'url': session.url})
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
+@api.route('/contact-form', methods =["POST"])
+def handleContactForm():
+    if not request.is_json:
+        return jsonify({"msg": "Missing JSON in request"}), 400
+
+    data = request.get_json()
+
+    name = data.get('name')
+    email = data.get('email')
+    message = data.get('message')
+
+    if not name or not email or not message:
+        return jsonify({"msg": "Some fields are missing"}), 400
+    
+    try:
+        new_message = ContactMessage(name=name, email=email, message=message)
+        
+        db.session.add(new_message)
+        db.session.commit() 
+
+        print(f"Nuevo mensaje de contacto guardado en DB (PostgreSQL):")
+        print(f"  Nombre: {new_message.name}")
+        print(f"  Email: {new_message.email}")
+        print(f"  Mensaje: {new_message.message}")
+        print("-" * 30)
+
+        success_response = {
+            "msg": "Message received and saved successfully!",
+            "status": "success",
+            "data": {
+                "id": new_message.id,
+                "name": new_message.name,
+                "email": new_message.email
+            }
+        }
+        return jsonify(success_response), 200
+
+    except Exception as error:
+        db.session.rollback()
+        return jsonify({"msg": f"Error saving the info in the database: {str(error)}"}), 500 
+
+@api.route ('/get-contactform-info', methods=["GET"])
+@jwt_required()
+def getContactForm():
+    try:
+
+        current_user_claims = get_jwt()
+        if not current_user_claims.get("is_admin", False):
+            return jsonify({"msg": "Administration role is required"}),403
+        all_messages = ContactMessage.query.all()
+        
+        messages_list = []
+        for msg in all_messages:
+            messages_list.append({
+                "id": msg.id,
+                "name": msg.name,
+                "email": msg.email,
+                "message": msg.message,
+            })
+        
+        return jsonify(messages_list), 200
+
+    except Exception as error:
+        print(f"Error al recuperar mensajes de la base de datos: {error}")
+        return jsonify({"msg": f"Failed to retrieve messages: {str(error)}"}), 500

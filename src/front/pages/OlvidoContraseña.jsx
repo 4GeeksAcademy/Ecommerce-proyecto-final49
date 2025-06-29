@@ -15,7 +15,7 @@ export const OlvidoContraseña = () => {
             return;
         }
 
-        const url = `${import.meta.env.VITE_BACKEND_URL}/api/forgot-password`;
+        const url = `${import.meta.env.VITE_BACKEND_URL}/forgot-password`;
 
         try {
             const response = await fetch(url, {

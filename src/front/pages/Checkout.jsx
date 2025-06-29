@@ -4,7 +4,7 @@ export const Checkout = () => {
     const BACKEND_URL = "http://localhost:5000"; // o import.meta.env...
 
     const handleCheckout = () => {
-        fetch(`${BACKEND_URL}/api/create-checkout-session`, {
+        fetch(`${BACKEND_URL}/create-checkout-session`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",

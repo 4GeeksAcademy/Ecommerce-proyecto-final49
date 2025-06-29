@@ -10,6 +10,7 @@ import { Home } from "./pages/Home";
 import { Single } from "./pages/Single";
 import { Demo } from "./pages/Demo";
 import { QuienesSomos } from "./pages/QuienesSomos";
+import { Contacto } from "./pages/Contacto";
 import { PreguntasFrecuentes } from "./pages/PreguntasFrecuentes";
 import { PoliticaPrivacidad } from "./pages/PoliticaPrivacidad";
 import { TerminosCondiciones } from "./pages/TerminosCondiciones";
@@ -21,7 +22,7 @@ import { ActualizarPerfil } from "./pages/ActualizarPerfil";
 import { VistaProducto } from "./pages/VistaProducto";
 import { ConfirmacionCompra } from "./pages/ConfirmacionCompra";
 import { OlvidoContraseña } from "./pages/OlvidoContraseña";
-import { Cart } from "./pages/Cart";  
+import { Cart } from "./pages/Cart";
 import { Checkout } from "./pages/Checkout";
 
 export const router = createBrowserRouter(
@@ -41,18 +42,15 @@ export const router = createBrowserRouter(
       <Route path="/demo" element={<Demo />} />
       <Route path="/registro" element={<Registro />} />
       <Route path="/iniciar-sesion" element={<IniciarSesion />} />
-      <Route path="/olvido-su-contraseña" element={<OlvidoContraseña/>} />
+      <Route path="/olvido-su-contraseña" element={<OlvidoContraseña />} />
       <Route path="/recuperar-contraseña" element={<RecuperarContraseña />} />
       <Route path="/actualizar-perfil" element={<ActualizarPerfil />} />
       <Route path="/quienes-somos" element={<QuienesSomos />} />
       <Route path="/preguntas-frecuentes" element={<PreguntasFrecuentes />} />
       <Route path="/politica-de-privacidad" element={<PoliticaPrivacidad />} />
       <Route path="/confirmacion-compra" element={<ConfirmacionCompra />} />
-
-      <Route
-        path="/politica-de-cancelacion"
-        element={<PoliticaCancelacion />}
-      />
+      <Route path="/politica-de-cancelacion" element={<PoliticaCancelacion />} />
+      <Route path="/contactanos" element={<Contacto />} />
       <Route path="/terminos-y-condiciones" element={<TerminosCondiciones />} />
       <Route path="/cart" element={<Cart />} />
       <Route path="/producto/:id" element={<VistaProducto />} />

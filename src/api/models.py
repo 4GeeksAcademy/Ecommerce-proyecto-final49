@@ -1,7 +1,7 @@
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import String, Boolean, Float, Integer, ForeignKey, Text, JSON
-from sqlalchemy.orm import Mapped, mapped_column, relationship
-import datetime, validates
+from sqlalchemy.orm import Mapped, mapped_column, relationship, validates
+import datetime
 
 db = SQLAlchemy()
 # necesita de conexion con la base de datos antes de ser implementado
@@ -76,5 +76,14 @@ class CartItem(db.Model):
 
     user = db.relationship('User', backref='cart_items')
     product = db.relationship('Product', backref='cart_items')
+
+class ContactMessage(db.Model):
+    __tablename__ = 'contact_message'
+    id: Mapped[int] = mapped_column(primary_key=True)
+    email: Mapped[str] = mapped_column(String(120), nullable=False)
+    name: Mapped[str] = mapped_column(String(120), nullable=False) 
+    message: Mapped[str] = mapped_column(String(1000), nullable=False)
+
+
 
 
