@@ -1,7 +1,7 @@
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import String, Boolean, Float, Integer, ForeignKey, Text, JSON
-from sqlalchemy.orm import Mapped, mapped_column, relationship
-import datetime, validates
+from sqlalchemy.orm import Mapped, mapped_column, relationship, validates
+import datetime
 
 db = SQLAlchemy()
 # necesita de conexion con la base de datos antes de ser implementado
@@ -47,7 +47,7 @@ class Product(db.Model):
     description: Mapped[str] = mapped_column(Text, nullable=True)
     detail_images: Mapped[list] = mapped_column(JSON, nullable=True)
     rating: Mapped[int] = mapped_column(Integer, nullable=True)
-    category: Mapped[str] = mapped_column(String(80), nullable=False, default='General')
+    # category: Mapped[str] = mapped_column(String(80), nullable=False, default='General')
 
     @validates('rating')
     def validate_rating(self, key, value):

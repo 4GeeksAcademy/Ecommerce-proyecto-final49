@@ -1,16 +1,17 @@
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useNavigate } from "react-router-dom";
 import React, { useState, useEffect } from "react";
 import "../styles/vistaproducto.css";
-import "../styles/vistaproducto.css";
+import useGlobalReducer from "../hooks/useGlobalReducer";
 
 export const VistaProducto = () => {
   const { id } = useParams();
   const [product, setProduct] = useState(null);
   const [imgSelected, setImgSelected] = useState("");
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
+  const { store, actions } = useGlobalReducer();
+  const navigate = useNavigate();
 
   useEffect(() => {
-    // fetch al backend para obtener producto por id
     fetch(`${backendUrl}/product/${id}`)
       .then((res) => res.json())
       .then((data) => {
@@ -18,34 +19,67 @@ export const VistaProducto = () => {
         if (data.image_url) setImgSelected(data.image_url);
       })
       .catch((err) => console.error(err));
-  }, [id]);
+  }, [id, backendUrl]);
 
   if (!product) return <div>Cargando producto...</div>;
 
   const ratingValue = product.rating || 0;
   const stars = "★".repeat(ratingValue) + "☆".repeat(5 - ratingValue);
-  const totalReviews = 20; // Este valor puede ser dinámico
-  const { id } = useParams();
-  const [product, setProduct] = useState(null);
-  const [imgSelected, setImgSelected] = useState("");
-  const backendUrl = import.meta.env.VITE_BACKEND_URL;
+  const totalReviews = 20;
 
-  useEffect(() => {
-    // fetch al backend para obtener producto por id
-    fetch(`${backendUrl}/product/${id}`)
-      .then((res) => res.json())
-      .then((data) => {
-        setProduct(data);
-        if (data.image_url) setImgSelected(data.image_url);
-      })
-      .catch((err) => console.error(err));
-  }, [id]);
+  const handleAddToCart = async () => {
+    const success = await actions.addToCart(product);
+    if (success) {
+      alert("Producto agregado al carrito");
+    } else {
+      alert("Error al agregar producto al carrito.  Intenta de nuevo");
+    }
+  };
 
-  if (!product) return <div>Cargando producto...</div>;
+  const handleBuyNow = async () => {
+    if (!product) {
+      alert("Producto no disponible para comprar.");
+      return;
+    }
 
-  const ratingValue = product.rating || 0;
-  const stars = "★".repeat(ratingValue) + "☆".repeat(5 - ratingValue);
-  const totalReviews = 20; // Este valor puede ser dinámico
+    if (!store.token) {
+      alert("Para comprar ahora, por favor inicia sesión o regístrate.");
+      navigate("/iniciar-sesion");
+      return;
+    }
+
+    try {
+      const response = await fetch(`${backendUrl}/create-checkout-session`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          items: [
+            {
+              product_name: product.name,
+              product_id: product.id,
+              price: product.price,
+              quantity: 1, // Se asume 1 para "Comprar ahora"
+              image_url: product.image_url,
+            },
+          ],
+        }),
+      });
+
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.error || "Error al crear la sesión de pago.");
+      }
+
+      if (data.url) {
+        window.location.href = data.url; // Redirige a Stripe
+      } else {
+        alert("No se pudo obtener la URL de pago.");
+      }
+    } catch (error) {
+      console.error("Error al procesar la compra directa:", error);
+      alert(`Ocurrió un error al procesar tu compra: ${error.message}`);
+    }
+  };
 
   return (
     <div className="container">
@@ -120,18 +154,24 @@ export const VistaProducto = () => {
           <span className="mb-5">Cantidad: 1 unidad (+5 disponibles)</span>
 
           {/*Botón comprar ahora*/}
-          <Link to={`/checkout/${product.id}`}>   {/*CAMBIAR EL NOMBRE DE LA RUTA CUANDO MARIA LA CREE */}
-            <button type="button" className="btn btn-primary w-100">
-              Comprar ahora
-            </button>
-          </Link>
+          <button
+            type="button"
+            className="btn btn-success w-100"
+            onClick={handleBuyNow}
+            //disabled={product.stock <= 0}
+          >
+            Comprar ahora
+          </button>
 
           {/*Botón agregar al carrito*/}
-          <Link to={`/cart/${product.id}`}>   {/*CAMBIAR EL NOMBRE DE LA RUTA CUANDO MARIA LA CREE */}
-            <button type="button" className="btn btn-primary w-100">
-              Agregar al carrito
-            </button>
-          </Link>
+          <button
+            type="button"
+            className="btn btn-primary w-100"
+            onClick={handleAddToCart}
+            //disabled={product.stock <= 0}
+          >
+            Agregar al carrito
+          </button>
         </div>
       </div>
     </div>
