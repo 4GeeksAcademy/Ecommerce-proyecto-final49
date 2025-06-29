@@ -39,13 +39,28 @@ def handle_hello():
 @api.route('/products', methods=['GET'])
 def get_products():
     query = Product.query
+
     category_id =request.args.get('category_id', type=int)
     if category_id is not None:
-        query =query.filter_by(category_id=category_id)
+        query = query.filter_by(category_id=category_id)
 
     author_id = request.args.get('author_id', type=int)
     if author_id is not None:
-        query =query.join(Product.authors).filter(Author.id == author_id)
+        query = query.join(Product.authors).filter(Author.id == author_id)
+
+    search_term =request.args.get('search', type=str)
+    if search_term:
+        search_term = search_term.strip()
+        if search_term:
+            query = query.join(Product.category).join(Product.authors).filter(
+                db.or_(
+                    Product.name.ilike(f'%{search_term}%'),
+                    Product.description.ilike(f'%{search_term}%'),
+                    Category.name.ilike(f'%{search_term}%'),
+                    Author.name.ilike(f'%{search_term}%'),
+                )
+            )
+        
 
     products_list = query.all()
 
@@ -61,6 +76,36 @@ def get_product(id):
         return jsonify({'error': 'Producto no encontrado'}), 404
     return jsonify(product.serialize()), 200
 
+
+@api.route('/products', methods=['POST'])
+def create_product():
+    data = request.get_json() 
+
+    category =Category.query.get(data.get('category_id'))
+    if not category:
+        return jsonify({'error': 'Categoria no valida'}), 400
+    
+    author_ids = data.get('author_ids', [])
+    authors = Author.query.filter(Author.id.in_(author_ids)).all()
+
+    new_product = Product(
+    name=data.get('name'),
+    price=data.get('price'),
+    image_url=data.get('image_url'),
+    is_featured=data.get('is_featured', False),
+    description=data.get('description', ''),
+    detail_images=data.get('detail_images', []),
+    rating=data.get('rating', 0),
+    category=category,
+    authors=authors
+    )
+
+    db.session.add(new_product)
+    db.session.commit()
+
+    return jsonify(new_product.serialize()), 201
+
+
 @api.route('/categories', methods=['GET'])
 def list_categories():
     categories = Category.query.all()
@@ -68,12 +113,50 @@ def list_categories():
         return jsonify({'message': 'No hay categorías'}), 404
     return jsonify([category.serialize() for category in categories]), 200
 
+@api.route('/categories', methods=['POST'])
+def create_category():
+    data = request.get_json()
+    name = data.get('name')
+
+    if not name:
+        return jsonify({'error': 'Nombre de la categoria requerido'}), 400
+    
+    existing = Category.query.filter_by(name=name).first()
+    if existing:
+        return jsonify({'error': 'La categoria ya existe'}), 400
+    
+    category =Category(name=name)
+    db.session.add(category)
+    db.session.commit()
+
+    return jsonify(category.serialize()), 201
+
+ 
 @api.route('/authors', methods=['GET'])
 def list_authors():
     authors = Author.query.all()
     if not authors:
         return jsonify({'message': 'No hay autores'}), 404
     return jsonify([author.serialize() for author in authors]), 200
+
+    
+@api.route('/authors', methods=['POST'])
+def create_author():
+    data = request.get_json()
+    name = data.get('name')
+
+    if not name:
+        return jsonify({'error': 'Nombre del autor requerido'}), 400
+    
+    existing = Author.query.filter_by(name=name).first()
+    if existing:
+        return jsonify({'error': 'El autor ya existe'}), 409
+    
+    author = Author(name=name)
+    db.session.add(author)
+    db.session.commit()
+
+    return jsonify(author.serialize()), 201
 
 
 

@@ -90,6 +90,6 @@ class Product(db.Model):
             'description': self.description,
             'detail_images': self.detail_images,    #fotos miniatura
             'rating': self.rating,
-            'category': self.category,
+            'category': self.category.serialize(),
             'authors': [a.serialize() for a in self.authors],
         }
