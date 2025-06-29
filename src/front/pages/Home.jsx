@@ -72,9 +72,14 @@ export const Home = () => {
     loadFilteredProducts();
   }, [bkUrl, selectedCategoryId, selectedAuthorId, searchText]);
 
-  const handleSearch = (searchValue) => {
-    setSearchText(searchValue);
+  const handleSearch = (text) => {
+    setSearchText(text);
   };
+
+  const handleCategorySelect = (categoryId) => {
+    setSelectedCategoryId(categoryId);
+    setSearchText('');
+  }
 
   // useEffect(() => {
   // 	const loadProducts = async () => {
@@ -100,6 +105,7 @@ export const Home = () => {
           title="No te pierdas estas ofertas"
           subtitle="Con la compra de mas de $50 el envio es gratis"
           onSearch={handleSearch}
+          onCategorySelect={handleCategorySelect}
 		  searchValue={searchText}
           categories={categories}
 		  authors={authors}
@@ -145,7 +151,7 @@ export const Home = () => {
 
         <h2> Productos destacados</h2>
 
-            <div className="row product-grid">
+            <div className="row ">
           {products.map((p) => {
             return (
               p.is_featured && (

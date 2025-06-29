@@ -1,17 +1,42 @@
 .banner {
 position:relative;
 background: white ;
-color: aqua;
+color: rgb(18, 80, 80);
 padding: auto;
 text-align: center;
-border: 1px solid black;
+width: 100%;
+height: 400px;
+overflow: hidden;
+font-weight: 700;
+line-height: 1.25;
 
 }
 
+.Banner__img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  /* display: block; */
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 0;
+}
+
 .banner__overlay {
-    background: rgb(4, 73, 73);
-    padding: 4px;
-    border-radius: 8px;
+  position: absolute;
+    background: none;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    padding: 2rem;
+    border-radius: 35px;
 
 }
 
@@ -24,6 +49,8 @@ border: 1px solid black;
 .banner__search {
     display: flex;
     max-width: 400px;
+    align-self: self-start;
+    margin-top: 1rem;
 
 }
 
@@ -33,4 +60,29 @@ border: 1px solid black;
 
 .banner__search button {
   margin-left: 10px;
+}
+
+.banner__categories {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-self: center;
+  margin-top: auto;
+  margin-bottom: 0.1rem;
+  color: black;
+}
+
+.banner__categories .btn-outline-secondary:hover, 
+.banner__categories .btn-outline-secondary:focus {
+  background-color: rgb(18, 53, 53);
+  border-color: black;
+  color: beige;
+}
+
+.banner__categories .btn-outline-secondary {
+  background-color: rgb(147, 151, 151);
+  color: rgb(12, 116, 177);
+  border-color: rgb(8, 146, 189);
+  font-weight: 700;
+line-height: 1.25;
 }
