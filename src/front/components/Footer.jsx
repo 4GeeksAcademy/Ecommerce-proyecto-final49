@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 
 export const Footer = () => (
   <div className="container-fluid">
-    <footer className="row row-cols-1 row-cols-sm-2 row-cols-md-5 py-5 border-top bg-dark text-white px-5">
+    <footer className="row row-cols-1 row-cols-sm-2 row-cols-md-5 py-4 border-top bg-dark text-white px-5">
       <div className="col ">
         <Link
           to="/"

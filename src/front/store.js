@@ -15,6 +15,7 @@ export const initialStore = () => {
     ],
     token: localStorage.getItem("token") || null,
     me: "",
+    cartCount: 0,
   };
 };
 
@@ -28,17 +29,6 @@ export default function storeReducer(store, action = {}) {
 
     case "add_task":
       const { id, color } = action.payload;
-
-    case "LOGIN":
-      return {
-        ...store,
-        token: action.payload,
-      };
-    case "LOGOUT":
-      return {
-        ...store,
-        token: localStorage.getItem("token") || null,
-      };
       return {
         ...store,
         todos: store.todos.map((todo) =>
@@ -46,12 +36,38 @@ export default function storeReducer(store, action = {}) {
         ),
       };
 
+    case "LOGIN":
+      return {
+        ...store,
+        token: action.payload,
+      };
+
+    case "LOGOUT":
+      localStorage.removeItem("token"); 
+      return {
+        ...store,
+        token: null, 
+        me: "", 
+        cartCount: 0, 
+      };
+
     case "ADD_ME":
       return {
         ...store,
         me: action.payload,
       };
+      case "ADD_TO_CART":
+        return {
+            ...store,
+            cartCount: store.cartCount + 1
+      };
+      case "RESET_CART":
+        return {
+            ...store,
+            cartCount: 0
+        };
+
     default:
-      throw Error("Unknown action.");
+      return store;
   }
 }

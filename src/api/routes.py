@@ -13,18 +13,20 @@ from flask_jwt_extended import create_access_token, jwt_required, get_jwt, get_j
 from datetime import timedelta
 
 from sqlalchemy import func
+from api.models import db, CartItem, Product, ContactMessage
+# import stripe
 
+# stripe.api_key = os.getenv("STRIPE_SECRET_KEY")
 api = Blueprint('api', __name__)
 CORS(api)
+# Allow CORS requests to this API
 
 
 def set_password(password, salt):
     return generate_password_hash(f'{password}{salt}')
 
-
 def check_password(pass_hash, password, salt):
     return check_password_hash(pass_hash, f'{password}{salt}')
-
 
 expire_in_minutes = 10
 expires_delta = timedelta(minutes=expire_in_minutes)
@@ -77,7 +79,7 @@ def get_products():
     return jsonify([product.serialize() for product in products_list]), 200
 
 
-@ api.route('/products/<int:id>', methods=['GET'])
+@api.route('/product/<int:id>', methods=['GET'])
 def get_product(id):
     product=Product.query.get(id)
     if not product:
@@ -336,3 +338,158 @@ def change_email():
     db.session.commit()
 
     return jsonify({"msg": "Email actualizado exitosamente"}), 200
+
+# RUTAS CARRITO DE COMPRAS
+@api.route('/cart/<int:user_id>', methods=['GET'])
+def get_cart(user_id):
+    cart_items = CartItem.query.filter_by(user_id=user_id).all()
+    result = []
+    for item in cart_items:
+        result.append({
+            "id": item.id,
+            "product_id": item.product_id,
+            "product_name": item.product.name,
+            "quantity": item.quantity,
+            "price": item.product.price
+        })
+    return jsonify(result), 200
+
+
+@api.route('/cart', methods=['POST'])
+def add_to_cart():
+    data = request.json
+    user_id = data.get('user_id')
+    product_id = data.get('product_id')
+    quantity = data.get('quantity', 1)
+
+    if not user_id or not product_id:
+        return jsonify({"msg": "Faltan datos"}), 400
+
+    existing_item = CartItem.query.filter_by(user_id=user_id, product_id=product_id).first()
+    if existing_item:
+        existing_item.quantity += quantity
+    else:
+        new_item = CartItem(user_id=user_id, product_id=product_id, quantity=quantity)
+        db.session.add(new_item)
+
+    db.session.commit()
+    return jsonify({"msg": "Producto agregado al carrito"}), 201
+
+
+@api.route('/cart/<int:item_id>', methods=['DELETE'])
+def delete_cart_item(item_id):
+    item = CartItem.query.get(item_id)
+    if not item:
+        return jsonify({"msg": "Item no encontrado"}), 404
+    db.session.delete(item)
+    db.session.commit()
+    return jsonify({"msg": "Item eliminado del carrito"}), 200
+
+
+@api.route('/cart/clear/<int:user_id>', methods=['DELETE'])
+def clear_cart(user_id):
+    items = CartItem.query.filter_by(user_id=user_id).all()
+    for item in items:
+        db.session.delete(item)
+    db.session.commit()
+    return jsonify({"msg": "Carrito vaciado"}), 200
+
+# CHECKOUT
+@api.route('/create-checkout-session', methods=['POST'])
+def create_checkout_session():
+    data = request.json
+    items = data.get('items', [])
+
+    line_items = []
+    for item in items:
+        line_items.append({
+            'price_data': {
+                'currency': 'usd',
+                'product_data': {
+                    'name': item['product_name'],
+                    'metadata': {
+                        'product_id': item['product_id']
+                 }
+                },
+                'unit_amount': int(item['price'] * 100)  # Stripe usa centavos
+            },
+            'quantity': item['quantity'],
+        })
+
+    try:
+        session = stripe.checkout.Session.create(
+            payment_method_types=['card'],
+            line_items=line_items,
+            mode='payment',
+            success_url=os.getenv("FRONTEND_URL") + '/success',
+            cancel_url=os.getenv("FRONTEND_URL") + '/cancel'
+        )
+        return jsonify({'url': session.url})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@api.route('/contact-form', methods =["POST"])
+def handleContactForm():
+    if not request.is_json:
+        return jsonify({"msg": "Missing JSON in request"}), 400
+
+    data = request.get_json()
+
+    name = data.get('name')
+    email = data.get('email')
+    message = data.get('message')
+
+    if not name or not email or not message:
+        return jsonify({"msg": "Some fields are missing"}), 400
+    
+    try:
+        new_message = ContactMessage(name=name, email=email, message=message)
+        
+        db.session.add(new_message)
+        db.session.commit() 
+
+        print(f"Nuevo mensaje de contacto guardado en DB (PostgreSQL):")
+        print(f"  Nombre: {new_message.name}")
+        print(f"  Email: {new_message.email}")
+        print(f"  Mensaje: {new_message.message}")
+        print("-" * 30)
+
+        success_response = {
+            "msg": "Message received and saved successfully!",
+            "status": "success",
+            "data": {
+                "id": new_message.id,
+                "name": new_message.name,
+                "email": new_message.email
+            }
+        }
+        return jsonify(success_response), 200
+
+    except Exception as error:
+        db.session.rollback()
+        return jsonify({"msg": f"Error saving the info in the database: {str(error)}"}), 500 
+
+@api.route ('/get-contactform-info', methods=["GET"])
+@jwt_required()
+def getContactForm():
+    try:
+
+        current_user_claims = get_jwt()
+        if not current_user_claims.get("is_admin", False):
+            return jsonify({"msg": "Administration role is required"}),403
+        all_messages = ContactMessage.query.all()
+        
+        messages_list = []
+        for msg in all_messages:
+            messages_list.append({
+                "id": msg.id,
+                "name": msg.name,
+                "email": msg.email,
+                "message": msg.message,
+            })
+        
+        return jsonify(messages_list), 200
+
+    except Exception as error:
+        print(f"Error al recuperar mensajes de la base de datos: {error}")
+        return jsonify({"msg": f"Failed to retrieve messages: {str(error)}"}), 500
