@@ -47,7 +47,7 @@ export const Registro = () => {
 
     const url = import.meta.env.VITE_BACKEND_URL;
         try {
-            const response = await fetch(`${url}/api/register`, {
+            const response = await fetch(`${url}/register`, {
                 method: "POST",
                 body: formData,
                 })

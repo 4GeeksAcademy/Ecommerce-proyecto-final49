@@ -11,7 +11,7 @@ export const RecuperarContraseña = () => {
 
     const url = import.meta.env.VITE_BACKEND_URL;
 
-    const response = await fetch(`${url}/api/reset-password`, {
+    const response = await fetch(`${url}/reset-password`, {
     method: "PUT",
     headers: {
         "Authorization": `Bearer ${searchParams.get("token")}`,
