@@ -41,6 +41,26 @@ class User(db.Model):
             "name": self.name,
             "role": self.role.name if self.role else 2
         }
+    
+class Category(db.Model):
+    __tablename__ ='category'
+    id: Mapped[int] = mapped_column(primary_key=True)
+    name: Mapped[str] = mapped_column(String(80), unique=True, nullable=False)
+
+    products: Mapped[list['Product']] = relationship(back_populates='category')
+
+    def serialize(self):
+        return{'id': self.id, 'name': self.name}
+    
+class Author(db.Model):
+    __tablename__ = 'author'
+    id: Mapped[int] = mapped_column(primary_key=True)
+    name: Mapped[str] = mapped_column(String(120), unique=True, nullable=False)
+
+    products: Mapped[list['Product']] = relationship('Product', secondary=book_authors, back_populates='authors')
+
+    def serialize(self):
+        return {'id': self.id, 'name': self.name}
 
 
 class Product(db.Model):
@@ -73,7 +93,9 @@ class Product(db.Model):
             'is_featured': self.is_featured,
             'description': self.description,
             'detail_images': self.detail_images,    #fotos miniatura
-            'rating': self.rating
+            'rating': self.rating,
+            'category': self.category.serialize(),
+            'authors': [a.serialize() for a in self.authors],
         }
     # CARRITO DE COMPRAS 
 class CartItem(db.Model):

@@ -1,11 +1,11 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useLayoutEffect } from "react";
 import "../styles/ProductCard.css";
 import { Link } from "react-router-dom";
 
 const ProductCard = ({ product, onAddToCart }) => {
   const titleRef = useRef(null);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const titleBook = titleRef.current;
     if (!titleBook) return;
 
@@ -19,7 +19,7 @@ const ProductCard = ({ product, onAddToCart }) => {
       }
     };
 
-bookFontSize ();
+bookFontSize();
 
 window.addEventListener('resize', bookFontSize);
 return () => {
@@ -36,7 +36,7 @@ return () => {
         className="product-card__image"
       />
 
-            <h3 className='product-card__name'>{product.name}</h3>
+            <h3 ref={titleRef} className='product-card__name'>{product.name}</h3>
             <p className='product-card__price'>${product.price.toFixed(2)}</p>
             <Link to={`/producto/${product.id}`}>
             <button className='product-card__button'

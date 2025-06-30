@@ -1,5 +1,5 @@
 .product-card {
-    background: rgb(13, 184, 214);
+    background: rgb(202, 212, 214);
     border: 1px solid black;
     border-radius: 4px;
     text-align: center;
@@ -23,7 +23,7 @@
 .product-card__image {
 width: 100%; 
 max-height: 250px;
-object-fit: contain;
+/* object-fit: contain; */
 height: 250px;
 object-fit: cover;
 border-radius: 8px;
@@ -31,10 +31,11 @@ flex-shrink: 0;
 }
 
 .product-card__name {
-font-size: clamp(0.9rem, 2.5vw, 1.3rem);
+/* font-size: clamp(0.9rem, 2.5vw, 1.3rem); */
 overflow: hidden;
 white-space: nowrap;
-  
+min-width:0;
+max-width: 100%;
 font-size: 24px;
 white-space: nowrap;
 overflow: hidden;
@@ -50,3 +51,4 @@ line-height: 1.25;
     line-height: 1.25;
     margin-top: auto;
 }
+
