@@ -77,4 +77,13 @@ class CartItem(db.Model):
     user = db.relationship('User', backref='cart_items')
     product = db.relationship('Product', backref='cart_items')
 
+class ContactMessage(db.Model):
+    __tablename__ = 'contact_message'
+    id: Mapped[int] = mapped_column(primary_key=True)
+    email: Mapped[str] = mapped_column(String(120), nullable=False)
+    name: Mapped[str] = mapped_column(String(120), nullable=False) 
+    message: Mapped[str] = mapped_column(String(1000), nullable=False)
+
+
+
 

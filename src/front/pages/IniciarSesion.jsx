@@ -1,6 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react"; // Importa useEffect
 import useGlobalReducer from "../hooks/useGlobalReducer";
-
 import { Link, useNavigate, Navigate } from "react-router-dom";
 
 const initialStateUser = {
@@ -10,9 +9,15 @@ const initialStateUser = {
 
 export const IniciarSesion = () => {
   const [user, setUser] = useState(initialStateUser);
+  const [message, setMessage] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   const { dispatch, store } = useGlobalReducer();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    console.log("Estado actual del store:", store);
+  }, [store]); 
 
   const handleChange = ({ target }) => {
     setUser({
@@ -22,36 +27,49 @@ export const IniciarSesion = () => {
   };
 
   const handleSubmit = async (event) => {
-    event.preventDefault();
+    event.preventDefault(); 
+    setMessage(null); 
+    setLoading(true); 
 
-    const url = import.meta.env.VITE_BACKEND_URL;
+    const url = import.meta.env.VITE_BACKEND_URL; 
 
-    const response = await fetch(`${url}/api/login`, {
-      method: "POST",
-      headers: {
-        "Content-type": "application/json",
-      },
-      body: JSON.stringify(user),
-    });
+    try {
+      const response = await fetch(`${url}/login`, {
+        method: "POST",
+        headers: {
+          "Content-type": "application/json",
+        },
+        body: JSON.stringify(user),
+      });
 
-    const data = await response.json();
+      const data = await response.json();
 
-    if (response.ok) {
-      localStorage.setItem("token", data.token);
-      dispatch({ type: "LOGIN", payload: data.token });
-      setTimeout(() => {
-        navigate("/");
-      }, 2000);
-    } else if (response.status === 400) {
-      alert("El correo electrónico o la contraseña son incorrectos.");
-    } else {
-      alert("Error al iniciar sesión. Por favor, comunícate con soporte.");
+      if (response.ok) {
+        localStorage.setItem("token", data.token);
+
+        dispatch({ type: "LOGIN", payload: data.token });
+
+        setMessage("¡Inicio de sesión exitoso! Redirigiendo...");
+        setTimeout(() => {
+          navigate("/");
+        }, 2000);
+      } else if (response.status === 400) {
+        setMessage("El correo electrónico o la contraseña son incorrectos.");
+      } else {
+        setMessage("Error al iniciar sesión. Por favor, comunícate con soporte.");
+      }
+    } catch (error) {
+      console.error("Error en la solicitud de login:", error);
+      setMessage("Error de conexión. Por favor, inténtalo de nuevo más tarde.");
+    } finally {
+      setLoading(false);
     }
   };
 
   if (store.token) {
     return <Navigate to="/" />;
   }
+
   return (
     <div className="container-fluid">
       <div className="row py-3">
@@ -73,6 +91,7 @@ export const IniciarSesion = () => {
                 onChange={handleChange}
                 value={user.email}
                 required
+                disabled={loading} 
               />
             </div>
             <div className="form-group mb-3">
@@ -88,11 +107,22 @@ export const IniciarSesion = () => {
                 onChange={handleChange}
                 value={user.password}
                 required
+                disabled={loading} 
               />
               <Link to="/olvido-su-contraseña">¿Olvidaste tu contraseña?</Link>
             </div>
-            <button type="submit" className="btn btn-success w-100">
-              Iniciar sesión
+            {message && (
+              <div
+                className={`alert ${
+                  message.includes("exitoso") ? "alert-success" : "alert-danger"
+                }`}
+                role="alert"
+              >
+                {message}
+              </div>
+            )}
+            <button type="submit" className="btn btn-success w-100" disabled={loading}>
+              {loading ? "Iniciando sesión..." : "Iniciar sesión"}
             </button>
           </form>
         </div>
