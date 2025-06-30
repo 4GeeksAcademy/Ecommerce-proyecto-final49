@@ -1,4 +1,3 @@
-// Import necessary hooks and functions from React.
 import {
   useContext,
   useReducer,
@@ -6,23 +5,15 @@ import {
   useEffect,
   useMemo,
 } from "react";
-import storeReducer, { initialStore } from "../store"; // Import the reducer and the initial state.
+import storeReducer, { initialStore } from "../store.js";
 
-// Create a context to hold the global state of the application
-// We will call this global state the "store" to avoid confusion while using local states
 const StoreContext = createContext();
 
-// Define a provider component that encapsulates the store and warps it in a context provider to
-// broadcast the information throught all the app pages and components.
 export function StoreProvider({ children }) {
-  // Initialize reducer with the initial state.
   const [store, dispatch] = useReducer(storeReducer, initialStore());
 
-  // *************
   const actions = useMemo(() => {
     const allActions = {
-      // Definimos un objeto temporal para contener todas las acciones
-      // Autenticación
       login: async (email, password) => {
         try {
           const resp = await fetch(`${process.env.VITE_BACKEND_URL}/login`, {
@@ -33,24 +24,11 @@ export function StoreProvider({ children }) {
           const data = await resp.json();
           if (resp.ok) {
             localStorage.setItem("jwt_token", data.token);
+            // El dispatch de LOGIN aquí es correcto
             dispatch({
               type: "LOGIN",
               payload: { token: data.token, user_data: data.user_id },
             });
-
-            //     await allActions.transferLocalCartToBackend();
-            //     await allActions.getBackendCart();
-            //     return true;
-            //   } else {
-            //     console.error("Error de login desde el backend:", data.msg);
-            //     return false;
-            //   }
-            // } catch (error) {
-            //   console.error("Error de red o servidor durante el login:", error);
-            //   return false;
-            // }
-            await allActions.transferLocalCartToBackend();
-            await allActions.getBackendCart();
             return true;
           } else {
             console.error("Error de login desde el backend:", data.msg);
@@ -62,10 +40,13 @@ export function StoreProvider({ children }) {
         }
       },
       logout: () => {
+        localStorage.removeItem("jwt_token");
         dispatch({ type: "LOGOUT" });
+        dispatch({ type: "SET_BACKEND_CART", payload: [] });
+        dispatch({ type: "ADD_ME", payload: null });
       },
-      getUserInfo: async () => {
-        const token = store.token || localStorage.getItem("jwt_token");
+      getUserInfo: async (tokenArg) => {
+        const token = tokenArg || localStorage.getItem("jwt_token");
         if (!token) return false;
         try {
           const response = await fetch(`${process.env.VITE_BACKEND_URL}/me`, {
@@ -88,7 +69,9 @@ export function StoreProvider({ children }) {
       },
 
       addToCart: async (product, quantity = 1) => {
-        if (store.token && store.user) {
+
+        const token = store.token || localStorage.getItem("jwt_token");
+        if (token && store.user) {
           try {
             const response = await fetch(
               `${process.env.VITE_BACKEND_URL}/api/cart`,
@@ -96,14 +79,14 @@ export function StoreProvider({ children }) {
                 method: "POST",
                 headers: {
                   "Content-Type": "application/json",
-                  Authorization: `Bearer ${store.token}`,
+                  Authorization: `Bearer ${token}`,
                 },
                 body: JSON.stringify({ product_id: product.id, quantity }),
               }
             );
             if (!response.ok)
               throw new Error("Fallo al añadir al carrito del backend");
-            await allActions.getBackendCart();
+            await allActions.getBackendCart(token);
             return true;
           } catch (error) {
             console.error("Error añadiendo al carrito del backend:", error);
@@ -115,18 +98,19 @@ export function StoreProvider({ children }) {
         }
       },
       removeCartItem: async (itemId) => {
-        if (store.token && store.user) {
+        const token = store.token || localStorage.getItem("jwt_token");
+        if (token && store.user) {
           try {
             const response = await fetch(
               `${process.env.VITE_BACKEND_URL}/api/cart/${itemId}`,
               {
                 method: "DELETE",
-                headers: { Authorization: `Bearer ${store.token}` },
+                headers: { Authorization: `Bearer ${token}` },
               }
             );
             if (!response.ok)
               throw new Error("Fallo al eliminar del carrito del backend");
-            await allActions.getBackendCart();
+            await allActions.getBackendCart(token);
             return true;
           } catch (error) {
             console.error("Error eliminando del carrito del backend:", error);
@@ -138,36 +122,40 @@ export function StoreProvider({ children }) {
         }
       },
       clearCart: async () => {
-        if (store.token && store.user) {
+        const token = store.token || localStorage.getItem("jwt_token");
+        if (token && store.user) {
           try {
             const response = await fetch(
               `${process.env.VITE_BACKEND_URL}/api/cart/clear`,
               {
                 method: "DELETE",
-                headers: { Authorization: `Bearer ${store.token}` },
+                headers: { Authorization: `Bearer ${token}` },
               }
             );
             if (!response.ok)
               throw new Error("Fallo al vaciar el carrito del backend");
-            await allActions.getBackendCart();
+            await allActions.getBackendCart(token);
             return true;
           } catch (error) {
             console.error("Error vaciando el carrito del backend:", error);
             return false;
           }
         } else {
+          // Línea 145, se adiciona un console.log por validación de duplicidad de item en carrito.
+          console.log("Agregando al carrito local (usuario no logeado)");
           dispatch({ type: "CLEAR_LOCAL_CART" });
           return true;
         }
       },
 
-      // Acciones para obtener y sincronizar carritos
       syncLocalCartWithStore: () => {
         const cart = JSON.parse(localStorage.getItem("local_cart") || "[]");
         dispatch({ type: "SET_LOCAL_CART", payload: cart });
       },
-      getBackendCart: async () => {
-        if (!store.token) {
+
+      getBackendCart: async (tokenArg) => {
+        const token = tokenArg || localStorage.getItem("jwt_token");
+        if (!token) {
           console.log(
             "No hay token, no se puede obtener el carrito del backend."
           );
@@ -178,7 +166,7 @@ export function StoreProvider({ children }) {
           const response = await fetch(
             `${process.env.VITE_BACKEND_URL}/api/cart`,
             {
-              headers: { Authorization: `Bearer ${store.token}` },
+              headers: { Authorization: `Bearer ${token}` },
             }
           );
           if (!response.ok) {
@@ -194,17 +182,22 @@ export function StoreProvider({ children }) {
           dispatch({ type: "SET_BACKEND_CART", payload: [] });
         }
       },
-      transferLocalCartToBackend: async () => {
+
+      transferLocalCartToBackend: async (tokenArg) => {
         const localCart = store.localCart;
-        if (localCart.length === 0 || !store.token || !store.user) {
+        const token = tokenArg || localStorage.getItem("jwt_token");
+        if (localCart.length === 0 || !token || !store.user) {
           return;
         }
+
 
         for (const item of localCart) {
           await allActions.addBackendCartItem(item.product_id, item.quantity);
         }
         allActions.clearCart();
+
       },
+
       addBackendCartItem: async (product_id, quantity = 1) => {
         const token = store.token || localStorage.getItem("jwt_token");
         if (!token) {
@@ -233,19 +226,40 @@ export function StoreProvider({ children }) {
         }
       },
     };
+
     return allActions;
-  }, [store.token, store.user, store.localCart, dispatch]);
+  }, [store.localCart, dispatch]);
 
   useEffect(() => {
-    if (actions) {
-      actions.getUserInfo();
-      actions.syncLocalCartWithStore();
+    const token = localStorage.getItem("jwt_token");
+    if (token && !store.token) {
+
+      dispatch({ type: "LOGIN", payload: { token: token, user_data: null } });
     }
-  }, [actions]);
+    if (store.token) {
+      actions.getUserInfo(store.token);
+    } else {
+      dispatch({ type: "ADD_ME", payload: null });
+    }
+  }, [store.token, actions]);
 
-  // *************
+  useEffect(() => {
+    actions.syncLocalCartWithStore();
+  }, []);
 
-  // Provide the store and dispatch method to all child components.
+  useEffect(() => {
+    if (store.token && store.user) {
+      actions.getBackendCart(store.token);
+
+      if (store.localCart.length > 0) {
+        actions.transferLocalCartToBackend(store.token);
+      }
+    } else {
+      // Si no hay token o usuario, asegurarse de que el carrito de backend esté vacío
+      dispatch({ type: "SET_BACKEND_CART", payload: [] });
+    }
+  }, [store.token, store.user, store.localCart.length, actions]); // Añadida dependencia localCart.length para reaccionar a cambios en el carrito local
+
   return (
     <StoreContext.Provider value={{ store, dispatch, actions }}>
       {children}
@@ -253,7 +267,6 @@ export function StoreProvider({ children }) {
   );
 }
 
-// Custom hook to access the global state and dispatch function.
 export default function useGlobalReducer() {
   const { dispatch, store, actions } = useContext(StoreContext);
   return { dispatch, store, actions };
