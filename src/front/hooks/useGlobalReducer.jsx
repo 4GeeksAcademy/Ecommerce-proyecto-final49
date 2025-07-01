@@ -245,22 +245,15 @@ export function StoreProvider({ children }) {
   }, [store.token, actions]);
 
   useEffect(() => {
-    actions.syncLocalCartWithStore();
-  }, []);
-
-  useEffect(() => {
-    if (store.token && store.user) {
-      actions.getBackendCart(store.token);
-
-      if (store.localCart.length > 0) {
-        actions.transferLocalCartToBackend(store.token);
-      }
-    } else {
-      // Si no hay token o usuario, asegurarse de que el carrito de backend esté vacío
-      dispatch({ type: "SET_BACKEND_CART", payload: [] });
+    if (actions) {
+      actions.getUserInfo();
+      actions.syncLocalCartWithStore();
     }
-  }, [store.token, store.user, store.localCart.length, actions]); // Añadida dependencia localCart.length para reaccionar a cambios en el carrito local
+  }, [actions]);
 
+  // *************
+
+  // Provide the store and dispatch method to all child components.
   return (
     <StoreContext.Provider value={{ store, dispatch, actions }}>
       {children}
