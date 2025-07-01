@@ -2,6 +2,7 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import String, Boolean, Float, Integer, ForeignKey, Text, JSON
 from sqlalchemy.orm import Mapped, mapped_column, relationship, validates
 import datetime
+# from .users import 
 
 db = SQLAlchemy()
 # necesita de conexion con la base de datos antes de ser implementado
@@ -34,6 +35,9 @@ class User(db.Model):
             "name": self.name,
             "role": self.role.name if self.role else 2
         }
+    
+    def populate(self):
+        pass
 
 
 class Product(db.Model):

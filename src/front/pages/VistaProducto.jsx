@@ -31,7 +31,6 @@ export const VistaProducto = () => {
   
   // Línea 32, se adicionó el parámetro e
   const handleAddToCart = async (e) => {
-    e.stopPropagation();
     // Línea 35, validación de la fuente de la llamada
     console.trace("handleAddToCart trace")
     if (addingToCart) return;
@@ -48,17 +47,6 @@ export const VistaProducto = () => {
 
     setAddingToCart(false);
   };
-
-  // const handleAddToCart = async (e) => {
-  //   e.stopPropagation();
-  //   if (addingToCart) return;
-
-  //   setAddingToCart(true);
-
-  //   await actions.addToCart(product);
-
-  //   setAddingToCart(false);
-  // }
 
   const handleBuyNow = async () => {
     if (!product) {
@@ -181,7 +169,7 @@ export const VistaProducto = () => {
           <button
             type="button"
             className="btn btn-success w-100"
-            onClick={handleBuyNow}
+            onClick={() => handleBuyNow()}
             //disabled={product.stock <= 0}
           >
             Comprar ahora
@@ -191,7 +179,7 @@ export const VistaProducto = () => {
           <button
             type="button"
             className="btn btn-primary w-100"
-            onClick={handleAddToCart}
+            onClick={() => handleAddToCart()}
             //disabled={product.stock <= 0}
           >
             Agregar al carrito

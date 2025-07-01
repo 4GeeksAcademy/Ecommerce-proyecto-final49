@@ -73,8 +73,9 @@ export function StoreProvider({ children }) {
         const token = store.token || localStorage.getItem("jwt_token");
         if (token && store.user) {
           try {
+            console.log("AddToCart desde front:", process.env.VITE_BACKEND_URL)
             const response = await fetch(
-              `${process.env.VITE_BACKEND_URL}/api/cart`,
+              `${process.env.VITE_BACKEND_URL}/cart`,
               {
                 method: "POST",
                 headers: {
