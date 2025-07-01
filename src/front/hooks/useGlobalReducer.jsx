@@ -29,6 +29,11 @@ export function StoreProvider({ children }) {
               type: "LOGIN",
               payload: { token: data.token, user_data: data.user_id },
             });
+            await allActions.getBackendCart();
+            if (store.localCart.length > 0) {
+                console.log("Transfiriendo carrito local al backend después del login...");
+                await allActions.transferLocalCartToBackend();
+            }
             return true;
           } else {
             console.error("Error de login desde el backend:", data.msg);
@@ -41,9 +46,9 @@ export function StoreProvider({ children }) {
       },
       logout: () => {
         localStorage.removeItem("jwt_token");
+        localStorage.removeItem("token"); // Por si acaso
+        localStorage.removeItem("local_cart");
         dispatch({ type: "LOGOUT" });
-        dispatch({ type: "SET_BACKEND_CART", payload: [] });
-        dispatch({ type: "ADD_ME", payload: null });
       },
       getUserInfo: async (tokenArg) => {
         const token = tokenArg || localStorage.getItem("jwt_token");
@@ -68,12 +73,22 @@ export function StoreProvider({ children }) {
         }
       },
 
-      addToCart: async (product, quantity = 1) => {
+      updateLocalCartItem: (productId, newQuantity) => {
+        dispatch({
+          type: "UPDATE_LOCAL_CART_ITEM",
+          payload: { productId, newQuantity },
+        });
+        return true;
+      },
 
+      addToCart: async (product, quantity = 1) => {
         const token = store.token || localStorage.getItem("jwt_token");
         if (token && store.user) {
           try {
-            console.log("AddToCart desde front:", process.env.VITE_BACKEND_URL)
+            console.log(
+              "AddToCart desde front (logeado):",
+              process.env.VITE_BACKEND_URL
+            );
             const response = await fetch(
               `${process.env.VITE_BACKEND_URL}/cart`,
               {
@@ -87,14 +102,31 @@ export function StoreProvider({ children }) {
             );
             if (!response.ok)
               throw new Error("Fallo al añadir al carrito del backend");
-            await allActions.getBackendCart(token);
+            await allActions.getBackendCart();
             return true;
           } catch (error) {
             console.error("Error añadiendo al carrito del backend:", error);
             return false;
           }
         } else {
-          dispatch({ type: "ADD_LOCAL_CART_ITEM", payload: product });
+          console.log(
+            "Agregando/Actualizando al carrito local (usuario no logeado)"
+          );
+          const existingItem = store.localCart.find(
+            (item) => Number(item.product_id) === Number(product.id)
+          );
+
+          if (existingItem) {
+            dispatch({
+              type: "UPDATE_LOCAL_CART_ITEM",
+              payload: { productId: product.id, newQuantity: quantity },
+            });
+          } else {
+            dispatch({
+              type: "ADD_LOCAL_CART_ITEM",
+              payload: { product, quantity },
+            });
+          }
           return true;
         }
       },
@@ -103,7 +135,7 @@ export function StoreProvider({ children }) {
         if (token && store.user) {
           try {
             const response = await fetch(
-              `${process.env.VITE_BACKEND_URL}/api/cart/${itemId}`,
+              `${process.env.VITE_BACKEND_URL}/cart/${itemId}`,
               {
                 method: "DELETE",
                 headers: { Authorization: `Bearer ${token}` },
@@ -127,7 +159,7 @@ export function StoreProvider({ children }) {
         if (token && store.user) {
           try {
             const response = await fetch(
-              `${process.env.VITE_BACKEND_URL}/api/cart/clear`,
+              `${process.env.VITE_BACKEND_URL}/cart/clear`,
               {
                 method: "DELETE",
                 headers: { Authorization: `Bearer ${token}` },
@@ -154,9 +186,9 @@ export function StoreProvider({ children }) {
         dispatch({ type: "SET_LOCAL_CART", payload: cart });
       },
 
-      getBackendCart: async (tokenArg) => {
+      getBackendCart: async () => {
         const token = tokenArg || localStorage.getItem("jwt_token");
-        if (!token) {
+        if (!token || !store.user) {
           console.log(
             "No hay token, no se puede obtener el carrito del backend."
           );
@@ -164,8 +196,9 @@ export function StoreProvider({ children }) {
           return;
         }
         try {
+          const userId = store.user.id;
           const response = await fetch(
-            `${process.env.VITE_BACKEND_URL}/api/cart`,
+            `${process.env.VITE_BACKEND_URL}/cart/${userId}`,
             {
               headers: { Authorization: `Bearer ${token}` },
             }
@@ -178,45 +211,49 @@ export function StoreProvider({ children }) {
           }
           const data = await response.json();
           dispatch({ type: "SET_BACKEND_CART", payload: data });
+          const newCartCount = data.reduce(
+            (sum, item) => sum + item.quantity,
+            0
+          );
+          dispatch({ type: "SET_CART_COUNT", payload: newCartCount });
         } catch (error) {
           console.error("Error al obtener el carrito del backend:", error);
           dispatch({ type: "SET_BACKEND_CART", payload: [] });
         }
       },
 
-      transferLocalCartToBackend: async (tokenArg) => {
+      transferLocalCartToBackend: async () => {
         const localCart = store.localCart;
         const token = tokenArg || localStorage.getItem("jwt_token");
         if (localCart.length === 0 || !token || !store.user) {
           return;
         }
 
-
         for (const item of localCart) {
           await allActions.addBackendCartItem(item.product_id, item.quantity);
         }
         allActions.clearCart();
-
       },
 
       addBackendCartItem: async (product_id, quantity = 1) => {
         const token = store.token || localStorage.getItem("jwt_token");
-        if (!token) {
+        if (!token || !store.user) {
           console.error("No hay token disponible para addBackendCartItem");
           return false;
         }
         try {
-          const response = await fetch(
-            `${process.env.VITE_BACKEND_URL}/api/cart`,
-            {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${token}`,
-              },
-              body: JSON.stringify({ product_id, quantity }),
-            }
-          );
+          const response = await fetch(`${process.env.VITE_BACKEND_URL}/cart`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({
+              user_id: store.user.id,
+              product_id,
+              quantity,
+            }),
+          });
           if (!response.ok) {
             throw new Error("Fallo al añadir el item al carrito del backend");
           }
@@ -226,34 +263,42 @@ export function StoreProvider({ children }) {
           return false;
         }
       },
+      setCartCount: (count) => {
+        dispatch({ type: "SET_CART_COUNT", payload: count });
+      },
     };
 
     return allActions;
-  }, [store.localCart, dispatch]);
+  }, [store.token, store.user, store.localCart, dispatch]);
 
   useEffect(() => {
-    const token = localStorage.getItem("jwt_token");
-    if (token && !store.token) {
-
-      dispatch({ type: "LOGIN", payload: { token: token, user_data: null } });
-    }
-    if (store.token) {
-      actions.getUserInfo(store.token);
-    } else {
-      dispatch({ type: "ADD_ME", payload: null });
-    }
+    const initApp = async () => {
+      const token = localStorage.getItem("jwt_token");
+      if (token) {
+        const userLoaded = await actions.getUserInfo(token);
+        if (userLoaded) {
+          await actions.getBackendCart();
+          if (store.localCart.length > 0) {
+            await actions.transferLocalCartToBackend();
+          }
+        } else {
+          dispatch({ type: "ADD_ME", payload: null });
+          dispatch({ type: "SET_BACKEND_CART", payload: [] });
+        }
+      } else {
+        dispatch({ type: "ADD_ME", payload: null });
+        dispatch({ type: "SET_BACKEND_CART", payload: [] });
+      }
+    };
+    initApp();
   }, [store.token, actions]);
 
   useEffect(() => {
-    if (actions) {
-      actions.getUserInfo();
+    if (store.token) {
       actions.syncLocalCartWithStore();
     }
-  }, [actions]);
+  }, [store.localCart, store.token, actions]);
 
-  // *************
-
-  // Provide the store and dispatch method to all child components.
   return (
     <StoreContext.Provider value={{ store, dispatch, actions }}>
       {children}

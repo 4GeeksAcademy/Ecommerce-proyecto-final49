@@ -7,6 +7,8 @@ export const VistaProducto = () => {
   const { id } = useParams();
   const [product, setProduct] = useState(null);
   const [imgSelected, setImgSelected] = useState("");
+  // Se adiciona la línea 11 para evaluar el stock
+  const [quantity, setQuantity] = useState(1);
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
   const { store, actions } = useGlobalReducer();
   const navigate = useNavigate();
@@ -19,36 +21,64 @@ export const VistaProducto = () => {
       .then((data) => {
         setProduct(data);
         if (data.image_url) setImgSelected(data.image_url);
+        // Se adicionan las lineas 24 y 25 para evaluar el stock
+        if (data.product_stock < quantity) {
+          setQuantity(data.product_stock > 0 ? 1 : 0);
+        }
       })
       .catch((err) => console.error(err));
-  }, [id, backendUrl]);
+  }, [id, backendUrl, quantity]);
 
   if (!product) return <div>Cargando producto...</div>;
 
   const ratingValue = product.rating || 0;
   const stars = "★".repeat(ratingValue) + "☆".repeat(5 - ratingValue);
   const totalReviews = 20;
-  
-  // Línea 32, se adicionó el parámetro e
+
+  const availability = product.product_stock;
+  let availableText = "";
+  if (availability === 0) {
+    availableText = "No disponible";
+  } else if (availability === 1) {
+    availableText = "1 unidad disponible";
+  } else {
+    availableText = `${availability} unidades disponibles`;
+  }
+
+  const handleQuantityChange = (change) => {
+    const newQuantity = quantity + change;
+    if (newQuantity >= 1 && newQuantity <= product.product_stock) {
+      setQuantity(newQuantity);
+    }
+  }
+
   const handleAddToCart = async (e) => {
-    // Línea 35, validación de la fuente de la llamada
-    console.trace("handleAddToCart trace")
+    if (quantity === 0 || quantity > product.product_stock) {
+      alert("No hay suficiente stock para la cantidad seleccionada.");
+      return;
+    }
+    
     if (addingToCart) return;
     setAddingToCart(true);
 
-    console.log("handleAddToCart called");
+    console.log(`Agregando ${quantity} de ${product.name} al carrito`);
 
-    const success = await actions.addToCart(product);
+    const success = await actions.addToCart(product, quantity);
     if (success) {
-      console.log("Producto agregado al carrito");
+      console.log("Producto(s) agregado(s) al carrito");
     } else {
-      console.log("Error al agregar producto al carrito");
+      console.log("Error al agregar producto(s) al carrito");
     }
 
     setAddingToCart(false);
   };
 
   const handleBuyNow = async () => {
+    if (quantity === 0 || quantity > product.product_stock) {
+      alert("No hay suficiente stock para la cantidad seleccionada.");
+      return;
+    }
+    
     if (!product) {
       alert("Producto no disponible para comprar.");
       return;
@@ -70,7 +100,7 @@ export const VistaProducto = () => {
               product_name: product.name,
               product_id: product.id,
               price: product.price,
-              quantity: 1, // Se asume 1 para "Comprar ahora"
+              quantity: quantity,
               image_url: product.image_url,
             },
           ],
@@ -97,7 +127,7 @@ export const VistaProducto = () => {
     <div className="container">
       <div className="row">
         {/*Bloque fotos del producto*/}
-        <div className="col-6 col-md-2 col-lg-2 d-flex flex-column gap-2 py-4 align-items-end">
+        <div className="col-2 col-md-2 col-lg-1 d-flex flex-column gap-2 py-4 align-items-end">
           {/*Foto principal en miniatura*/}
           {product.image_url && (
             <img
@@ -122,7 +152,7 @@ export const VistaProducto = () => {
         </div>
 
         {/*Foto principal grande*/}
-        <div className="col-6 col-md-10 col-lg-4 py-4">
+        <div className="col-10 col-md-6 col-lg-5 py-4">
           <div className="py-4 border rounded-2 div_producto">
             <img
               src={imgSelected}
@@ -141,12 +171,14 @@ export const VistaProducto = () => {
             <strong>{product.description}</strong>
           </p>
           <p className="mb-0 py-1">
-            {ratingValue} {stars} ({totalReviews})
+            <span className="fs-5">{ratingValue}</span>
+            <span className="fs-4 ms-2">{stars}</span>
+            <span className="fs-6 ms-2">({totalReviews})</span>
           </p>
           {(() => {
             const [intPart, decimalPart] = product.price.toFixed(2).split(".");
             return (
-              <p className="mb-0 pt-1">
+              <p className="mb-0 pt-2 fs-1">
                 ${intPart}
                 <sup className="fs-7">{decimalPart}</sup>
               </p>
@@ -162,8 +194,30 @@ export const VistaProducto = () => {
           <span className="small_font_size">
             Tienes 30 días para devolverlo
           </span>
-          <span>Stock disponible</span>
-          <span className="mb-5">Cantidad: 1 unidad (+5 disponibles)</span>
+
+          {/*Muestra el stock disponible*/}
+          <span className="fw-bold">Stock: {availableText}</span>
+
+          {/*Selector de cantidad*/}
+          <div className="d-flex align-items-center justify-content-center my-3 ">
+            <button 
+              type="button" 
+              className="btn btn-outline-secondary" 
+              onClick={() => handleQuantityChange(-1)} 
+              disabled={quantity <= 1}
+            >
+              -
+            </button>
+            <span className="mx-3 fs-5">{quantity}</span>
+            <button 
+              type="button" 
+              className="btn btn-outline-secondary" 
+              onClick={() => handleQuantityChange(1)} 
+              disabled={quantity >= product.product_stock || product.product_stock === 0}
+            >
+              +
+            </button>
+          </div>
 
           {/*Botón comprar ahora*/}
           <button

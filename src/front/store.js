@@ -2,7 +2,7 @@ export const initialStore = () => {
     const token = localStorage.getItem("jwt_token") || null;
 
     const localCart = JSON.parse(localStorage.getItem("local_cart") || "[]");
-    const initialCartCount = localCart.reduce((sum, item) => sum + item.quantity, 0);
+    const initialCartCount = localCart.reduce((sum, item) => sum + (Number(item.quantity) || 0), 0);
 
     return {
         message: null,
@@ -23,7 +23,8 @@ export const initialStore = () => {
 
         localCart: localCart,
         backendCart: [],
-        loading: false
+        loading: false,
+        cartCount: initialCartCount
     };
 };
 
@@ -36,7 +37,6 @@ export default function storeReducer(store, action = {}) {
             };
 
         case "add_task":
-
             return store;
 
         case "LOGIN":
@@ -49,6 +49,7 @@ export default function storeReducer(store, action = {}) {
         case "LOGOUT":
             localStorage.removeItem("jwt_token");
             localStorage.removeItem("token");
+            localStorage.removeItem("local_cart");
             return {
                 ...store,
                 token: null,
@@ -64,46 +65,69 @@ export default function storeReducer(store, action = {}) {
                 user: action.payload,
             };
 
-        case "SET_LOCAL_CART":
-            return { ...store, localCart: action.payload };
+        case "SET_LOCAL_CART": {
+            const newLocalCart = action.payload;
+            const newCartCount = newLocalCart.reduce((sum, item) => sum + (Number(item.quantity) || 0), 0);
+            localStorage.setItem("local_cart", JSON.stringify(newLocalCart));
+            return { ...store, localCart: newLocalCart, cartCount: newCartCount };
+        }
         case "ADD_LOCAL_CART_ITEM": {
-            const product = action.payload;
+            const { product, quantity: selectedQuantity } = action.payload;
             const updatedCart = [...store.localCart];
-            const existingItemIndex = updatedCart.findIndex(item => item.product_id === product.id);
+            const existingItemIndex = updatedCart.findIndex(item => Number(item.product_id) === Number(product.id));
 
             if (existingItemIndex > -1) {
-                updatedCart[existingItemIndex].quantity += product.quantity || 1;
+                updatedCart[existingItemIndex].quantity = Number(updatedCart[existingItemIndex].quantity || 0) + Number(selectedQuantity || 1);
             } else {
                 updatedCart.push({
                     product_id: product.id,
                     product_name: product.name,
                     price: product.price,
                     image_url: product.image_url,
-                    quantity: 1,
+                    quantity: Number(selectedQuantity || 1),
                     id: Date.now() + Math.random().toString(36).substring(2, 9) 
                 });
             }
+            const newCartCount = updatedCart.reduce((sum, item) => sum + (Number(item.quantity) || 0), 0);
             localStorage.setItem("local_cart", JSON.stringify(updatedCart));
-            return { ...store, localCart: updatedCart };
+            return { ...store, localCart: updatedCart, cartCount: newCartCount };
+        }
+        case "UPDATE_LOCAL_CART_ITEM": {
+            const { productId, newQuantity } = action.payload;
+            const updatedCart = store.localCart.map(item => {
+                if (Number(item.product_id) === Number(productId)) {
+                    return { ...item, quantity: Number(newQuantity) || 1 };
+                }
+                return item;
+            });
+            const newCartCount = updatedCart.reduce((sum, item) => sum + (Number(item.quantity) || 0), 0);
+            localStorage.setItem("local_cart", JSON.stringify(updatedCart));
+            return { ...store, localCart: updatedCart, cartCount: newCartCount };
         }
         case "REMOVE_LOCAL_CART_ITEM": {
             const itemId = action.payload; 
             const updatedCart = store.localCart.filter(item => item.id !== itemId);
-
+            const newCartCount = updatedCart.reduce((sum, item) => sum + (Number(item.quantity) || 0), 0);
             localStorage.setItem("local_cart", JSON.stringify(updatedCart));
-            return { ...store, localCart: updatedCart };
+            return { ...store, localCart: updatedCart, cartCount: newCartCount };
         }
         case "CLEAR_LOCAL_CART":
             localStorage.removeItem("local_cart");
-            return { ...store, localCart: [] };
+            return { ...store, localCart: [], cartCount: 0 };
 
-        case "SET_BACKEND_CART":
-            return { ...store, backendCart: action.payload };
-
+        case "SET_BACKEND_CART": {
+            const newBackendCart = action.payload;
+            const newCartCount = newBackendCart.reduce((sum, item) => sum + (Number(item.quantity) || 0), 0);
+            return { ...store, backendCart: newBackendCart, cartCount: newCartCount };
+        }
+        
         case "SET_MESSAGE":
             return { ...store, message: action.payload };
         case "SET_LOADING":
             return { ...store, loading: action.payload };
+
+        case "SET_CART_COUNT":
+            return { ...store, cartCount: Number(action.payload) || 0 };
 
         default:
             return store;

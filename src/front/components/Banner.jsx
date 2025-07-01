@@ -30,7 +30,7 @@ const Banner = ({ title, subtitle, onSearch, categories }) => (
             <nav className='banner__categories mt-3'>
                 {categories.map(categorie => (
                     <button
-                        key={categories}
+                        key={categorie}
                         onClick={() => onSearch(categorie)}
                         className='btn btn-outline-secondary me-2 mb-2'
                     >
