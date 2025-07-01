@@ -104,21 +104,12 @@ class Order(db.Model):
         "created_at": self.created_at.isoformat(),
         "items": [item.serialize() for item in self.items]
     }
-
 class OrderItem(db.Model):
     __tablename__ = "order_items"
     id = db.Column(db.Integer, primary_key=True)
     order_id = db.Column(db.Integer, db.ForeignKey("orders.id"), nullable=False)
     product_id = db.Column(db.Integer, db.ForeignKey("product.id"), nullable=False)
+    product_name = db.Column(db.String(120), nullable=False)
+    product_description = db.Column(db.Text, nullable=True)
     quantity = db.Column(db.Integer, nullable=False)
     price = db.Column(db.Float, nullable=False)
-    def serialize(self):
-        return {
-        "id": self.id,
-        "product_id": self.product_id,
-        "quantity": self.quantity,
-        "price": self.price
-    }
-
-
-

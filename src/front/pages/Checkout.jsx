@@ -31,7 +31,7 @@ export const Checkout = () => {
         <div className="container mt-5">
             <h2>💳 Finalizar Compra</h2>
             <button className="btn btn-success" onClick={handleCheckout}>
-                Pagar con Stripe
+                Pagar 
             </button>
         </div>
     );

@@ -380,7 +380,7 @@ def getContactForm():
         print(f"Error al recuperar mensajes de la base de datos: {error}")
         return jsonify({"msg": f"Failed to retrieve messages: {str(error)}"}), 500
     #RUTAS ORDEN DE COMPRA 
-@api.route("/api/orders", methods=["POST"])
+@api.route("/orders", methods=["POST"])
 @jwt_required()
 def create_order():
     data = request.get_json()
@@ -391,9 +391,15 @@ def create_order():
     db.session.commit()
 
     for item in data["items"]:
+        product = Product.query.get(item["product_id"])
+        if not product:
+            continue  # puedes también abortar con error si prefieres
+
         order_item = OrderItem(
             order_id=new_order.id,
-            product_id=item["product_id"],
+            product_id=product.id,
+            product_name=product.name,
+            product_description=product.description,
             quantity=item["quantity"],
             price=item["price"]
         )
@@ -403,8 +409,26 @@ def create_order():
     return jsonify({"msg": "Orden registrada correctamente"}), 201
 @api.route("/orders", methods=["GET"])
 @jwt_required()
-def get_orders():
+def get_user_orders():
     user_id = get_jwt_identity()
     orders = Order.query.filter_by(user_id=user_id).all()
 
-    return jsonify([order.serialize() for order in orders]), 200
+    if not orders:
+        return jsonify({"msg": "No hay órdenes registradas"}), 404
+
+    return jsonify([
+        {
+            "id": order.id,
+            "total": order.total,
+            "created_at": order.created_at,
+            "items": [
+                {
+                    "product_id": item.product_id,
+                    "product_name": item.product_name,
+                    "description": item.product_description,
+                    "quantity": item.quantity,
+                    "price": item.price
+                } for item in order.items
+            ]
+        } for order in orders
+    ]), 200

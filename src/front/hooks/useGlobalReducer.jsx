@@ -249,7 +249,7 @@ export function StoreProvider({ children }) {
       actions.getUserInfo();
       actions.syncLocalCartWithStore();
     }
-  }, [actions]);
+  }, []);
 
   // *************
 

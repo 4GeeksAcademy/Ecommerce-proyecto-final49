@@ -14,7 +14,7 @@ export const VistaProducto = () => {
   const [addingToCart, setAddingToCart] = useState(false);
 
   useEffect(() => {
-    fetch(`${backendUrl}/product/${id}`)
+    fetch(`${backendUrl}/api/product/${id}`)
       .then((res) => res.json())
       .then((data) => {
         setProduct(data);
