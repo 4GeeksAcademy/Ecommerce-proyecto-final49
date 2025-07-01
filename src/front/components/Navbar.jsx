@@ -1,9 +1,11 @@
 import React from "react";
 import useGlobalReducer from "../hooks/useGlobalReducer.jsx";
 import { Link, useNavigate } from "react-router-dom";
+import milPaginasLogo from "../assets/img/mil_paginas.png"
 
 export const Navbar = () => {
-  const { store, dispatch } = useGlobalReducer();
+  const { store, dispatch }
+   = useGlobalReducer();
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -28,7 +30,7 @@ export const Navbar = () => {
 
         <Link className="navbar-brand mx-auto order-lg-first" to="/">
           <img
-            src="src/front/assets/img/mil_paginas.png"
+            src={milPaginasLogo}
             alt="Mil páginas logo"
             height="50"
           />
@@ -204,7 +206,7 @@ export const Navbar = () => {
               <hr className="dropdown-divider" />
             </li>
             <li>
-              <Link className="dropdown-item text-center" to="/cart-details">
+              <Link className="dropdown-item text-center" to="/cart">
                 Ver Carrito Completo
               </Link>
             </li>
