@@ -4,6 +4,7 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 import smtplib
 import ssl
+from .models import User
 
 
 class APIException(Exception):
@@ -84,3 +85,6 @@ def send_email(subject, to, body):
     except Exception as error:
         print(str(error))
         return False
+
+def population_data ():
+    User.populate()
