@@ -12,6 +12,7 @@ import os
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt, get_jwt_identity
 from datetime import timedelta
 from api.models import db, CartItem, Product, ContactMessage
+from .models import db, Order, OrderItem
 # import stripe
 
 # stripe.api_key = os.getenv("STRIPE_SECRET_KEY")
@@ -378,3 +379,32 @@ def getContactForm():
     except Exception as error:
         print(f"Error al recuperar mensajes de la base de datos: {error}")
         return jsonify({"msg": f"Failed to retrieve messages: {str(error)}"}), 500
+    #RUTAS ORDEN DE COMPRA 
+@api.route("/api/orders", methods=["POST"])
+@jwt_required()
+def create_order():
+    data = request.get_json()
+    user_id = get_jwt_identity()
+
+    new_order = Order(user_id=user_id, total=data["total"])
+    db.session.add(new_order)
+    db.session.commit()
+
+    for item in data["items"]:
+        order_item = OrderItem(
+            order_id=new_order.id,
+            product_id=item["product_id"],
+            quantity=item["quantity"],
+            price=item["price"]
+        )
+        db.session.add(order_item)
+
+    db.session.commit()
+    return jsonify({"msg": "Orden registrada correctamente"}), 201
+@api.route("/orders", methods=["GET"])
+@jwt_required()
+def get_orders():
+    user_id = get_jwt_identity()
+    orders = Order.query.filter_by(user_id=user_id).all()
+
+    return jsonify([order.serialize() for order in orders]), 200

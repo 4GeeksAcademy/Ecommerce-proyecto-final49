@@ -1,7 +1,7 @@
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import String, Boolean, Float, Integer, ForeignKey, Text, JSON
 from sqlalchemy.orm import Mapped, mapped_column, relationship, validates
-import datetime
+from datetime import datetime
 # from .users import 
 
 db = SQLAlchemy()
@@ -88,6 +88,37 @@ class ContactMessage(db.Model):
     name: Mapped[str] = mapped_column(String(120), nullable=False) 
     message: Mapped[str] = mapped_column(String(1000), nullable=False)
 
+# ORDEN DE COMPRA 
+class Order(db.Model):
+    __tablename__ = "orders"
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
+    total = db.Column(db.Float, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    items = db.relationship("OrderItem", backref="order", lazy=True)
+    def serialize(self):
+        return {
+        "id": self.id,
+        "user_id": self.user_id,
+        "total": self.total,
+        "created_at": self.created_at.isoformat(),
+        "items": [item.serialize() for item in self.items]
+    }
+
+class OrderItem(db.Model):
+    __tablename__ = "order_items"
+    id = db.Column(db.Integer, primary_key=True)
+    order_id = db.Column(db.Integer, db.ForeignKey("orders.id"), nullable=False)
+    product_id = db.Column(db.Integer, db.ForeignKey("product.id"), nullable=False)
+    quantity = db.Column(db.Integer, nullable=False)
+    price = db.Column(db.Float, nullable=False)
+    def serialize(self):
+        return {
+        "id": self.id,
+        "product_id": self.product_id,
+        "quantity": self.quantity,
+        "price": self.price
+    }
 
 
 

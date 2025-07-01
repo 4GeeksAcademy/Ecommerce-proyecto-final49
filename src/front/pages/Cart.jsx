@@ -7,7 +7,6 @@ export const Cart = () => {
   const navigate = useNavigate();
 
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
-
   const displayedCartItems = store.token ? store.backendCart : store.localCart;
 
   useEffect(() => {
@@ -52,14 +51,39 @@ export const Cart = () => {
       return;
     }
 
+    const orderData = {
+      total: getTotal(),
+      items: displayedCartItems.map(item => ({
+        product_id: item.product_id || item.id,
+        quantity: item.quantity,
+        price: item.price
+      }))
+    };
+
     try {
-      const response = await fetch(`${backendUrl}/create-checkout-session`, {
+      // Crear la orden en el backend
+      const orderResponse = await fetch(`${backendUrl}/api/orders`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${store.token}`
+        },
+        body: JSON.stringify(orderData)
+      });
+
+      const orderResult = await orderResponse.json();
+      if (!orderResponse.ok) {
+        throw new Error(orderResult.msg || "Error al guardar la orden");
+      }
+
+      // Crear la sesión de Stripe
+      const stripeResponse = await fetch(`${backendUrl}/create-checkout-session`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          items: displayedCartItems.map((item) => ({
+          items: displayedCartItems.map(item => ({
             product_name: item.product_name,
             product_id: item.product_id,
             price: item.price,
@@ -69,18 +93,18 @@ export const Cart = () => {
         }),
       });
 
-      const data = await response.json();
-      if (!response.ok) {
-        throw new Error(data.error || "Error al crear la sesión de pago.");
+      const stripeData = await stripeResponse.json();
+      if (!stripeResponse.ok) {
+        throw new Error(stripeData.error || "Error al crear la sesión de pago.");
       }
 
-      if (data.url) {
-        window.location.href = data.url;
+      if (stripeData.url) {
+        window.location.href = stripeData.url;
       } else {
         alert("No se pudo obtener la URL de pago.");
       }
     } catch (error) {
-      console.error("Error al crear sesión de Stripe:", error);
+      console.error("Error en el proceso de pago:", error);
       alert(`Ocurrió un error al procesar el pago: ${error.message}`);
     }
   };
@@ -104,10 +128,7 @@ export const Cart = () => {
               className="cart-item-card d-flex align-items-center mb-3 p-3 border rounded"
             >
               <img
-                src={
-                  item.image_url ||
-                  "https://placehold.co/80x80/cccccc/ffffff?text=No+Img"
-                }
+                src={item.image_url || "https://placehold.co/80x80/cccccc/ffffff?text=No+Img"}
                 alt={item.product_name}
                 className="cart-item-image me-3"
                 style={{ width: "80px", height: "80px", objectFit: "cover" }}
