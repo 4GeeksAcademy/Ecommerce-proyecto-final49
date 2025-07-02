@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 export const NotFound = () => {
   return (
     <div className="container py-4">
@@ -10,9 +12,9 @@ export const NotFound = () => {
         <p class="lead">
           La página que estás buscando no existe o ha sido movida.
         </p>
-        <button href="/" class="btn btn-primary">
+        <Link to="/" class="btn btn-success">
           Ir a la Página Principal
-        </button>
+        </Link>
       </div>
     </div>
   );
