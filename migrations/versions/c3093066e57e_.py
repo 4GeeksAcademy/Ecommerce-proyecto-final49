@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: acc3727d34f7
+Revision ID: c3093066e57e
 Revises: 
-Create Date: 2025-07-01 22:31:18.747874
+Create Date: 2025-07-02 03:36:25.818800
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'acc3727d34f7'
+revision = 'c3093066e57e'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -40,9 +40,9 @@ def upgrade():
     )
     op.create_table('role',
     sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('name', sa.String(length=50), nullable=False),
+    sa.Column('role_name', sa.String(length=50), nullable=False),
     sa.PrimaryKeyConstraint('id'),
-    sa.UniqueConstraint('name')
+    sa.UniqueConstraint('role_name')
     )
     op.create_table('user',
     sa.Column('id', sa.Integer(), nullable=False),
@@ -51,6 +51,7 @@ def upgrade():
     sa.Column('password', sa.String(length=255), nullable=False),
     sa.Column('salt', sa.String(length=80), nullable=False),
     sa.Column('is_active', sa.Boolean(), nullable=False),
+    sa.Column('email_validated', sa.Boolean(), nullable=False),
     sa.Column('role_id', sa.Integer(), nullable=False),
     sa.ForeignKeyConstraint(['role_id'], ['role.id'], ),
     sa.PrimaryKeyConstraint('id'),

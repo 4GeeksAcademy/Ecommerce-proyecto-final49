@@ -7,7 +7,7 @@ db = SQLAlchemy()
 class Role(db.Model):
     __tablename__ = 'role'
     id: Mapped[int] = mapped_column(primary_key=True)
-    name: Mapped[str] = mapped_column(String(50), unique=True, nullable=False)
+    role_name: Mapped[str] = mapped_column(String(50), unique=True, nullable=False)
     users: Mapped[list['User']] = relationship(back_populates='role')
 
     def __repr__(self):
@@ -21,6 +21,7 @@ class User(db.Model):
     password: Mapped[str] = mapped_column(String(255), nullable=False)   
     salt: Mapped[str] = mapped_column(String(80), nullable=False, default="")   
     is_active: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
+    email_validated: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
     role_id: Mapped[int] = mapped_column(ForeignKey('role.id'), nullable=False)
     
     role: Mapped['Role'] = relationship(back_populates='users')
