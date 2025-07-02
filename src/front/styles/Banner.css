@@ -9,6 +9,8 @@
   overflow: hidden;
   font-weight: 700;
   line-height: 1.25;
+  border-radius: 16px;
+  
 }
 
 .Banner__img {
