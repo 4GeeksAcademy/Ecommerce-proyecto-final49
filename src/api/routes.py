@@ -14,8 +14,8 @@ from datetime import timedelta
 from api.models import db, CartItem, Product, ContactMessage
 from .models import db, Order, OrderItem
 import stripe
+stripe.api_key = os.getenv("STRIPE_SECRET_KEY")
 
-# stripe.api_key = os.getenv("STRIPE_SECRET_KEY")
 api = Blueprint('api', __name__)
 CORS(api)
 # Allow CORS requests to this API
