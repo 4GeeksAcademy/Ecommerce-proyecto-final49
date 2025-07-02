@@ -1,7 +1,7 @@
 import React from "react";
 
 export const Checkout = () => {
-    const BACKEND_URL = "http://localhost:5000"; // o import.meta.env...
+    const BACKEND_URL = "http://localhost:5000"; 
 
     const handleCheckout = () => {
         fetch(`${BACKEND_URL}/create-checkout-session`, {

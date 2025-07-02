@@ -13,7 +13,7 @@ from flask_jwt_extended import create_access_token, jwt_required, get_jwt, get_j
 from datetime import timedelta
 from api.models import db, CartItem, Product, ContactMessage
 from .models import db, Order, OrderItem
-# import stripe
+import stripe
 
 # stripe.api_key = os.getenv("STRIPE_SECRET_KEY")
 api = Blueprint('api', __name__)
@@ -281,8 +281,10 @@ def clear_cart(user_id):
     return jsonify({"msg": "Carrito vaciado"}), 200
 
 # CHECKOUT
-@api.route('/create-checkout-session', methods=['POST'])
+@api.route('/create-checkout-session', methods=['POST'])\
+@jwt_required()
 def create_checkout_session():
+    user_id = get_jwt_identity() 
     data = request.json
     items = data.get('items', [])
 
@@ -308,7 +310,8 @@ def create_checkout_session():
             line_items=line_items,
             mode='payment',
             success_url=os.getenv("FRONTEND_URL") + '/success',
-            cancel_url=os.getenv("FRONTEND_URL") + '/cancel'
+            cancel_url=os.getenv("FRONTEND_URL") + '/cancel',
+            metadata={'user_id': user_id} 
         )
         return jsonify({'url': session.url})
     except Exception as e:
@@ -393,7 +396,7 @@ def create_order():
     for item in data["items"]:
         product = Product.query.get(item["product_id"])
         if not product:
-            continue  # puedes también abortar con error si prefieres
+            continue  
 
         order_item = OrderItem(
             order_id=new_order.id,
