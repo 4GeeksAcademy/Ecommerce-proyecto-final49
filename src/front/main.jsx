@@ -20,7 +20,6 @@ const Main = () => {
                 <RouterProvider router={router}>
                 </RouterProvider>
             </StoreProvider>
-
     );
 }
 
