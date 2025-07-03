@@ -2,7 +2,7 @@
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 '''
 from flask import Flask, request, jsonify, url_for, Blueprint
-from api.models import db, User, Product
+from api.models import db, User, Product, Category, Author
 from api.utils import generate_sitemap, APIException, send_email
 from flask_cors import CORS
 import cloudinary.uploader as upload
@@ -11,6 +11,8 @@ from base64 import b64encode
 import os
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt, get_jwt_identity
 from datetime import timedelta
+
+from sqlalchemy import func
 from api.models import db, CartItem, Product, ContactMessage
 # import stripe
 
@@ -74,25 +76,139 @@ def handle_hello():
 
 @api.route('/products', methods=['GET'])
 def get_products():
-    products = Product.query.all()
-    if len(products) <= 0:
-        return jsonify({'msg': 'No hay productos'}), 404
-    return jsonify([product.serialize() for product in products]), 200
+    query = Product.query
+
+    category_id = request.args.get('category_id', type=int)
+    if category_id is not None:
+        query = query.filter_by(category_id=category_id)
+
+    author_id = request.args.get('author_id', type=int)
+    if author_id is not None:
+        query = query.join(Product.authors).filter(Author.id == author_id)
+
+    search_term = request.args.get('search', type=str)
+    if search_term:
+        search_term = search_term.strip().lower()
+        if search_term:
+            query = (
+                query
+                .join(Product.category)
+                .join(Product.authors)
+                .filter(
+                db.or_(
+                    func.unaccent(func.lower(Product.name)).ilike(f'%{search_term}%'),
+                    func.unaccent(func.lower(Product.description)).ilike(f'%{search_term}%'),
+                    func.unaccent(func.lower(Category.name)).ilike(f'%{search_term}%'),
+                    func.unaccent(func.lower(Author.name)).ilike(f'%{search_term}%'),
+
+                 )
+            )
+        )
+
+
+    products_list=query.all()
+
+    if not products_list:
+        return jsonify({'message': 'No hay productos'}), 404
+    return jsonify([product.serialize() for product in products_list]), 200
 
 
 @api.route('/product/<int:id>', methods=['GET'])
 def get_product(id):
-    product = Product.query.get(id)
+    product=Product.query.get(id)
     if not product:
         return jsonify({'error': 'Producto no encontrado'}), 404
     return jsonify(product.serialize()), 200
 
 
-@api.route('/register', methods=['POST'])
+@ api.route('/products', methods=['POST'])
+def create_product():
+    data=request.get_json()
+
+    category=Category.query.get(data.get('category_id'))
+    if not category:
+        return jsonify({'error': 'Categoria no valida'}), 400
+
+    author_ids=data.get('author_ids', [])
+    authors=Author.query.filter(Author.id.in_(author_ids)).all()
+
+    new_product=Product(
+    name=data.get('name'),
+    price=data.get('price'),
+    image_url=data.get('image_url'),
+    is_featured=data.get('is_featured', False),
+    description=data.get('description', ''),
+    detail_images=data.get('detail_images', []),
+    rating=data.get('rating', 0),
+    category=category,
+    authors=authors
+    )
+
+    db.session.add(new_product)
+    db.session.commit()
+
+    return jsonify(new_product.serialize()), 201
+
+
+@ api.route('/categories', methods=['GET'])
+def list_categories():
+    categories=Category.query.all()
+    if not categories:
+        return jsonify({'message': 'No hay categorías'}), 404
+    return jsonify([category.serialize() for category in categories]), 200
+
+@ api.route('/categories', methods=['POST'])
+def create_category():
+    data=request.get_json()
+    name=data.get('name')
+
+    if not name:
+        return jsonify({'error': 'Nombre de la categoria requerido'}), 400
+
+    existing=Category.query.filter_by(name=name).first()
+    if existing:
+        return jsonify({'error': 'La categoria ya existe'}), 400
+
+    category=Category(name=name)
+    db.session.add(category)
+    db.session.commit()
+
+    return jsonify(category.serialize()), 201
+
+
+@ api.route('/authors', methods=['GET'])
+def list_authors():
+    authors=Author.query.all()
+    if not authors:
+        return jsonify({'message': 'No hay autores'}), 404
+    return jsonify([author.serialize() for author in authors]), 200
+
+
+@ api.route('/authors', methods=['POST'])
+def create_author():
+    data=request.get_json()
+    name=data.get('name')
+
+    if not name:
+        return jsonify({'error': 'Nombre del autor requerido'}), 400
+
+    existing=Author.query.filter_by(name=name).first()
+    if existing:
+        return jsonify({'error': 'El autor ya existe'}), 409
+
+    author=Author(name=name)
+    db.session.add(author)
+    db.session.commit()
+
+    return jsonify(author.serialize()), 201
+
+
+
+@ api.route('/register', methods=['POST'])
 def add_user():
-    email = request.form.get("email")
-    name = request.form.get("name")
-    password = request.form.get("password")
+    email=request.form.get("email")
+    name=request.form.get("name")
+    password=request.form.get("password")
 
     if not email or not name or not password:
         return jsonify("Para poder crearse una cuenta se necesita la información completa"), 400
@@ -115,21 +231,21 @@ def add_user():
         return jsonify(f"Error: {error.args}"), 500
 
 
-@api.route('/login', methods=['POST'])
+@ api.route('/login', methods=['POST'])
 def handle_login():
-    data = request.json
-    email = data.get('email')
-    password = data.get('password')
+    data=request.json
+    email=data.get('email')
+    password=data.get('password')
 
     if not email or not password:
         return jsonify({"msg": "Correo electrónico y contraseña son requeridos"}), 400
 
-    user = User.query.filter_by(email=email).one_or_none()
+    user=User.query.filter_by(email=email).one_or_none()
 
     if not user or not check_password(user.password, password, user.salt):
         return jsonify({"msg": "Credenciales incorrectas"}), 401
 
-    token = create_access_token(identity=str(user.id))
+    token=create_access_token(identity=str(user.id))
     return jsonify({"token": token}), 200
 
 
@@ -147,8 +263,8 @@ def handle_admin():
 @api.route('/forgot-password', methods=["POST"])
 def forgot_password():
 
-    body = request.json
-    user = User.query.filter_by(email=body).one_or_none()
+    body=request.json
+    user=User.query.filter_by(email=body).one_or_none()
 
     if user:
         additional_claims = {"purpose": "password_reset"}
@@ -158,8 +274,8 @@ def forgot_password():
         expires_delta=timedelta(hours=1)
     )
 
-    reset_url = f'{os.getenv("FRONTEND_URL")}/recuperar-contraseña?token={reset_token}'
-    message = f"""
+    reset_url=f'{os.getenv("FRONTEND_URL")}/recuperar-contraseña?token={reset_token}'
+    message=f"""
         <div>
             <h1>Recupera tu contraseña</h1>
             <p>Haz clic en el siguiente enlace para restablecer tu contraseña:</p>
@@ -167,13 +283,13 @@ def forgot_password():
             <p>Si no solicitaste esto, por favor ignora este correo.</p>
         </div>
     """
-    data = {
+    data={
         "subject": "Recuperación de contraseña",
         "to": body,
         "message": message
     }
 
-    sended_email = send_email(
+    sended_email=send_email(
         data.get("subject"), data.get("to"), data.get("message"))
 
     if sended_email:
@@ -182,53 +298,53 @@ def forgot_password():
         return jsonify({"msg": "internal error"}), 200
 
 
-@api.route('/reset-password', methods=["PUT"])
-@jwt_required()
+@ api.route('/reset-password', methods=["PUT"])
+@ jwt_required()
 def handle_password_reset():
-    claims = get_jwt()
+    claims=get_jwt()
     if claims.get('purpose') != "password_reset":
         return jsonify({"msg": "Token inválido para recuperación de contraseña"}), 403
 
-    body = request.get_json()
-    new_password = body.get("password")
+    body=request.get_json()
+    new_password=body.get("password")
 
     if not new_password:
         return jsonify({"msg": "Se requiere una nueva contraseña"}), 400
 
-    user_id = get_jwt_identity()
-    user = User.query.get(user_id)
+    user_id=get_jwt_identity()
+    user=User.query.get(user_id)
 
     if not user:
         return jsonify({"msg": "Usuario no encontrado"}), 404
 
-    user.password = set_password(new_password, user.salt)
+    user.password=set_password(new_password, user.salt)
     db.session.commit()
 
     return jsonify({"msg": "Contraseña actualizada exitosamente"}), 200
 
 
-@api.route('/me', methods=["GET"])
-@jwt_required()
+@ api.route('/me', methods=["GET"])
+@ jwt_required()
 def get_user_info():
-    user_id = get_jwt_identity()
-    user = User.query.get(user_id)
+    user_id=get_jwt_identity()
+    user=User.query.get(user_id)
     if not user:
         return jsonify({'msg': "no user found"}), 404
     return jsonify(user.serialize()), 200
 
 
-@api.route('/change-password', methods=["POST"])
-@jwt_required()
+@ api.route('/change-password', methods=["POST"])
+@ jwt_required()
 def change_password():
-    user_id = get_jwt_identity()
-    user = User.query.get(user_id)
+    user_id=get_jwt_identity()
+    user=User.query.get(user_id)
 
     if not user:
         return jsonify({"msg": "Usuario no encontrado"}), 404
 
-    body = request.get_json()
-    current_password = body.get("current_password")
-    new_password = body.get("new_password")
+    body=request.get_json()
+    current_password=body.get("current_password")
+    new_password=body.get("new_password")
 
     if not current_password or not new_password:
         return jsonify({"msg": "Se requiere la contraseña actual y la nueva contraseña"}), 400
@@ -236,36 +352,36 @@ def change_password():
     if not check_password(user.password, current_password, user.salt):
         return jsonify({"msg": "La contraseña actual es incorrecta"}), 401
 
-    user.password = set_password(new_password, user.salt)
+    user.password=set_password(new_password, user.salt)
     db.session.commit()
 
     return jsonify({"msg": "Contraseña cambiada exitosamente"}), 200
 
 
-@api.route('/change-email', methods=["POST"])
-@jwt_required()
+@ api.route('/change-email', methods=["POST"])
+@ jwt_required()
 def change_email():
-    user_id = get_jwt_identity()
-    user = User.query.get(user_id)
+    user_id=get_jwt_identity()
+    user=User.query.get(user_id)
 
     if not user:
         return jsonify({"msg": "Usuario no encontrado"}), 404
 
-    body = request.get_json()
-    new_email = body.get("new_email")
-    password = body.get("password")
+    body=request.get_json()
+    new_email=body.get("new_email")
+    password=body.get("password")
 
     if not new_email or not password:
         return jsonify({"msg": "Se requiere el nuevo email y la contraseña actual"}), 400
 
-    existing_user = User.query.filter_by(email=new_email).first()
+    existing_user=User.query.filter_by(email=new_email).first()
     if existing_user:
         return jsonify({"msg": "El correo electrónico ya está en uso"}), 409
 
     if not check_password(user.password, password, user.salt):
         return jsonify({"msg": "La contraseña es incorrecta"}), 401
 
-    user.email = new_email
+    user.email=new_email
     db.session.commit()
 
     return jsonify({"msg": "Email actualizado exitosamente"}), 200
