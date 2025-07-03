@@ -4,20 +4,19 @@ This module takes care of starting the API Server, Loading the DB and Adding the
 from flask import Flask, request, jsonify, url_for, Blueprint
 from api.models import db, User, Product
 from api.utils import generate_sitemap, APIException, send_email
-from flask_cors import CORS
 import cloudinary.uploader as upload
 from werkzeug.security import generate_password_hash, check_password_hash
 from base64 import b64encode
 import os
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt, get_jwt_identity
 from datetime import timedelta
-from api.models import db, CartItem, Product, ContactMessage
-# import stripe
+from api.models import db, CartItem, Product, ContactMessage, Order, OrderItem
+import stripe
 
-# stripe.api_key = os.getenv("STRIPE_SECRET_KEY")
+stripe.api_key = os.getenv("STRIPE_SECRET_KEY")
 api = Blueprint('api', __name__)
-CORS(api)
-# Allow CORS requests to this API
+
+#Allow CORS requests to this API
 
 
 def set_password(password, salt):
@@ -281,7 +280,9 @@ def clear_cart(user_id):
 
 # CHECKOUT
 @api.route('/create-checkout-session', methods=['POST'])
+@jwt_required()
 def create_checkout_session():
+    user_id = get_jwt_identity()
     data = request.json
     items = data.get('items', [])
 
@@ -296,7 +297,7 @@ def create_checkout_session():
                         'product_id': item['product_id']
                  }
                 },
-                'unit_amount': int(item['price'] * 100)  # Stripe usa centavos
+                'unit_amount': int(item['price'] * 100)  
             },
             'quantity': item['quantity'],
         })
@@ -307,13 +308,13 @@ def create_checkout_session():
             line_items=line_items,
             mode='payment',
             success_url=os.getenv("FRONTEND_URL") + '/success',
-            cancel_url=os.getenv("FRONTEND_URL") + '/cancel'
+            cancel_url=os.getenv("FRONTEND_URL") + '/cancel',
+            metadata={'user_id': user_id}
         )
         return jsonify({'url': session.url})
     except Exception as e:
         return jsonify({'error': str(e)}), 500
-
-@api.route('/contact-form', methods =["POST"])
+@api.route('/contact-form', methods=["POST"])
 def handleContactForm():
     if not request.is_json:
         return jsonify({"msg": "Missing JSON in request"}), 400
@@ -378,3 +379,53 @@ def getContactForm():
     except Exception as error:
         print(f"Error al recuperar mensajes de la base de datos: {error}")
         return jsonify({"msg": f"Failed to retrieve messages: {str(error)}"}), 500
+    
+    #Webhook de Stripe
+    from flask import abort
+
+@api.route('/webhook', methods=['POST'])
+def stripe_webhook():
+    payload = request.data
+    sig_header = request.headers.get('stripe-signature')
+    endpoint_secret = os.getenv("STRIPE_WEBHOOK_SECRET")
+
+    try:
+        event = stripe.Webhook.construct_event(
+            payload, sig_header, endpoint_secret
+        )
+    except stripe.error.SignatureVerificationError:
+        return jsonify({'msg': 'Webhook signature verification failed'}), 400
+    except Exception as e:
+        return jsonify({'msg': f'Webhook error: {str(e)}'}), 400
+
+    if event['type'] == 'checkout.session.completed':
+        session = event['data']['object']
+        user_id = session.get('metadata', {}).get('user_id')
+
+        if not user_id:
+            return jsonify({'msg': 'User ID no encontrado en metadata'}), 400
+
+        # Recuperar los items de la sesión
+        line_items = stripe.checkout.Session.list_line_items(session['id'])
+        total_amount = session['amount_total'] / 100  # en dólares
+
+        # Crear la orden
+        new_order = Order(user_id=user_id, total=total_amount)
+        db.session.add(new_order)
+        db.session.commit()
+
+        for item in line_items['data']:
+            order_item = OrderItem(
+                order_id=new_order.id,
+                product_id=item['price']['product'],  # requiere validación
+                product_name=item['description'],
+                product_description="",
+                quantity=item['quantity'],
+                price=item['amount_total'] / 100
+            )
+            db.session.add(order_item)
+
+        db.session.commit()
+        print("Orden creada desde webhook Stripe ✅")
+
+    return jsonify({'status': 'ok'}), 200
