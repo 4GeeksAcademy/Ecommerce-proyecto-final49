@@ -1,4 +1,3 @@
-import React from "react";
 import useGlobalReducer from "../hooks/useGlobalReducer.jsx";
 import { Link, useNavigate } from "react-router-dom";
 import milPaginasLogo from "../assets/img/mil_paginas.png"
@@ -12,6 +11,11 @@ export const Navbar = () => {
     dispatch({ type: "LOGOUT" });
     navigate("/");
   };
+
+  const totalItems = store.localCart.reduce(
+    (acc, item) => acc + item.quantity,
+    0
+  );
 
   return (
     <nav className="navbar navbar-expand-lg navbar-light bg-light">
@@ -176,8 +180,8 @@ export const Navbar = () => {
             aria-expanded="false"
           >
             <i className="fa-solid fa-cart-shopping"></i>
-            <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-              {store.cartCount}{" "}
+            <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-primary">
+              {totalItems}{" "}
               <span className="visually-hidden">items in cart</span>
             </span>
           </button>
@@ -189,7 +193,7 @@ export const Navbar = () => {
             <li>
               <hr className="dropdown-divider" />
             </li>
-            {store.cartCount === 0 ? (
+            {totalItems === 0 ? (
               <li>
                 <span className="dropdown-item text-muted">
                   Aún no hay artículos en el carrito.
@@ -198,7 +202,7 @@ export const Navbar = () => {
             ) : (
               <li>
                 <span className="dropdown-item text-muted">
-                  Tienes {store.cartCount} artículo(s) en el carrito.
+                  Tienes {totalItems} artículo(s) en el carrito.
                 </span>
               </li>
             )}

@@ -15,16 +15,11 @@ const Main = () => {
         </React.StrictMode>
         );
     return (
-        <>
-        {/* <React.StrictMode>   */}
-            {/* Provide global state to all components */}
             <StoreProvider> 
                 {/* Set up routing for the application */} 
                 <RouterProvider router={router}>
                 </RouterProvider>
             </StoreProvider>
-        {/* </React.StrictMode> */}
-        </>
     );
 }
 

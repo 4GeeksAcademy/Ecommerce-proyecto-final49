@@ -21,6 +21,7 @@ flask-mail = "*"
 flask = "*"
 cloudinary = "*"
 flask-cors = "*"
+stripe = "*"
 
 [requires]
 python_version = "3.13"
@@ -35,3 +36,5 @@ downgrade="flask db downgrade"
 insert-test-data="flask insert-test-data"
 reset_db="bash ./docs/assets/reset_migrations.bash"
 deploy="echo 'Please follow this 3 steps to deploy: https://github.com/4GeeksAcademy/flask-rest-hello/blob/master/README.md#deploy-your-website-to-heroku' "
+
+populate-data="python -c 'from src.api.utils import population_data; population_data()'"
