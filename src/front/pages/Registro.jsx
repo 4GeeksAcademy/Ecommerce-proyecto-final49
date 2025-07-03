@@ -31,21 +31,12 @@ export const Registro = () => {
     const handleSubmit = async (event) => {
        event.preventDefault();
 
+    const formData = new FormData();
+    formData.append("name", user.name);
+    formData.append("email", user.email);
+    formData.append("password", user.password);
 
-
-    const formData = new FormData();
-
-    formData.append("name", user.name);
-
-    formData.append("email", user.email);
-
-    formData.append("password", user.password);
-
-
-
-
-
-    const url = import.meta.env.VITE_BACKEND_URL;
+    const url = import.meta.env.VITE_BACKEND_URL;
         try {
             const response = await fetch(`${url}/register`, {
                 method: "POST",
