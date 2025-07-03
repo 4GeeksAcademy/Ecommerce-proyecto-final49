@@ -20,8 +20,8 @@ export const Home = () => {
   useEffect(() => {
     async function LoadCategoriesAndAuthors() {
       try {
-        const categoriesResponse = await fetch(`${bkUrl}/api/categories`);
-        const authorsResponse = await fetch(`${bkUrl}/api/authors`);
+        const categoriesResponse = await fetch(`${bkUrl}/categories`);
+        const authorsResponse = await fetch(`${bkUrl}/authors`);
 
         if (categoriesResponse.ok) {
           const categoriesData = await categoriesResponse.json();
@@ -52,7 +52,7 @@ export const Home = () => {
 			queryParameters.append('search', searchText);
 		}
 
-        const requestUrl = `${bkUrl}/api/products${
+        const requestUrl = `${bkUrl}/products${
           queryParameters.toString() ? "?" + queryParameters.toString() : ""
         }`;
         const productsResponse = await fetch(requestUrl);
@@ -81,22 +81,7 @@ export const Home = () => {
     setSearchText('');
   }
 
-  // useEffect(() => {
-  // 	const loadProducts = async () => {
-  // 		try {
-  // 			const bkUrl = import.meta.env.VITE_BACKEND_URL;
-  // 			const response = await fetch(`${bkUrl}/api/products`);
-  // 			const data = await response.json();
-  // 			if (response.ok) setProducts(data);
-
-  // 		} catch (err) {
-  // 			console.error("Error al cargar caracteristicas del producto:", err);
-  // 		}
-  // 	};
-  // 	loadProducts();
-  // }, []);
-
-  
+ 
 
   return (
     <div className="home-container text-center mt-5">
