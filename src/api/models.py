@@ -5,15 +5,14 @@ import datetime
 # from .users import
 
 db = SQLAlchemy()
-# necesita de conexion con la base de datos antes de ser implementado
-# class Role(db.Model):
-#     __tablename__ = 'role'
-#     id: Mapped[int] = mapped_column(primary_key=True)
-#     name: Mapped[str] = mapped_column(String(50), unique=True, nullable=False)
-#     users: Mapped[list['User']] = relationship(back_populates='role')
+class Role(db.Model):
+    __tablename__ = 'role'
+    id: Mapped[int] = mapped_column(primary_key=True)
+    role_name: Mapped[str] = mapped_column(String(50), unique=True, nullable=False)
+    users: Mapped[list['User']] = relationship(back_populates='role')
 
-#     def __repr__(self):
-#         return f'<Role {self.name}>'
+    def __repr__(self):
+        return f'<Role {self.name}>'
 
 book_authors = Table(
     'book_authors', 
@@ -25,17 +24,14 @@ book_authors = Table(
 class User(db.Model):
     __tablename__ = 'user'
     id: Mapped[int] = mapped_column(primary_key=True)
-    email: Mapped[str] = mapped_column(
-        String(120), unique=True, nullable=False)
-    name: Mapped[str] = mapped_column(String(120), nullable=False)
-    password: Mapped[str] = mapped_column(String(255), nullable=False)
-    salt: Mapped[str] = mapped_column(String(80), nullable=False, default="")
-    is_active: Mapped[bool] = mapped_column(
-        Boolean, nullable=False, default=True)
-    # rompe el codigo si no existe la base de datos
-    # role_id: Mapped[int] = mapped_column(ForeignKey('role.id'), nullable=False)
-
-    # role: Mapped['Role'] = relationship(back_populates='users')
+    email: Mapped[str] = mapped_column(String(120), unique=True, nullable=False)
+    name: Mapped[str] = mapped_column(String(120), nullable=False) 
+    password: Mapped[str] = mapped_column(String(255), nullable=False)   
+    salt: Mapped[str] = mapped_column(String(80), nullable=False, default="")   
+    is_active: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
+    role_id: Mapped[int] = mapped_column(ForeignKey('role.id'), nullable=False)
+    
+    role: Mapped['Role'] = relationship(back_populates='users')
 
     def serialize(self):
         return {
@@ -126,5 +122,5 @@ class ContactMessage(db.Model):
     __tablename__ = 'contact_message'
     id: Mapped[int] = mapped_column(primary_key=True)
     email: Mapped[str] = mapped_column(String(120), nullable=False)
-    name: Mapped[str] = mapped_column(String(120), nullable=False)
-    message: Mapped[str] = mapped_column(String(1000), nullable=False)
+    name: Mapped[str] = mapped_column(String(120), nullable=False) 
+    message: Mapped[str] = mapped_column(String(255), nullable=False)

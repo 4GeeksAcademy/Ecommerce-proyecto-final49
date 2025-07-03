@@ -1,8 +1,10 @@
 import useGlobalReducer from "../hooks/useGlobalReducer.jsx";
 import { Link, useNavigate } from "react-router-dom";
+import milPaginasLogo from "../assets/img/mil_paginas.png"
 
 export const Navbar = () => {
-  const { store, dispatch } = useGlobalReducer();
+  const { store, dispatch }
+   = useGlobalReducer();
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -32,7 +34,7 @@ export const Navbar = () => {
 
         <Link className="navbar-brand mx-auto order-lg-first" to="/">
           <img
-            src="src/front/assets/img/mil_paginas.png"
+            src={milPaginasLogo}
             alt="Mil páginas logo"
             height="50"
           />

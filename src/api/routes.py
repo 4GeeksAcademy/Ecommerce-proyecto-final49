@@ -23,10 +23,44 @@ CORS(api)
 
 
 def set_password(password, salt):
+    if password.lenght() < 8:
+        return jsonify("la contraseña debe tener almenos 8 caracteres")
     return generate_password_hash(f'{password}{salt}')
 
 def check_password(pass_hash, password, salt):
     return check_password_hash(pass_hash, f'{password}{salt}')
+
+# se utiliza la libreria re de python para validar que el correo sea valido
+def validate_email():
+    validat_token=create_access_token(
+        identity=str(user.id),
+        additional_claims=additional_claims,
+        expires_delta=timedelta(hours=1)
+    )
+
+    reset_url = f'{os.getenv("FRONTEND_URL")}/recuperar-contraseña?token={reset_token}'
+    message = f"""
+        <div>
+            <h1>Verifica tu correo</h1>
+            <p>Porfavor entra al siguiente correo</p>
+            <a href="{reset_url}" target="_blank">Restablecer Contraseña</a>
+            <p>Si no solicitaste esto, por favor ignora este correo.</p>
+        </div>
+    """
+    data = {
+        "subject": "Recuperación de contraseña",
+        "to": body,
+        "message": message
+    }
+
+    sended_email = send_email(
+        data.get("subject"), data.get("to"), data.get("message"))
+
+    if sended_email:
+        return jsonify({"msg": "Si tu correo está en nuestro sistema, recibirás un enlace para recuperar la contraseña."}), 200
+    else:
+        return jsonify({"msg": "internal error"}), 200
+
 
 expire_in_minutes = 10
 expires_delta = timedelta(minutes=expire_in_minutes)
@@ -178,14 +212,16 @@ def add_user():
 
     if not email or not name or not password:
         return jsonify("Para poder crearse una cuenta se necesita la información completa"), 400
+    
+    if (email or name or password) != str:
+        return jsonify ("Los datos deben ser del tipo string")
 
-    salt=b64encode(os.urandom(32)).decode("utf-8")
-    user=User()
-    user.email=email
-    user.name=name
-    user.password=set_password(password, salt)
-    user.salt=salt
-    # user.role_id = 2
+    salt = b64encode(os.urandom(32)).decode("utf-8")
+    user = User()
+    user.email = email
+    user.name = name
+    user.password = set_password(password, salt)
+    user.salt = salt
     db.session.add(user)
     try:
         db.session.commit()
@@ -213,15 +249,26 @@ def handle_login():
     return jsonify({"token": token}), 200
 
 
-@ api.route('/forgot-password', methods=["POST"])
+@api.route('/logout', methods=["POST"])
+def handle_logout():
+    return jsonify({"msg": "xd"}), 200
+
+
+@api.route( '/admin', methods=["GET"])
+def handle_admin():
+    return jsonify({"xd": "xd"}), 200
+
+
+
+@api.route('/forgot-password', methods=["POST"])
 def forgot_password():
 
     body=request.json
     user=User.query.filter_by(email=body).one_or_none()
 
     if user:
-        additional_claims={"purpose": "password_reset"}
-    reset_token=create_access_token(
+        additional_claims = {"purpose": "password_reset"}
+        reset_token = create_access_token(
         identity=str(user.id),
         additional_claims=additional_claims,
         expires_delta=timedelta(hours=1)

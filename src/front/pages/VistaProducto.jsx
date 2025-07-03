@@ -4,6 +4,7 @@ import "../styles/vistaproducto.css";
 import useGlobalReducer from "../hooks/useGlobalReducer";
 
 export const VistaProducto = () => {
+
   const { id } = useParams();
   const [product, setProduct] = useState(null);
   const [imgSelected, setImgSelected] = useState("");
@@ -127,6 +128,7 @@ export const VistaProducto = () => {
     <div className="container">
       <div className="row">
         {/*Bloque fotos del producto*/}
+
         <div className="col-2 col-md-2 col-lg-1 d-flex flex-column gap-2 py-4 align-items-end">
           {/*Foto principal en miniatura*/}
           {product.image_url && (
@@ -152,6 +154,7 @@ export const VistaProducto = () => {
         </div>
 
         {/*Foto principal grande*/}
+        <div className="col-6 col-md-10 col-lg-4 py-4">
         <div className="col-10 col-md-6 col-lg-5 py-4">
           <div className="py-4 border rounded-2 div_producto">
             <img
@@ -171,6 +174,7 @@ export const VistaProducto = () => {
             <strong>{product.description}</strong>
           </p>
           <p className="mb-0 py-1">
+
             <span className="fs-5">{ratingValue}</span>
             <span className="fs-4 ms-2">{stars}</span>
             <span className="fs-6 ms-2">({totalReviews})</span>
@@ -178,6 +182,7 @@ export const VistaProducto = () => {
           {(() => {
             const [intPart, decimalPart] = product.price.toFixed(2).split(".");
             return (
+
               <p className="mb-0 pt-2 fs-1">
                 ${intPart}
                 <sup className="fs-7">{decimalPart}</sup>
