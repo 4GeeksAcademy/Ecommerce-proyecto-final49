@@ -30,7 +30,7 @@ import { OlvidoContraseña } from "./pages/OlvidoContraseña";
 import { VistaProducto } from "./pages/VistaProducto";
 import { ConfirmacionCompra } from "./pages/ConfirmacionCompra";
 import { Cart } from "./pages/Cart";
-import { Checkout } from "./pages/Checkout";
+
 
 //vistas admin
 
@@ -74,7 +74,6 @@ export const router = createBrowserRouter(
       {/* carrito y vista de producto */}
       <Route path="/cart" element={<Cart />} />
       <Route path="/producto/:id" element={<VistaProducto />} />
-      <Route path="/checkout" element={<Checkout />} />
       <Route path="/confirmacion" element={<ConfirmacionCompra />} />
       {/* vistas admin */}
       <Route path="/admin" />

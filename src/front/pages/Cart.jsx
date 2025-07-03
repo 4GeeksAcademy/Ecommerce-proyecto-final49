@@ -5,7 +5,6 @@ import { Link, useNavigate } from "react-router-dom";
 export const Cart = () => {
   const { store, actions } = useGlobalReducer();
   const navigate = useNavigate();
-
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
   const displayedCartItems = store.token ? store.backendCart : store.localCart;
@@ -18,20 +17,12 @@ export const Cart = () => {
 
   const handleRemoveItem = async (itemId) => {
     const success = await actions.removeCartItem(itemId);
-    if (success) {
-      console.log("Producto eliminado del carrito.");
-    } else {
-      console.error("Error al eliminar el producto del carrito.");
-    }
+    if (!success) console.error("Error al eliminar producto del carrito.");
   };
 
   const handleClearCart = async () => {
     const success = await actions.clearCart();
-    if (success) {
-      console.log("Carrito vaciado.");
-    } else {
-      console.error("Error al vaciar el carrito.");
-    }
+    if (!success) console.error("Error al vaciar el carrito.");
   };
 
   const getTotal = () => {
@@ -47,41 +38,44 @@ export const Cart = () => {
     }
 
     if (!store.token) {
-      alert("Para proceder al pago, por favor inicia sesión o regístrate.");
+      alert("Para pagar necesitas iniciar sesión.");
       navigate("/iniciar-sesion");
       return;
     }
 
     try {
+      const token = localStorage.getItem("jwt_token");
       const response = await fetch(`${backendUrl}/create-checkout-session`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`, // Muy importante para rutas protegidas
         },
         body: JSON.stringify({
           items: displayedCartItems.map((item) => ({
-            product_name: item.product_name,
-            product_id: item.product_id,
+            product_name: item.product_name || item.name,
+            product_id: item.product_id || item.id,
             price: item.price,
             quantity: item.quantity,
-            image_url: item.image_url,
+            image_url: item.image_url || "",
           })),
         }),
       });
 
       const data = await response.json();
+
       if (!response.ok) {
-        throw new Error(data.error || "Error al crear la sesión de pago.");
+        throw new Error(data.error || "Error al iniciar el checkout.");
       }
 
       if (data.url) {
         window.location.href = data.url;
       } else {
-        alert("No se pudo obtener la URL de pago.");
+        alert("No se pudo obtener la URL de Stripe.");
       }
     } catch (error) {
-      console.error("Error al crear sesión de Stripe:", error);
-      alert(`Ocurrió un error al procesar el pago: ${error.message}`);
+      console.error("Error en el checkout:", error);
+      alert(`Error durante el pago: ${error.message}`);
     }
   };
 
@@ -108,14 +102,16 @@ export const Cart = () => {
                   item.image_url ||
                   "https://placehold.co/80x80/cccccc/ffffff?text=No+Img"
                 }
-                alt={item.product_name}
+                alt={item.product_name || item.name}
                 className="cart-item-image me-3"
                 style={{ width: "80px", height: "80px", objectFit: "cover" }}
               />
               <div className="cart-item-details flex-grow-1">
-                <h5 className="cart-item-name">{item.product_name}</h5>
+                <h5 className="cart-item-name">
+                  {item.product_name || item.name}
+                </h5>
                 <p className="cart-item-price">
-                  Precio unitario: ${typeof item.price === "number" ? item.price.toFixed(2) : "0.00"}
+                  Precio unitario: ${item.price.toFixed(2)}
                 </p>
                 <p className="cart-item-quantity">Cantidad: {item.quantity}</p>
                 <p className="cart-item-subtotal fw-bold">
