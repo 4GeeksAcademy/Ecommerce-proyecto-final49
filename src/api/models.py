@@ -76,11 +76,13 @@ class Product(db.Model):
     description: Mapped[str] = mapped_column(Text, nullable=True)
     detail_images: Mapped[list] = mapped_column(JSON, nullable=True)
     rating: Mapped[int] = mapped_column(Integer, nullable=True)
+    product_stock: Mapped[int] = mapped_column(Integer, nullable=False)
+
     category_id: Mapped[int] = mapped_column(ForeignKey('category.id'), nullable=False)
+    
     category: Mapped[Category] = relationship(back_populates='products')
     authors: Mapped[list[Author]] = relationship('Author', secondary=book_authors, back_populates='products')
-    product_stock: Mapped[int] = mapped_column(Integer, nullable=False)
-    # category: Mapped[str] = mapped_column(String(80), nullable=False, default='General')
+    
 
     @validates('rating')
     def validate_rating(self, key, value):
@@ -98,9 +100,9 @@ class Product(db.Model):
             'description': self.description,
             'detail_images': self.detail_images,    #fotos miniatura
             'rating': self.rating,
+            'product_stock': self.product_stock,
             'category': self.category.serialize(),
-            'authors': [a.serialize() for a in self.authors],
-            'product_stock': self.product_stock
+            'authors': [a.serialize() for a in self.authors], 
         }
 
     # CARRITO DE COMPRAS

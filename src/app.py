@@ -16,7 +16,7 @@ from flask_cors import CORS
 
 app = Flask(__name__)
 CORS(app, resources={r"/api/*": {"origins": "*"}}, supports_credentials=True)
-app.register_blueprint(api, url_prefix="/api")
+
 
 ENV = "development" if os.getenv("FLASK_DEBUG") == "1" else "production"
 static_file_dir = os.path.join(os.path.dirname(
@@ -27,7 +27,6 @@ app.url_map.strict_slashes = False
 # Setup the Flask-JWT-Extended extension
 app.config["JWT_SECRET_KEY"] =   os.getenv("JWT_SECRET_KEY")
 jwt = JWTManager(app)
-
 
 
 # database condiguration
