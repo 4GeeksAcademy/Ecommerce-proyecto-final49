@@ -1,16 +1,10 @@
-// workspaces/ecommerce/src/front/store.js
-
-// Define el estado inicial de nuestra aplicación.
 export const initialStore = () => {
-    // Intenta cargar el token JWT del localStorage.
-    // Usamos "jwt_token" para ser específicos con JWT.
     const token = localStorage.getItem("jwt_token") || null;
 
-    // Carga el carrito local del localStorage. Si no existe, inicializa un array vacío.
     const localCart = JSON.parse(localStorage.getItem("local_cart") || "[]");
+    const initialCartCount = localCart.reduce((sum, item) => sum + (Number(item.quantity) || 0), 0);
 
     return {
-        // --- Tu estado existente ---
         message: null,
         todos: [
             {
@@ -24,124 +18,118 @@ export const initialStore = () => {
                 background: null,
             },
         ],
-        // Tu token existente, ahora alineado con "jwt_token" para consistencia.
         token: token,
-        // Tu campo existente 'me' ahora se llamará 'user' para ser más descriptivo con la información del usuario logueado.
-        user: null, // Lo inicializamos a null, y se llenará con la acción ADD_ME
+        user: null,
 
-        // --- Nuevas propiedades para el carrito y autenticación ---
-        localCart: localCart,       // Carrito para usuarios NO autenticados, cargado desde localStorage
-        backendCart: [],            // Carrito para usuarios AUTENTICADOS, se carga del backend
-        loading: false              // Para manejar estados de carga globales (opcional)
+        localCart: localCart,
+        backendCart: [],
+        loading: false,
+        cartCount: initialCartCount
     };
 };
 
-// Este es el "reducer".
 export default function storeReducer(store, action = {}) {
     switch (action.type) {
-        // --- Acciones de tu código existente ---
         case "set_hello":
             return {
                 ...store,
                 message: action.payload,
             };
 
-        case "add_task": // Ojo: Este case no tiene un 'return' al final. Asegúrate de que haga algo.
-                         // Lo he movido más abajo para evitar conflictos con el 'return' del case 'LOGIN'.
-            // const { id, color } = action.payload; // Esto estaba sin usar y debería estar dentro de su propio case.
-            // Falta un 'return' aquí. Si esta acción necesita modificar 'todos', debería hacerlo y retornar un nuevo estado.
-            // Para el ejemplo, asumo que 'add_task' es un placeholder o está incompleto.
-            // Si necesitas usar 'id' y 'color' para 'todos', colócalo dentro de un 'return' aquí.
-            // EJEMPLO:
-            // return {
-            //     ...store,
-            //     todos: store.todos.map((todo) =>
-            //         todo.id === action.payload.id ? { ...todo, background: action.payload.color } : todo
-            //     ),
-            // };
-            // throw Error("Action 'add_task' not fully implemented or missing return.");
-            return store; // Placeholder para que no rompa si no hace nada
+        case "add_task":
+            return store;
 
-        // --- Acciones de Autenticación (fusionadas y ajustadas) ---
         case "LOGIN":
-            // Guarda el token en localStorage y actualiza el estado.
-            // Asumimos que action.payload para LOGIN ahora es { token, user_data }
-            localStorage.setItem("jwt_token", action.payload.token); // Usamos "jwt_token" para consistencia
+            localStorage.setItem("jwt_token", action.payload.token);
             return {
                 ...store,
                 token: action.payload.token,
-                user: action.payload.user_data // Ahora usa 'user' en lugar de 'me' para los datos del usuario
+                user: action.payload.user_data
             };
         case "LOGOUT":
-            // Elimina el token de localStorage y limpia el estado de usuario/token.
-            localStorage.removeItem("jwt_token"); // Elimina "jwt_token"
-            // También remueve el token "antiguo" si aún existiera por si acaso.
+            localStorage.removeItem("jwt_token");
             localStorage.removeItem("token");
+            localStorage.removeItem("local_cart");
             return {
                 ...store,
                 token: null,
-                user: null,             // Limpia la información del usuario
-                backendCart: [],        // Limpia el carrito del backend
-                localCart: []           // Opcional: limpiar el carrito local al desloguear
+                user: null, 
+                backendCart: [],
+                localCart: [],
+                cartCount: 0,
             };
         
-        // --- Tu acción ADD_ME existente (renombrada para ser más descriptiva con 'user') ---
-        case "ADD_ME": // Esta acción ahora actualiza el campo 'user'
+        case "ADD_ME":
             return {
                 ...store,
-                user: action.payload, // Guarda la info detallada del usuario en 'user'
+                user: action.payload,
             };
 
-        // --- Nuevas acciones para el Carrito Local (para usuarios NO autenticados) ---
-        case "SET_LOCAL_CART":
-            return { ...store, localCart: action.payload };
+        case "SET_LOCAL_CART": {
+            const newLocalCart = action.payload;
+            const newCartCount = newLocalCart.reduce((sum, item) => sum + (Number(item.quantity) || 0), 0);
+            localStorage.setItem("local_cart", JSON.stringify(newLocalCart));
+            return { ...store, localCart: newLocalCart, cartCount: newCartCount };
+        }
         case "ADD_LOCAL_CART_ITEM": {
-            const product = action.payload;
+            const { product, quantity: selectedQuantity } = action.payload;
             const updatedCart = [...store.localCart];
-            // Busca si el producto ya existe por su product_id.
-            const existingItemIndex = updatedCart.findIndex(item => item.product_id === product.id);
+            const existingItemIndex = updatedCart.findIndex(item => Number(item.product_id) === Number(product.id));
 
             if (existingItemIndex > -1) {
-                updatedCart[existingItemIndex].quantity += 1;
+                updatedCart[existingItemIndex].quantity = Number(updatedCart[existingItemIndex].quantity || 0) + Number(selectedQuantity || 1);
             } else {
                 updatedCart.push({
                     product_id: product.id,
                     product_name: product.name,
                     price: product.price,
                     image_url: product.image_url,
-                    quantity: 1,
-                    // ID temporal para el frontend, ¡CRÍTICO para las 'keys' en React!
+                    quantity: Number(selectedQuantity || 1),
                     id: Date.now() + Math.random().toString(36).substring(2, 9) 
                 });
             }
+            const newCartCount = updatedCart.reduce((sum, item) => sum + (Number(item.quantity) || 0), 0);
             localStorage.setItem("local_cart", JSON.stringify(updatedCart));
-            return { ...store, localCart: updatedCart };
+            return { ...store, localCart: updatedCart, cartCount: newCartCount };
+        }
+        case "UPDATE_LOCAL_CART_ITEM": {
+            const { productId, newQuantity } = action.payload;
+            const updatedCart = store.localCart.map(item => {
+                if (Number(item.product_id) === Number(productId)) {
+                    return { ...item, quantity: Number(newQuantity) || 1 };
+                }
+                return item;
+            });
+            const newCartCount = updatedCart.reduce((sum, item) => sum + (Number(item.quantity) || 0), 0);
+            localStorage.setItem("local_cart", JSON.stringify(updatedCart));
+            return { ...store, localCart: updatedCart, cartCount: newCartCount };
         }
         case "REMOVE_LOCAL_CART_ITEM": {
-            // Usa el 'id' generado por el frontend para remover.
             const itemId = action.payload; 
             const updatedCart = store.localCart.filter(item => item.id !== itemId);
-
+            const newCartCount = updatedCart.reduce((sum, item) => sum + (Number(item.quantity) || 0), 0);
             localStorage.setItem("local_cart", JSON.stringify(updatedCart));
-            return { ...store, localCart: updatedCart };
+            return { ...store, localCart: updatedCart, cartCount: newCartCount };
         }
         case "CLEAR_LOCAL_CART":
             localStorage.removeItem("local_cart");
-            return { ...store, localCart: [] };
+            return { ...store, localCart: [], cartCount: 0 };
 
-        // --- Nuevas acciones para el Carrito del Backend (para usuarios AUTENTICADOS) ---
-        case "SET_BACKEND_CART":
-            return { ...store, backendCart: action.payload };
-
-        // --- Acciones Generales (nuevas, si se usan en useGlobalReducer) ---
-        case "SET_MESSAGE": // Tu acción 'set_hello' se puede unificar con esta para mensajes generales.
+        case "SET_BACKEND_CART": {
+            const newBackendCart = action.payload;
+            const newCartCount = newBackendCart.reduce((sum, item) => sum + (Number(item.quantity) || 0), 0);
+            return { ...store, backendCart: newBackendCart, cartCount: newCartCount };
+        }
+        
+        case "SET_MESSAGE":
             return { ...store, message: action.payload };
         case "SET_LOADING":
             return { ...store, loading: action.payload };
 
+        case "SET_CART_COUNT":
+            return { ...store, cartCount: Number(action.payload) || 0 };
+
         default:
-            // Si la acción no se reconoce, devuelve el estado sin cambios.
-            // Evitamos 'throw Error' en el default, es mejor solo retornar el estado.
             return store;
     }
 }

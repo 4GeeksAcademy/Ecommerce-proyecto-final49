@@ -357,6 +357,7 @@ def get_cart(user_id):
 
 @api.route('/cart', methods=['POST'])
 def add_to_cart():
+    print("Entró al método addToCart")
     data = request.json
     user_id = data.get('user_id')
     product_id = data.get('product_id')
