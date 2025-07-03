@@ -122,6 +122,7 @@ def get_product(id):
 def create_product():
     data=request.get_json()
 
+    category_id = data.get('category_id')
     category=Category.query.get(data.get('category_id'))
     if not category:
         return jsonify({'error': 'Categoria no valida'}), 400
@@ -137,8 +138,10 @@ def create_product():
     description=data.get('description', ''),
     detail_images=data.get('detail_images', []),
     rating=data.get('rating', 0),
+    category_id=category_id,
     category=category,
-    authors=authors
+    authors=authors,
+    product_stock=data.get('product_stock', 0)
     )
 
     db.session.add(new_product)
