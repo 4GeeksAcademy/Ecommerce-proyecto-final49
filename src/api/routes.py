@@ -10,8 +10,9 @@ from base64 import b64encode
 import os
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt, get_jwt_identity
 from datetime import timedelta
-from api.models import db, CartItem, Product, ContactMessage, Order, OrderItem
+from api.models import db, CartItem, Product, ContactMessage, Order, OrderItem, Role
 import stripe
+from .data import users, categories, authors, products, roles
 
 stripe.api_key = os.getenv("STRIPE_SECRET_KEY")
 api = Blueprint('api', __name__)
@@ -592,4 +593,43 @@ def stripe_webhook():
         db.session.commit()
         print("Orden creada desde webhook Stripe ✅")
 
-    return jsonify({'status': 'ok'}), 200
+        # endpoint para popular la base ded atos
+@api.route("/populate-user", methods=["GET"])
+def populate_users():
+    for rol in roles:
+        role = Role(role_name=rol)
+        db.session.add(role)
+    for person in users:
+        user = User(
+            email=person.get("email"),
+            name=person.get("name"),
+            role_id=person.get("role_id"),
+            password=generate_password_hash(person.get("password")),
+            salt=b64encode(os.urandom(32)).decode("utf-8")
+        )
+        db.session.add(user)
+    for cat in categories:
+        category = Category(name=cat.get("name"))
+        db.session.add(category)
+    for author in authors:
+        new_author = Author(name=author.get("name"))
+        db.session.add(new_author)
+    for product in products:
+        new_product = Product(
+            name=product.get("name"),
+            price=product.get("price"),
+            image_url=product.get("image_url"),
+            is_featured=product.get("is_featured", False),
+            description=product.get("description", ''),
+            detail_images=product.get("detail_images", []),
+            rating=product.get("rating", 0),
+            product_stock=product.get("product_stock", 0),
+            category_id=product.get("category_id")
+        )
+        db.session.add(new_product)
+    try:
+        db.session.commit()
+        return jsonify("Populate success"), 201
+    except Exception as error:
+        db.session.rollback()
+        return jsonify(f"Error: {error.args}"), 500

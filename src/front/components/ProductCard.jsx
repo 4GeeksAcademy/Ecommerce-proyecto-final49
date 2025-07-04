@@ -49,10 +49,3 @@ const ProductCard = ({ product, onAddToCart }) => {
   };
 
   export default ProductCard;
-
-  // const ProductCard = () => {
-  //   return <h1>soy product card</h1>;
-  // };
-
-  // export default ProductCard;
-// }
