@@ -2,7 +2,7 @@
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 '''
 from flask import Flask, request, jsonify, url_for, Blueprint
-from api.models import db, User, Product, Category, Author, CartItem, ContactMessage, Order, OrderItem
+from api.models import db, User, Product, Category, Author, CartItem, ContactMessage, Order, OrderItem, Role
 from api.utils import generate_sitemap, APIException, send_email
 import cloudinary.uploader as upload
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -11,8 +11,9 @@ import os
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
 from datetime import timedelta
 import stripe
+from .data import users, categories, authors, products, roles
 
-stripe.api_key = os.getenv("STRIPE_SECRET_KEY")
+# stripe.api_key = os.getenv("STRIPE_SECRET_KEY")
 api = Blueprint('api', __name__)
 
 def set_password(password, salt):
@@ -127,7 +128,7 @@ def get_product(id):
     return jsonify(product.serialize()), 200
 
 
-@ api.route('/products', methods=['POST'])
+@api.route('/products', methods=['POST'])
 def create_product():
     data=request.get_json()
 
@@ -159,14 +160,14 @@ def create_product():
     return jsonify(new_product.serialize()), 201
 
 
-@ api.route('/categories', methods=['GET'])
+@api.route('/categories', methods=['GET'])
 def list_categories():
     categories=Category.query.all()
     if not categories:
         return jsonify({'message': 'No hay categorías'}), 404
     return jsonify([category.serialize() for category in categories]), 200
 
-@ api.route('/categories', methods=['POST'])
+@api.route('/categories', methods=['POST'])
 def create_category():
     data=request.get_json()
     name=data.get('name')
@@ -185,7 +186,7 @@ def create_category():
     return jsonify(category.serialize()), 201
 
 
-@ api.route('/authors', methods=['GET'])
+@api.route('/authors', methods=['GET'])
 def list_authors():
     authors=Author.query.all()
     if not authors:
@@ -193,7 +194,7 @@ def list_authors():
     return jsonify([author.serialize() for author in authors]), 200
 
 
-@ api.route('/authors', methods=['POST'])
+@api.route('/authors', methods=['POST'])
 def create_author():
     data=request.get_json()
     name=data.get('name')
@@ -213,7 +214,7 @@ def create_author():
 
 
 
-@ api.route('/register', methods=['POST'])
+@api.route('/register', methods=['POST'])
 def add_user():
     email=request.form.get("email")
     name=request.form.get("name")
@@ -240,7 +241,7 @@ def add_user():
         return jsonify(f"Error: {error.args}"), 500
 
 
-@ api.route('/login', methods=['POST'])
+@api.route('/login', methods=['POST'])
 def handle_login():
     data=request.json
     email=data.get('email')
@@ -307,7 +308,7 @@ def forgot_password():
         return jsonify({"msg": "internal error"}), 200
 
 
-@ api.route('/reset-password', methods=["PUT"])
+@api.route('/reset-password', methods=["PUT"])
 @ jwt_required()
 def handle_password_reset():
     claims=get_jwt()
@@ -332,7 +333,7 @@ def handle_password_reset():
     return jsonify({"msg": "Contraseña actualizada exitosamente"}), 200
 
 
-@ api.route('/me', methods=["GET"])
+@api.route('/me', methods=["GET"])
 @ jwt_required()
 def get_user_info():
     user_id=get_jwt_identity()
@@ -342,7 +343,7 @@ def get_user_info():
     return jsonify(user.serialize()), 200
 
 
-@ api.route('/change-password', methods=["POST"])
+@api.route('/change-password', methods=["POST"])
 @ jwt_required()
 def change_password():
     user_id=get_jwt_identity()
@@ -367,7 +368,7 @@ def change_password():
     return jsonify({"msg": "Contraseña cambiada exitosamente"}), 200
 
 
-@ api.route('/change-email', methods=["POST"])
+@api.route('/change-email', methods=["POST"])
 @ jwt_required()
 def change_email():
     user_id=get_jwt_identity()
@@ -601,4 +602,43 @@ def stripe_webhook():
         db.session.commit()
         print("Orden creada desde webhook Stripe ✅")
 
-    return jsonify({'status': 'ok'}), 200
+        # endpoint para popular la base ded atos
+@api.route("/populate-user", methods=["GET"])
+def populate_users():
+    for rol in roles:
+        role = Role(role_name=rol)
+        db.session.add(role)
+    for person in users:
+        user = User(
+            email=person.get("email"),
+            name=person.get("name"),
+            role_id=person.get("role_id"),
+            password=generate_password_hash(person.get("password")),
+            salt=b64encode(os.urandom(32)).decode("utf-8")
+        )
+        db.session.add(user)
+    for cat in categories:
+        category = Category(name=cat.get("name"))
+        db.session.add(category)
+    for author in authors:
+        new_author = Author(name=author.get("name"))
+        db.session.add(new_author)
+    for product in products:
+        new_product = Product(
+            name=product.get("name"),
+            price=product.get("price"),
+            image_url=product.get("image_url"),
+            is_featured=product.get("is_featured", False),
+            description=product.get("description", ''),
+            detail_images=product.get("detail_images", []),
+            rating=product.get("rating", 0),
+            product_stock=product.get("product_stock", 0),
+            category_id=product.get("category_id")
+        )
+        db.session.add(new_product)
+    try:
+        db.session.commit()
+        return jsonify("Populate success"), 201
+    except Exception as error:
+        db.session.rollback()
+        return jsonify(f"Error: {error.args}"), 500

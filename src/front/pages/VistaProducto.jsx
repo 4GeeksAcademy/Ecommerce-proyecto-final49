@@ -50,14 +50,14 @@ export const VistaProducto = () => {
     if (newQuantity >= 1 && newQuantity <= product.product_stock) {
       setQuantity(newQuantity);
     }
-  };
+  }
 
   const handleAddToCart = async (e) => {
     if (quantity === 0 || quantity > product.product_stock) {
       alert("No hay suficiente stock para la cantidad seleccionada.");
       return;
     }
-
+    
     if (addingToCart) return;
     setAddingToCart(true);
 
@@ -78,7 +78,7 @@ export const VistaProducto = () => {
       alert("No hay suficiente stock para la cantidad seleccionada.");
       return;
     }
-
+    
     if (!product) {
       alert("Producto no disponible para comprar.");
       return;
@@ -127,7 +127,6 @@ export const VistaProducto = () => {
     <div className="container">
       <div className="row">
         {/*Bloque fotos del producto*/}
-
         <div className="col-2 col-md-2 col-lg-1 d-flex flex-column gap-2 py-4 align-items-end">
           {/*Foto principal en miniatura*/}
           {product.image_url && (
@@ -153,99 +152,92 @@ export const VistaProducto = () => {
         </div>
 
         {/*Foto principal grande*/}
-        <div className="col-6 col-md-10 col-lg-4 py-4">
-          <div className="col-10 col-md-6 col-lg-5 py-4">
-            <div className="py-4 border rounded-2 div_producto">
-              <img
-                src={imgSelected}
-                alt="Selected product"
-                className="img-fluid img_producto"
-              />
-            </div>
+        <div className="col-10 col-md-6 col-lg-5 py-4">
+          <div className="py-4 border rounded-2 div_producto">
+            <img
+              src={imgSelected}
+              alt="Selected product"
+              className="img-fluid img_producto"
+            />
           </div>
+        </div>
 
-          {/*Bloque descripción del producto y precio*/}
-          <div className="col-12 col-md-6 col-lg-3 py-4 description_font_size d-flex flex-column">
-            <Link to="/" className="text-decoration-none small_font_size">
-              Ver más productos
-            </Link>
-            <p className="py-3 mb-0">
-              <strong>{product.description}</strong>
-            </p>
-            <p className="mb-0 py-1">
-              <span className="fs-5">{ratingValue}</span>
-              <span className="fs-4 ms-2">{stars}</span>
-              <span className="fs-6 ms-2">({totalReviews})</span>
-            </p>
-            {(() => {
-              const [intPart, decimalPart] = product.price
-                .toFixed(2)
-                .split(".");
-              return (
-                <p className="mb-0 pt-2 fs-1">
-                  ${intPart}
-                  <sup className="fs-7">{decimalPart}</sup>
-                </p>
-              );
-            })()}
-            <span className="small_font_size">IVA incluido</span>
-          </div>
+        {/*Bloque descripción del producto y precio*/}
+        <div className="col-12 col-md-6 col-lg-3 py-4 description_font_size d-flex flex-column">
+          <Link to="/" className="text-decoration-none small_font_size">
+            Ver más productos
+          </Link>
+          <p className="py-3 mb-0">
+            <strong>{product.description}</strong>
+          </p>
+          <p className="mb-0 py-1">
+            <span className="fs-5">{ratingValue}</span>
+            <span className="fs-4 ms-2">{stars}</span>
+            <span className="fs-6 ms-2">({totalReviews})</span>
+          </p>
+          {(() => {
+            const [intPart, decimalPart] = product.price.toFixed(2).split(".");
+            return (
+              <p className="mb-0 pt-2 fs-1">
+                ${intPart}
+                <sup className="fs-7">{decimalPart}</sup>
+              </p>
+            );
+          })()}
+          <span className="small_font_size">IVA incluido</span>
+        </div>
 
-          {/*Bloque de compra*/}
-          <div className="col-12 col-md-6 col-lg-3 my-4 border rounded-2 d-flex flex-column gap-2">
-            <span className="mt-3">Llega gratis mañana</span>
-            <span>Devolución gratis</span>
-            <span className="small_font_size">
-              Tienes 30 días para devolverlo
-            </span>
+        {/*Bloque de compra*/}
+        <div className="col-12 col-md-6 col-lg-3 my-4 border rounded-2 d-flex flex-column gap-2">
+          <span className="mt-3">Llega gratis mañana</span>
+          <span>Devolución gratis</span>
+          <span className="small_font_size">
+            Tienes 30 días para devolverlo
+          </span>
 
-            {/*Muestra el stock disponible*/}
-            <span className="fw-bold">Stock: {availableText}</span>
+          {/*Muestra el stock disponible*/}
+          <span className="fw-bold">Stock: {availableText}</span>
 
-            {/*Selector de cantidad*/}
-            <div className="d-flex align-items-center justify-content-center my-3 ">
-              <button
-                type="button"
-                className="btn btn-outline-secondary"
-                onClick={() => handleQuantityChange(-1)}
-                disabled={quantity <= 1}
-              >
-                -
-              </button>
-              <span className="mx-3 fs-5">{quantity}</span>
-              <button
-                type="button"
-                className="btn btn-outline-secondary"
-                onClick={() => handleQuantityChange(1)}
-                disabled={
-                  quantity >= product.product_stock ||
-                  product.product_stock === 0
-                }
-              >
-                +
-              </button>
-            </div>
-
-            {/*Botón comprar ahora*/}
-            <button
-              type="button"
-              className="btn btn-success w-100"
-              onClick={() => handleBuyNow()}
-              //disabled={product.stock <= 0}
+          {/*Selector de cantidad*/}
+          <div className="d-flex align-items-center justify-content-center my-3 ">
+            <button 
+              type="button" 
+              className="btn btn-outline-secondary" 
+              onClick={() => handleQuantityChange(-1)} 
+              disabled={quantity <= 1}
             >
-              Comprar ahora
+              -
             </button>
-
-            {/*Botón agregar al carrito*/}
-            <button
-              type="button"
-              className="btn btn-primary w-100"
-              onClick={() => handleAddToCart()}
-              //disabled={product.stock <= 0}
+            <span className="mx-3 fs-5">{quantity}</span>
+            <button 
+              type="button" 
+              className="btn btn-outline-secondary" 
+              onClick={() => handleQuantityChange(1)} 
+              disabled={quantity >= product.product_stock || product.product_stock === 0}
             >
-              Agregar al carrito
+              +
             </button>
           </div>
+
+          {/*Botón comprar ahora*/}
+          <button
+            type="button"
+            className="btn btn-success w-100"
+            onClick={() => handleBuyNow()}
+            //disabled={product.stock <= 0}
+          >
+            Comprar ahora
+          </button>
+
+          {/*Botón agregar al carrito*/}
+          <button
+            type="button"
+            className="btn btn-primary w-100"
+            onClick={() => handleAddToCart()}
+            //disabled={product.stock <= 0}
+          >
+            Agregar al carrito
+          </button>
         </div>
       </div>
     </div>
