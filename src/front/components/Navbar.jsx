@@ -1,7 +1,8 @@
 import React from "react";
 import useGlobalReducer from "../hooks/useGlobalReducer.jsx";
 import { Link, useNavigate } from "react-router-dom";
-import milPaginasLogo from "../assets/img/mil_paginas.png";
+import milPaginasLogo from "../assets/img/mil_paginas.png"
+import "../styles/navbar.css"
 
 export const Navbar = ({ onSearch, searchValue }) => {
   const { store, dispatch } = useGlobalReducer();
@@ -48,58 +49,10 @@ export const Navbar = ({ onSearch, searchValue }) => {
 
         <div className="collapse navbar-collapse" id="navbarNav">
           <ul className="navbar-nav me-auto mb-2 mb-lg-0 order-lg-1">
-            <li className="nav-item dropdown">
-              <a
-                className="nav-link dropdown-toggle"
-                href="#"
-                id="navbarDropdownCategories"
-                role="button"
-                data-bs-toggle="dropdown"
-                aria-expanded="false"
-              >
-                Categorías
-              </a>
-              <ul
-                className="dropdown-menu"
-                aria-labelledby="navbarDropdownCategories"
-              >
-                <li>
-                  <Link className="dropdown-item" to="/category/fiction">
-                    Ficción
-                  </Link>
-                </li>
-                <li>
-                  <Link className="dropdown-item" to="/category/non-fiction">
-                    No Ficción
-                  </Link>
-                </li>
-                <li>
-                  <Link className="dropdown-item" to="/category/scifi">
-                    Ciencia Ficción
-                  </Link>
-                </li>
-                <li>
-                  <hr className="dropdown-divider" />
-                </li>
-                <li>
-                  <Link className="dropdown-item" to="/category/all">
-                    Ver Todas
-                  </Link>
-                </li>
-              </ul>
+            <li>
+                <Link className="ms-4 navbar-link" to="/categorias">Categorías</Link>              
             </li>
 
-            <li className="nav-item">
-              <Link className="nav-link" to="/new-arrivals">
-                Novedades
-              </Link>
-            </li>
-
-            <li className="nav-item">
-              <Link className="nav-link" to="/deals">
-                Ofertas
-              </Link>
-            </li>
           </ul>
           <form className="d-flex me-auto" onSubmit={onSubmitSearch}>
             <input

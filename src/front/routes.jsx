@@ -19,6 +19,7 @@ import { PoliticaPrivacidad } from "./pages/vistas genericas/PoliticaPrivacidad"
 import { TerminosCondiciones } from "./pages/vistas genericas/TerminosCondiciones";
 import { PoliticaCancelacion } from "./pages/vistas genericas/PoliticaCancelacion";
 import { NotFound } from "./pages/vistas genericas/NotFound";
+import { Categorias } from "./pages/vistas genericas/Categorias"
 
 //inicio de sesion - registro y gestion de usuarios
 import { Registro } from "./pages/Registro";
@@ -31,9 +32,7 @@ import { VistaProducto } from "./pages/VistaProducto";
 import { ConfirmacionCompra } from "./pages/ConfirmacionCompra";
 import { Cart } from "./pages/Cart";
 
-
 //vistas admin
-
 import { Customers } from "./pages/AdminPages/Customers";
 import { Dashboard } from "./pages/AdminPages/Dashboard";
 import { Orders } from "./pages/AdminPages/Orders";
@@ -60,12 +59,10 @@ export const router = createBrowserRouter(
       <Route path="/preguntas-frecuentes" element={<PreguntasFrecuentes />} />
       <Route path="/politica-de-privacidad" element={<PoliticaPrivacidad />} />
       <Route path="/confirmacion-compra" element={<ConfirmacionCompra />} />
-      <Route
-        path="/politica-de-cancelacion"
-        element={<PoliticaCancelacion />}
-      />
+      <Route path="/politica-de-cancelacion" element={<PoliticaCancelacion />} />
       <Route path="/contactanos" element={<Contacto />} />
       <Route path="/terminos-y-condiciones" element={<TerminosCondiciones />} />
+      <Route path="/categorias" element={<Categorias />} />
       {/* inicio de sesion y manejo de usuario */}
       <Route path="/registro" element={<Registro />} />
       <Route path="/iniciar-sesion" element={<IniciarSesion />} />
