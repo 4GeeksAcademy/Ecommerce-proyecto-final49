@@ -4,7 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
 const initialStateUser = {
-  username: "",
+  name: "",      
   email: "",
   password: "",
 };
@@ -34,12 +34,14 @@ export const Registro = () => {
     event.preventDefault();
 
     try {
+      const formData = new FormData();
+      formData.append("email", user.email);
+      formData.append("name", user.name);  
+      formData.append("password", user.password);
+
       const response = await fetch(`${BACKEND_URL}/register`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(user),
+        body: formData, 
       });
 
       const data = await response.json();
@@ -72,8 +74,8 @@ export const Registro = () => {
               <label htmlFor="btnName">Nombre de usuario:</label>
               <input
                 type="text"
-                name="username"
-                value={user.username}
+                name="name"
+                value={user.name}
                 onChange={handleChange}
                 className="form-control"
                 required
