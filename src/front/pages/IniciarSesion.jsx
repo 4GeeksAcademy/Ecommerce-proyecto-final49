@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import useGlobalReducer from "../hooks/useGlobalReducer";
 import { Link, useNavigate, Navigate } from "react-router-dom";
 
@@ -14,10 +14,6 @@ export const IniciarSesion = () => {
 
   const { store, actions } = useGlobalReducer();
   const navigate = useNavigate();
-
-  useEffect(() => {
-    console.log("Estado actual del store:", store);
-  }, [store]);
 
   const handleChange = ({ target }) => {
     setUser({
@@ -54,21 +50,17 @@ export const IniciarSesion = () => {
   }
 
   return (
-    <div className="container-fluid">
-      <div className="row py-3">
-        <div className="col-12 col-md-6 d-flex align-items-center">
-          <h1 className="text-center">
-            Ingresa tu correo electrónico y contraseña para iniciar sesión
-          </h1>
-        </div>
-        <div className="col-12 col-md-6">
-          <form onSubmit={handleSubmit} className="border m-2 p-3">
+    <div className="container vh-100 d-flex justify-content-center align-items-center">
+      <div className="row w-100 justify-content-center">
+        <div className="col-12 col-md-6 col-lg-4">
+          <form onSubmit={handleSubmit} className="border p-4 shadow rounded bg-white">
+            <h2 className="text-center mb-4">Iniciar Sesión</h2>
             <div className="form-group mb-3">
               <label htmlFor="email">Correo electrónico:</label>
               <input
                 type="email"
-                placeholder="Ingresa tu correo electrónico"
-                className="form-control border border-dark my-2"
+                placeholder="Tu correo"
+                className="form-control"
                 id="email"
                 name="email"
                 onChange={handleChange}
@@ -81,8 +73,8 @@ export const IniciarSesion = () => {
               <label htmlFor="password">Contraseña:</label>
               <input
                 type="password"
-                placeholder="Ingresa tu contraseña"
-                className="form-control border-dark"
+                placeholder="Tu contraseña"
+                className="form-control"
                 id="password"
                 name="password"
                 onChange={handleChange}
@@ -90,7 +82,9 @@ export const IniciarSesion = () => {
                 required
                 disabled={loading}
               />
-              <Link to="/olvido-su-contraseña">¿Olvidaste tu contraseña?</Link>
+              <div className="mt-2">
+                <Link to="/olvido-su-contraseña">¿Olvidaste tu contraseña?</Link>
+              </div>
             </div>
             {message && (
               <div
@@ -105,11 +99,13 @@ export const IniciarSesion = () => {
             <button type="submit" className="btn btn-success w-100" disabled={loading}>
               {loading ? "Iniciando sesión..." : "Iniciar sesión"}
             </button>
+            <div className="text-center mt-3">
+              <small>
+                ¿No tienes cuenta? <Link to="/registro">Crea una</Link>
+              </small>
+            </div>
           </form>
         </div>
-        <h5 className="text-center my-4">
-          ¿No tienes cuenta? <Link to="/registro">Crea una</Link>
-        </h5>
       </div>
     </div>
   );
