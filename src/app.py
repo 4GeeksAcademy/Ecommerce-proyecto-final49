@@ -15,14 +15,16 @@ from flask_cors import CORS
 # from models import Person
 
 app = Flask(__name__)
-CORS(app, supports_credentials=True)
+CORS(app, resources={r'/api/*': { 'origins': "*"}}, supports_credentials=True)
 app.register_blueprint(api, url_prefix="/api")
+
+
 
 ENV = "development" if os.getenv("FLASK_DEBUG") == "1" else "production"
 static_file_dir = os.path.join(os.path.dirname(
     os.path.realpath(__file__)), '../dist/')
-app = Flask(__name__)
-app.url_map.strict_slashes = False
+# app = Flask(__name__)
+# app.url_map.strict_slashes = False
 
 
 # Setup the Flask-JWT-Extended extension
@@ -50,7 +52,7 @@ setup_admin(app)
 setup_commands(app)
 
 # Add all endpoints form the API with a "api" prefix
-app.register_blueprint(api, url_prefix='/api')
+# app.register_blueprint(api, url_prefix='/api')
 
 # Handle/serialize errors like a JSON object
 
