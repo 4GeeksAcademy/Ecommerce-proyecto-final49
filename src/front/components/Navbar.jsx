@@ -144,7 +144,7 @@ export const Navbar = ({ onSearch, searchValue }) => {
               <input
                 className="form-control"
                 type="search"
-                placeholder="Buscar libros, autores, géneros..."
+                placeholder="Buscar libros, autores o categorías..."
                 aria-label="Search"
               />
               <button className="btn btn-primary" type="submit">
