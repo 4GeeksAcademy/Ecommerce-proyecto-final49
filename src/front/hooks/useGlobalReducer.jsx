@@ -16,22 +16,24 @@ export function StoreProvider({ children }) {
     const allActions = {
       login: async (email, password) => {
         try {
-          const resp = await fetch(`${process.env.VITE_BACKEND_URL}/login`, {
+          const resp = await fetch(`${import.meta.env.VITE_BACKEND_URL}/login`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ email, password }),
+            body: JSON.stringify({ email, password }) 
           });
+
           const data = await resp.json();
-          if (resp.ok) {
+          console.log("Respuesta del backend:", data);
+
+          if (resp.ok && data.token) {
             localStorage.setItem("jwt_token", data.token);
-            // El dispatch de LOGIN aquí es correcto
             dispatch({
               type: "LOGIN",
               payload: { token: data.token, user_data: data.user_id },
             });
             return true;
           } else {
-            console.error("Error de login desde el backend:", data.msg);
+            console.error("Error de login:", data.msg || "No token recibido");
             return false;
           }
         } catch (error) {
@@ -39,17 +41,19 @@ export function StoreProvider({ children }) {
           return false;
         }
       },
+
       logout: () => {
         localStorage.removeItem("jwt_token");
         dispatch({ type: "LOGOUT" });
         dispatch({ type: "SET_BACKEND_CART", payload: [] });
         dispatch({ type: "ADD_ME", payload: null });
       },
+
       getUserInfo: async (tokenArg) => {
         const token = tokenArg || localStorage.getItem("jwt_token");
         if (!token) return false;
         try {
-          const response = await fetch(`${process.env.VITE_BACKEND_URL}/me`, {
+          const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/me`, {
             headers: { Authorization: `Bearer ${token}` },
           });
           if (!response.ok) {
@@ -69,13 +73,11 @@ export function StoreProvider({ children }) {
       },
 
       addToCart: async (product, quantity = 1) => {
-
         const token = store.token || localStorage.getItem("jwt_token");
         if (token && store.user) {
           try {
-            console.log("AddToCart desde front:", process.env.VITE_BACKEND_URL)
             const response = await fetch(
-              `${process.env.VITE_BACKEND_URL}/cart`,
+              `${import.meta.env.VITE_BACKEND_URL}/cart`,
               {
                 method: "POST",
                 headers: {
@@ -98,12 +100,13 @@ export function StoreProvider({ children }) {
           return true;
         }
       },
+
       removeCartItem: async (itemId) => {
         const token = store.token || localStorage.getItem("jwt_token");
         if (token && store.user) {
           try {
             const response = await fetch(
-              `${process.env.VITE_BACKEND_URL}/api/cart/${itemId}`,
+              `${import.meta.env.VITE_BACKEND_URL}/api/cart/${itemId}`,
               {
                 method: "DELETE",
                 headers: { Authorization: `Bearer ${token}` },
@@ -122,12 +125,13 @@ export function StoreProvider({ children }) {
           return true;
         }
       },
+
       clearCart: async () => {
         const token = store.token || localStorage.getItem("jwt_token");
         if (token && store.user) {
           try {
             const response = await fetch(
-              `${process.env.VITE_BACKEND_URL}/api/cart/clear`,
+              `${import.meta.env.VITE_BACKEND_URL}/api/cart/clear`,
               {
                 method: "DELETE",
                 headers: { Authorization: `Bearer ${token}` },
@@ -142,8 +146,6 @@ export function StoreProvider({ children }) {
             return false;
           }
         } else {
-          // Línea 145, se adiciona un console.log por validación de duplicidad de item en carrito.
-          console.log("Agregando al carrito local (usuario no logeado)");
           dispatch({ type: "CLEAR_LOCAL_CART" });
           return true;
         }
@@ -157,15 +159,13 @@ export function StoreProvider({ children }) {
       getBackendCart: async (tokenArg) => {
         const token = tokenArg || localStorage.getItem("jwt_token");
         if (!token) {
-          console.log(
-            "No hay token, no se puede obtener el carrito del backend."
-          );
+          console.log("No hay token, no se puede obtener el carrito del backend.");
           dispatch({ type: "SET_BACKEND_CART", payload: [] });
           return;
         }
         try {
           const response = await fetch(
-            `${process.env.VITE_BACKEND_URL}/api/cart`,
+            `${import.meta.env.VITE_BACKEND_URL}/api/cart`,
             {
               headers: { Authorization: `Bearer ${token}` },
             }
@@ -191,12 +191,10 @@ export function StoreProvider({ children }) {
           return;
         }
 
-
         for (const item of localCart) {
           await allActions.addBackendCartItem(item.product_id, item.quantity);
         }
         allActions.clearCart();
-
       },
 
       addBackendCartItem: async (product_id, quantity = 1) => {
@@ -207,7 +205,7 @@ export function StoreProvider({ children }) {
         }
         try {
           const response = await fetch(
-            `${process.env.VITE_BACKEND_URL}/api/cart`,
+            `${import.meta.env.VITE_BACKEND_URL}/api/cart`,
             {
               method: "POST",
               headers: {
@@ -234,7 +232,6 @@ export function StoreProvider({ children }) {
   useEffect(() => {
     const token = localStorage.getItem("jwt_token");
     if (token && !store.token) {
-
       dispatch({ type: "LOGIN", payload: { token: token, user_data: null } });
     }
     if (store.token) {
@@ -251,9 +248,6 @@ export function StoreProvider({ children }) {
     }
   }, []);
 
-  // *************
-
-  // Provide the store and dispatch method to all child components.
   return (
     <StoreContext.Provider value={{ store, dispatch, actions }}>
       {children}

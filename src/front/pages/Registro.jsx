@@ -1,11 +1,10 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
-
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
 const initialStateUser = {
-  name: "",
+  username: "",
   email: "",
   password: "",
 };
@@ -43,11 +42,11 @@ export const Registro = () => {
         body: JSON.stringify(user),
       });
 
-      if (response.status === 201) {
+      const data = await response.json();
+      if (response.ok) {
         setUser(initialStateUser);
         setRegistered(true);
       } else {
-        const data = await response.json();
         alert(data.msg || "El usuario ya existe o faltan datos.");
       }
     } catch (error) {
@@ -57,32 +56,30 @@ export const Registro = () => {
   };
 
   return (
-    <div className="container-fluid d-flex justify-content-center">
-      <div className="row py-3 w-100">
-        {registered && (
-          <div className="col-12">
+    <div className="container vh-100 d-flex justify-content-center align-items-center">
+      <div className="row w-100 justify-content-center">
+        <div className="col-12 col-md-6 col-lg-4">
+          {registered && (
             <div className="alert alert-success text-center">
               ¡Usuario creado exitosamente! Serás redirigido al login...
             </div>
-          </div>
-        )}
+          )}
 
-        <div className="col-12 col-md-6 d-flex align-items-center justify-content-center">
-          <h1 className="text-center">Completa los datos para crear tu cuenta</h1>
-        </div>
-        <div className="col-12 col-md-6">
-          <form className="border m-2 p-3" onSubmit={handleSubmit}>
+          <form className="border p-4 shadow rounded bg-white" onSubmit={handleSubmit}>
+            <h2 className="text-center mb-4">Registro</h2>
+
             <div className="form-group mb-3">
-              <label htmlFor="btnName">Nombre Completo:</label>
+              <label htmlFor="btnName">Nombre de usuario:</label>
               <input
                 type="text"
-                name="name"
-                value={user.name}
+                name="username"
+                value={user.username}
                 onChange={handleChange}
                 className="form-control"
                 required
               />
             </div>
+
             <div className="form-group mb-3">
               <label htmlFor="btnEmail">Correo electrónico:</label>
               <input
@@ -94,7 +91,8 @@ export const Registro = () => {
                 required
               />
             </div>
-            <div className="form-group mb-3">
+
+            <div className="form-group mb-4">
               <label htmlFor="btnPass">Contraseña:</label>
               <input
                 type="password"
@@ -105,15 +103,17 @@ export const Registro = () => {
                 required
               />
             </div>
+
             <button className="btn btn-success w-100" type="submit">
               Registrar
             </button>
+
+            <div className="text-center mt-3">
+              <small>
+                ¿Ya tienes una cuenta? <Link to="/iniciar-sesion">Inicia sesión</Link>
+              </small>
+            </div>
           </form>
-        </div>
-        <div className="col-12">
-          <h5 className="text-center my-4">
-            ¿Ya tienes una cuenta? <Link to="/iniciar-sesion">Inicia sesión</Link>
-          </h5>
         </div>
       </div>
     </div>
