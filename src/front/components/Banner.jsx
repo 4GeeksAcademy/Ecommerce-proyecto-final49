@@ -36,7 +36,7 @@ const Banner = ({ title, subtitle, onSearch, categories, searchValue, onCategory
         </form>
       )} */}
 
-      {categories && categories.length > 0 && (
+      {/* {categories && categories.length > 0 && (
         <nav className="banner__categories">
           {categories.map((category) => (
             <button
@@ -50,7 +50,7 @@ const Banner = ({ title, subtitle, onSearch, categories, searchValue, onCategory
             </button>
           ))}
         </nav>
-      )}
+      )} */}
     </div>
   </section>
 );

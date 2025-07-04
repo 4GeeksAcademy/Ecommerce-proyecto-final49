@@ -11,8 +11,9 @@ import os
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt, get_jwt_identity
 from datetime import timedelta
 from api.models import db, CartItem, Product, ContactMessage, Order, OrderItem, Role
-import stripe
+# import stripe
 from .data import users, categories, authors, products, roles
+from sqlalchemy import func
 
 # stripe.api_key = os.getenv("STRIPE_SECRET_KEY")
 api = Blueprint('api', __name__)
@@ -74,6 +75,7 @@ def handle_hello():
 
 @api.route('/products', methods=['GET'])
 def get_products():
+    print(">>> Parametros recibidos:", request.args)
     query = Product.query
 
     category_id = request.args.get('category_id', type=int)
@@ -596,9 +598,11 @@ def stripe_webhook():
         # endpoint para popular la base ded atos
 @api.route("/populate-user", methods=["GET"])
 def populate_users():
+
     for rol in roles:
         role = Role(role_name=rol)
         db.session.add(role)
+
     for person in users:
         user = User(
             email=person.get("email"),
@@ -608,13 +612,20 @@ def populate_users():
             salt=b64encode(os.urandom(32)).decode("utf-8")
         )
         db.session.add(user)
+
     for cat in categories:
         category = Category(name=cat.get("name"))
         db.session.add(category)
+
     for author in authors:
         new_author = Author(name=author.get("name"))
         db.session.add(new_author)
+
+    
+
     for product in products:
+        
+        
         new_product = Product(
             name=product.get("name"),
             price=product.get("price"),
@@ -624,9 +635,11 @@ def populate_users():
             detail_images=product.get("detail_images", []),
             rating=product.get("rating", 0),
             product_stock=product.get("product_stock", 0),
-            category_id=product.get("category_id")
+            category_id=product.get("category_id"),
+            
         )
         db.session.add(new_product)
+
     try:
         db.session.commit()
         return jsonify("Populate success"), 201

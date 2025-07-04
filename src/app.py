@@ -14,6 +14,7 @@ from flask_jwt_extended import JWTManager
 from flask_cors import CORS
 # from models import Person
 
+
 app = Flask(__name__)
 CORS(app, resources={r"/api/*": {"origins": "*"}}, supports_credentials=True)
 app.register_blueprint(api, url_prefix="/api")
