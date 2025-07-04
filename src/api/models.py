@@ -5,10 +5,12 @@ import datetime
 # from .users import
 
 db = SQLAlchemy()
+
 class Role(db.Model):
     __tablename__ = 'role'
     id: Mapped[int] = mapped_column(primary_key=True)
     role_name: Mapped[str] = mapped_column(String(50), unique=True, nullable=False)
+    
     users: Mapped[list['User']] = relationship(back_populates='role')
 
     def __repr__(self):
@@ -38,7 +40,7 @@ class User(db.Model):
             "id": self.id,
             "email": self.email,
             "name": self.name,
-            "role": self.role.name if self.role else 2
+            "role": self.role.name if self.role else "user"
         }
     
 class Category(db.Model):

@@ -2,74 +2,83 @@
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 '''
 from flask import Flask, request, jsonify, url_for, Blueprint
-from api.models import db, User, Product, Category, Author
+from api.models import db, User, Product, Category, Author, CartItem, ContactMessage, Order, OrderItem
 from api.utils import generate_sitemap, APIException, send_email
 import cloudinary.uploader as upload
 from werkzeug.security import generate_password_hash, check_password_hash
 from base64 import b64encode
 import os
-from flask_jwt_extended import create_access_token, jwt_required, get_jwt, get_jwt_identity
+from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
 from datetime import timedelta
-from api.models import db, CartItem, Product, ContactMessage, Order, OrderItem
 import stripe
 
 stripe.api_key = os.getenv("STRIPE_SECRET_KEY")
 api = Blueprint('api', __name__)
 
-#Allow CORS requests to this API
-
-
 def set_password(password, salt):
-    if password.lenght() < 8:
-        return jsonify("la contraseña debe tener almenos 8 caracteres")
+    if len(password) < 8:
+        raise ValueError("La contraseña debe tener al menos 8 caracteres.")
     return generate_password_hash(f'{password}{salt}')
 
 def check_password(pass_hash, password, salt):
     return check_password_hash(pass_hash, f'{password}{salt}')
 
-# se utiliza la libreria re de python para validar que el correo sea valido
-def validate_email():
-    validat_token=create_access_token(
-        identity=str(user.id),
-        additional_claims=additional_claims,
-        expires_delta=timedelta(hours=1)
-    )
+# VALIDACION DE CORREO
+def validate_email(user_email, user_id):
+    try:
+        token = create_access_token(
+            identity=str(user_id),
+            expires_delta=timedelta(hours=1)
+        )
 
-    reset_url = f'{os.getenv("FRONTEND_URL")}/recuperar-contraseña?token={reset_token}'
-    message = f"""
-        <div>
-            <h1>Verifica tu correo</h1>
-            <p>Porfavor entra al siguiente correo</p>
-            <a href="{reset_url}" target="_blank">Restablecer Contraseña</a>
-            <p>Si no solicitaste esto, por favor ignora este correo.</p>
-        </div>
-    """
-    data = {
-        "subject": "Recuperación de contraseña",
-        "to": body,
-        "message": message
-    }
+        reset_url = f'{os.getenv("FRONTEND_URL")}/recuperar-contraseña?token={token}'
+        message = f"""
+            <div>
+                <h1>Verifica tu correo</h1>
+                <p>Por favor entra al siguiente enlace para restablecer tu contraseña:</p>
+                <a href="{reset_url}" target="_blank">Restablecer Contraseña</a>
+                <p>Si no solicitaste esto, por favor ignora este correo.</p>
+            </div>
+        """
 
-    sended_email = send_email(
-        data.get("subject"), data.get("to"), data.get("message"))
+        sended_email = send_email("Recuperación de contraseña", user_email, message)
 
-    if sended_email:
-        return jsonify({"msg": "Si tu correo está en nuestro sistema, recibirás un enlace para recuperar la contraseña."}), 200
-    else:
-        return jsonify({"msg": "internal error"}), 200
+        if sended_email:
+            return jsonify({"msg": "Si tu correo está en nuestro sistema, recibirás un enlace para recuperar la contraseña."}), 200
+        else:
+            return jsonify({"msg": "Error interno al enviar el correo."}), 500
+    except Exception as e:
+        return jsonify({"msg": "Error inesperado", "error": str(e)}), 500
+
+# ENDPOINT DEL LOGIN 
+@api.route('/login', methods=['POST'])
+def login():
+    body = request.get_json()
+    if not body or 'email' not in body or 'password' not in body:
+        return jsonify({"msg": "Faltan campos obligatorios"}), 400
+
+    user = User.query.filter_by(email=body['email']).first()
+    if not user:
+        return jsonify({"msg": "Usuario no encontrado"}), 404
+
+    if not check_password(user.password, body['password'], user.salt):
+        return jsonify({"msg": "Contraseña incorrecta"}), 401
+
+    # Generar token
+    additional_claims = {"role": user.role.name if user.role else "user"}
+    token = create_access_token(identity=user.id, additional_claims=additional_claims)
+
+    return jsonify({
+        "token": token,
+        "user": user.serialize()  
+    }), 200
 
 
-expire_in_minutes = 10
-expires_delta = timedelta(minutes=expire_in_minutes)
-
-
-@api.route('/hello', methods=['POST', 'GET'])
+@api.route('/hello', methods=['GET', 'POST'])
 def handle_hello():
-    response_body = {
-        'message': "Hello! I'm a message that came from the backend, check the network tab on the google inspector and you will see the GET request"
-    }
-    return jsonify(response_body), 200
-
+    return jsonify({
+        'message': "Hello! I'm a message from the backend."
+    }), 200
 
 @api.route('/products', methods=['GET'])
 def get_products():

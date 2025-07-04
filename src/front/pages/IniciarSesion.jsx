@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"; // Importa useEffect
+import { useState, useEffect } from "react";
 import useGlobalReducer from "../hooks/useGlobalReducer";
 import { Link, useNavigate, Navigate } from "react-router-dom";
 
@@ -12,12 +12,12 @@ export const IniciarSesion = () => {
   const [message, setMessage] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  const { dispatch, store } = useGlobalReducer();
+  const { store, actions } = useGlobalReducer();
   const navigate = useNavigate();
 
   useEffect(() => {
     console.log("Estado actual del store:", store);
-  }, [store]); 
+  }, [store]);
 
   const handleChange = ({ target }) => {
     setUser({
@@ -27,40 +27,23 @@ export const IniciarSesion = () => {
   };
 
   const handleSubmit = async (event) => {
-    event.preventDefault(); 
-    setMessage(null); 
-    setLoading(true); 
-
-    const url = import.meta.env.VITE_BACKEND_URL; 
+    event.preventDefault();
+    setMessage(null);
+    setLoading(true);
 
     try {
-      const response = await fetch(`${url}/login`, {
-        method: "POST",
-        headers: {
-          "Content-type": "application/json",
-        },
-        body: JSON.stringify(user),
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        localStorage.setItem("token", data.token);
-
-        dispatch({ type: "LOGIN", payload: data.token });
-
+      const success = await actions.login(user.email, user.password);
+      if (success) {
         setMessage("¡Inicio de sesión exitoso! Redirigiendo...");
         setTimeout(() => {
           navigate("/");
         }, 2000);
-      } else if (response.status === 400) {
-        setMessage("El correo electrónico o la contraseña son incorrectos.");
       } else {
-        setMessage("Error al iniciar sesión. Por favor, comunícate con soporte.");
+        setMessage("Correo o contraseña incorrectos.");
       }
     } catch (error) {
-      console.error("Error en la solicitud de login:", error);
-      setMessage("Error de conexión. Por favor, inténtalo de nuevo más tarde.");
+      console.error("Error durante el inicio de sesión:", error);
+      setMessage("Hubo un error. Intenta nuevamente.");
     } finally {
       setLoading(false);
     }
@@ -91,13 +74,11 @@ export const IniciarSesion = () => {
                 onChange={handleChange}
                 value={user.email}
                 required
-                disabled={loading} 
+                disabled={loading}
               />
             </div>
             <div className="form-group mb-3">
-              <label htmlFor="password" className="">
-                Contraseña:
-              </label>
+              <label htmlFor="password">Contraseña:</label>
               <input
                 type="password"
                 placeholder="Ingresa tu contraseña"
@@ -107,7 +88,7 @@ export const IniciarSesion = () => {
                 onChange={handleChange}
                 value={user.password}
                 required
-                disabled={loading} 
+                disabled={loading}
               />
               <Link to="/olvido-su-contraseña">¿Olvidaste tu contraseña?</Link>
             </div>
