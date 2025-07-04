@@ -34,15 +34,19 @@ export const Registro = () => {
     event.preventDefault();
 
     try {
-      const response = await fetch(`${BACKEND_URL}/register`, {
+      // Usamos FormData porque el backend espera form-data
+      const formData = new FormData();
+      formData.append("email", user.email);
+      formData.append("name", user.username);
+      formData.append("password", user.password);
+
+      const response = await fetch(`${BACKEND_URL}/api/register`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(user),
+        body: formData,
       });
 
       const data = await response.json();
+
       if (response.ok) {
         setUser(initialStateUser);
         setRegistered(true);
