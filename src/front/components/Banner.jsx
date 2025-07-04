@@ -11,7 +11,7 @@ const Banner = ({ title, subtitle, onSearch, categories, searchValue, onCategory
       <h1 className="banner__title">{title}</h1>
       {subtitle && <p className="banner__subtitle">{subtitle}</p>}
 
-      {onSearch && (
+      {/* {onSearch && (
         <form
           className="banner__search d-flex"
           onSubmit={(event) => {
@@ -34,7 +34,7 @@ const Banner = ({ title, subtitle, onSearch, categories, searchValue, onCategory
             Buscar
           </button>
         </form>
-      )}
+      )} */}
 
       {categories && categories.length > 0 && (
         <nav className="banner__categories">
