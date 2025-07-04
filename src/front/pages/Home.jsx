@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import useGlobalReducer from "../hooks/useGlobalReducer.jsx";
+import { useSearchParams } from "react-router-dom";
 import Banner from "../components/Banner.jsx";
 import ProductCard from "../components/ProductCard.jsx";
 
@@ -12,6 +13,11 @@ export const Home = () => {
   const [selectedAuthorId, setSelectedAuthorId] = useState(null);
   const [searchText, setSearchText] = useState('');
   
+const [searchParams] = useSearchParams();
+useEffect(() => {
+  const sB =searchParams.get('search') ?? "";
+    setSearchText(sB);
+  }, [searchParams]);
 
   
 
@@ -81,7 +87,7 @@ export const Home = () => {
     setSearchText('');
   }
 
- 
+//  console.log('productos recibidos:', products);
 
   return (
     <div className="home-container text-center mt-5">
@@ -96,7 +102,7 @@ export const Home = () => {
 		  authors={authors}
         />
 
-        <div className="row mb-4">
+        {/* <div className="row mb-4">
           <div className="col">
             <select
               className="form-select"
@@ -132,7 +138,7 @@ export const Home = () => {
               ))}
             </select>
           </div>
-        </div>
+        </div> */}
 
         <h2> Productos destacados</h2>
 
@@ -148,7 +154,7 @@ export const Home = () => {
           })}
         </div>
 
-        <h2> Todas las categorias </h2>
+        <h2> categorias destaca </h2>
         <div className="row product-grid">
           {products.map((p) => {
             return (

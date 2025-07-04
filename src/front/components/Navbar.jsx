@@ -1,12 +1,13 @@
+import React from "react";
 import useGlobalReducer from "../hooks/useGlobalReducer.jsx";
 import { Link, useNavigate } from "react-router-dom";
 import milPaginasLogo from "../assets/img/mil_paginas.png"
 import "../styles/navbar.css"
 
-export const Navbar = () => {
-  const { store, dispatch }
-   = useGlobalReducer();
+export const Navbar = ({ onSearch, searchValue }) => {
+  const { store, dispatch } = useGlobalReducer();
   const navigate = useNavigate();
+  // const [searchValue, setSearchValue] = useState("");
 
   const handleLogout = () => {
     dispatch({ type: "LOGOUT" });
@@ -17,6 +18,15 @@ export const Navbar = () => {
     (acc, item) => acc + item.quantity,
     0
   );
+
+  function onSubmitSearch(event) {
+    event.preventDefault();
+    const searchBar = event.target.elements.search.value.trim();
+    console.log("Busqueda del navbar:", searchBar);
+    if (searchBar) {
+      navigate(`/?search=${encodeURIComponent(searchBar)}`);
+    }
+  }
 
   return (
     <nav className="navbar navbar-expand-lg navbar-light bg-light">
@@ -34,11 +44,7 @@ export const Navbar = () => {
         </button>
 
         <Link className="navbar-brand mx-auto order-lg-first" to="/">
-          <img
-            src={milPaginasLogo}
-            alt="Mil páginas logo"
-            height="50"
-          />
+          <img src={milPaginasLogo} alt="Mil páginas logo" height="50" />
         </Link>
 
         <div className="collapse navbar-collapse" id="navbarNav">
@@ -48,8 +54,89 @@ export const Navbar = () => {
             </li>
 
           </ul>
+          <form className="d-flex me-auto" onSubmit={onSubmitSearch}>
+            <input
+              name="search"
+              type="search"
+              className="form-control"
+              placeholder="Buscar libros autores y categorias"
+              value={searchValue}
+              onChange={(event) => {
+                onSearch(event.target.value);
+                if (event.target.value.trim() === "") {
+                  navigate(`/`);
+                }
+              }}
+            />
 
-          <form
+            <button type="submit" className="btn btn-primary">
+              Buscar
+            </button>
+          </form>
+</div>
+
+          {/* {onSearch && (
+        <form
+          className="banner__search d-flex" 
+          onSubmit={(event) => {
+            event.preventDefault();
+            const searcher = event.target.elements.search.value.trim();
+            console.log("navbar, resultado:", searcher)
+            if (searcher.length > 0) {
+              onSearch(searcher);
+            }
+          }}
+        >
+          <input
+            name="search"
+            type="search"
+            placeholder="que estas buscando"
+            className="form-control"
+            value={searchValue}
+            onChange={(event) => onSearch(event.target.value)}
+          />
+
+          <button type="submit" className="btn btn-primary">
+            Buscar
+          </button>
+        </form>
+           )} */}
+          {/* {onSearch && (
+        <form
+          className="banner__search d-flex"
+          onSubmit={(event) => {
+            event.preventDefault();
+            const searcher = event.target.elements.search.value.trim();
+            if (searcher.length > 0) {
+              onSearch(searcher);
+            }
+          }}
+        >
+          <input
+            name="search"
+            type="text"
+            placeholder="que estas buscando"
+            className="form-control"
+            value={searchValue}
+            onChange={(event) => onSearch(event.target.value)}
+          />
+          <button type="submit" className="btn btn-primary">
+            Buscar
+          </button>
+        </form> */}
+          )
+          {/* <div className="input-group">
+              <input
+                className="form-control"
+                type="search"
+                placeholder="Buscar libros, autores, géneros..."
+                aria-label="Search"
+                value={searchValue}
+                onChange={(event) => setSearchValue(event.target.value)}
+                
+              />
+              </div> */}
+          {/* <form
             className="d-flex mx-0 mx-lg-5 mb-3 my-lg-0 order-lg-2 flex-grow-1"
             role="search"
           >
@@ -64,8 +151,8 @@ export const Navbar = () => {
                 <i className="fa-solid fa-magnifying-glass"></i>
               </button>
             </div>
-          </form>
-        </div>
+          </form> */}
+        
 
         <div className="btn-group ms-auto">
           <button
