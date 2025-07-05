@@ -8,12 +8,54 @@ users = [
     {"email": "jose@gmail.com",
      "name": "Jose Hernandez",
      "password": "123456789",
-     "role_id": 1},
+     "role_id": 2},
+
     {"email": "maria@gmail.com",
      "name": "Maria Perez",
-        "password": "123456789",
-        "role_id": 2}
+     "password": "123456789",
+     "role_id": 2},
+
+    {"email": "luis@gmail.com",
+     "name": "Luis Miguel",
+     "password": "123456789",
+     "role_id": 2},
+
+    {"email": "sofia@gmail.com",
+     "name": "Sofia Reyes",
+     "password": "123456789",
+     "role_id": 2},
+
+    {"email": "andres@gmail.com",
+     "name": "Andres Romero",
+     "password": "123456789",
+     "role_id": 2},
+
+    {"email": "ana@gmail.com",
+     "name": "Ana Castillo",
+     "password": "123456789",
+     "role_id": 2},
+
+    {"email": "raul@gmail.com",
+     "name": "Raul Paredes",
+     "password": "123456789",
+     "role_id": 2},
+
+    {"email": "carla@gmail.com",
+     "name": "Carla Navarro",
+     "password": "123456789",
+     "role_id": 2},
+
+    {"email": "daniel@gmail.com",
+     "name": "Daniel Suárez",
+     "password": "123456789",
+     "role_id": 1},
+
+    {"email": "elena@gmail.com",
+     "name": "Elena Figueroa",
+     "password": "123456789",
+     "role_id": 1}
 ]
+
 
 categories = [
     {"name": "Ciencia ficción"},
@@ -49,7 +91,8 @@ products = [
         "detail_images": [],
         "rating": 5,
         "product_stock": 30,
-        "category_id": 1
+        "category_id": 1,
+        "author_ids": [1],
     },
     {
         "name": "El Señor de los Anillos: La Comunidad del Anillo",
@@ -278,6 +321,6 @@ products = [
         "product_stock": 35,
         "category_id": 10,
         "author_ids": [10],
-    }
-    
+        }
+
 ]

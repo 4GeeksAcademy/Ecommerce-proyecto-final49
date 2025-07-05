@@ -29,6 +29,7 @@ def add_user():
     email = data.get("email")
     name = data.get("username")  
     password = data.get("password")
+    # role_id = data.get("role_id")
 
     if not email or not name or not password:
         return jsonify({"msg": "Faltan campos requeridos"}), 400
@@ -42,6 +43,7 @@ def add_user():
     salt = b64encode(os.urandom(32)).decode("utf-8")
     user = User(email=email, name=name, salt=salt)
     user.password = set_password(password, salt)
+    # user.role_id = role_id
     db.session.add(user)
 
     try:
@@ -66,8 +68,10 @@ def login():
     if not user or not check_password(user.password, password, user.salt):
         return jsonify({"msg": "Credenciales incorrectas"}), 401
 
-    additional_claims = {"role": user.role.name if user.role else "user"}
-    token = create_access_token(identity=user.id, additional_claims=additional_claims)
+    print(user.serialize())
+
+    # additional_claims = {"role": user.role_id if user.role_id else "user"}
+    token = create_access_token(identity=user.id)
 
     return jsonify({"token": token, "user": user.serialize()}), 200
 
