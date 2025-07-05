@@ -20,8 +20,10 @@ categories = [
     {"name": "Fantasía"},
     {"name": "No ficción"},
     {"name": "Novela histórica"},
+    {"name": "Biografía"},
     {"name": "Ensayo"},
     {"name": "Literatura clásica"},
+    {"name": "Psicología"},
     {"name": "Misterio"},
     {"name": "Autoayuda"}
 ]
@@ -58,7 +60,9 @@ products = [
         "detail_images": [],
         "rating": 5,
         "product_stock": 25,
-        "category_id": 2},
+        "category_id": 2,
+        "author_ids": [2],
+    },
     {
         "name": "1984",
         "price": 12.99,
@@ -68,7 +72,8 @@ products = [
         "detail_images": [],
         "rating": 5,
         "product_stock": 40,
-        "category_id": 1
+        "category_id": 1,
+        "author_ids": [3],
     },
     {
         "name": "It",
@@ -79,7 +84,8 @@ products = [
         "detail_images": [],
         "rating": 4,
         "product_stock": 20,
-        "category_id": 7
+        "category_id": 9,
+        "author_ids": [4],
     },
     {
         "name": "Orgullo y prejuicio",
@@ -90,7 +96,8 @@ products = [
         "detail_images": [],
         "rating": 5,
         "product_stock": 15,
-        "category_id": 6
+        "category_id": 7,
+        "author_ids": [5],
     },
     {
         "name": "Sapiens: De animales a dioses",
@@ -101,7 +108,8 @@ products = [
         "detail_images": [],
         "rating": 5,
         "product_stock": 50,
-        "category_id": 3
+        "category_id": 3,
+        "author_ids": [6],
     },
     {
         "name": "Cien años de soledad",
@@ -112,7 +120,8 @@ products = [
         "detail_images": [],
         "rating": 5,
         "product_stock": 35,
-        "category_id": 6
+        "category_id": 7,
+        "author_ids": [7],
     },
     {
         "name": "Ángeles y demonios",
@@ -123,7 +132,8 @@ products = [
         "detail_images": [],
         "rating": 4,
         "product_stock": 22,
-        "category_id": 7
+        "category_id": 9,
+        "author_ids": [8],
     },
     {
         "name": "Los miserables",
@@ -134,7 +144,8 @@ products = [
         "detail_images": [],
         "rating": 5,
         "product_stock": 28,
-        "category_id": 6
+        "category_id": 4,
+        "author_ids": [9],
     },
     {
         "name": "El arte de la guerra",
@@ -145,7 +156,8 @@ products = [
         "detail_images": [],
         "rating": 4,
         "product_stock": 50,
-        "category_id": 5
+        "category_id": 6,
+        "author_ids": [10],
     },
     {
         "name": "La guerra de los mundos",
@@ -156,7 +168,8 @@ products = [
         "detail_images": [],
         "rating": 4,
         "product_stock": 30,
-        "category_id": 1
+        "category_id": 1,
+        "author_ids": [1],
     },
     {
         "name": "El Hobbit",
@@ -167,7 +180,8 @@ products = [
         "detail_images": [],
         "rating": 5,
         "product_stock": 30,
-        "category_id": 2
+        "category_id": 2,
+        "author_ids": [2],
     },
     {
         "name": "Animal Farm",
@@ -178,7 +192,8 @@ products = [
         "detail_images": [],
         "rating": 4,
         "product_stock": 20,
-        "category_id": 6
+        "category_id": 1,
+        "author_ids": [3],
     },
     {
         "name": "Carrie",
@@ -189,7 +204,8 @@ products = [
         "detail_images": [],
         "rating": 4,
         "product_stock": 18,
-        "category_id": 7
+        "category_id": 9,
+        "author_ids": [4],
     },
     {
         "name": "Emma",
@@ -200,7 +216,8 @@ products = [
         "detail_images": [],
         "rating": 4,
         "product_stock": 16,
-        "category_id": 6
+        "category_id": 7,
+        "author_ids": [5],
     },
     {
         "name": "Homo Deus",
@@ -211,7 +228,8 @@ products = [
         "detail_images": [],
         "rating": 4,
         "product_stock": 40,
-        "category_id": 3
+        "category_id": 3,
+        "author_ids": [6],
     },
     {
         "name": "El coronel no tiene quien le escriba",
@@ -222,7 +240,20 @@ products = [
         "detail_images": [],
         "rating": 4,
         "product_stock": 15,
-        "category_id": 6
+        "category_id": 7,
+        "author_ids": [7],
+    },
+    {
+        "name": "Inferno",
+        "price": 14.29,
+        "image_url": "https://covers.openlibrary.org/b/id/8184861-L.jpg",
+        "is_featured": True,
+        "description": "Otra entrega de la saga de Robert Langdon.",
+        "detail_images": [],
+        "rating": 4,
+        "product_stock": 22,
+        "category_id": 9,
+        "author_ids": [8],
     },
     {
         "name": "Notre-Dame de París",
@@ -233,7 +264,8 @@ products = [
         "detail_images": [],
         "rating": 5,
         "product_stock": 25,
-        "category_id": 6
+        "category_id": 4,
+        "author_ids": [9],
     },
     {
         "name": "12 reglas para vivir",
@@ -244,6 +276,8 @@ products = [
         "detail_images": [],
         "rating": 4,
         "product_stock": 35,
-        "category_id": 8
+        "category_id": 10,
+        "author_ids": [10],
     }
+    
 ]

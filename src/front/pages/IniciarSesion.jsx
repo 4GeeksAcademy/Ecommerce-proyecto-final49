@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"; // Importa useEffect
+import { useState } from "react";
 import useGlobalReducer from "../hooks/useGlobalReducer";
 import { Link, useNavigate, Navigate } from "react-router-dom";
 
@@ -12,12 +12,8 @@ export const IniciarSesion = () => {
   const [message, setMessage] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  const { dispatch, store } = useGlobalReducer();
+  const { store, actions } = useGlobalReducer();
   const navigate = useNavigate();
-
-  useEffect(() => {
-    console.log("Estado actual del store:", store);
-  }, [store]); 
 
   const handleChange = ({ target }) => {
     setUser({
@@ -27,40 +23,23 @@ export const IniciarSesion = () => {
   };
 
   const handleSubmit = async (event) => {
-    event.preventDefault(); 
-    setMessage(null); 
-    setLoading(true); 
-
-    const url = import.meta.env.VITE_BACKEND_URL; 
+    event.preventDefault();
+    setMessage(null);
+    setLoading(true);
 
     try {
-      const response = await fetch(`${url}/login`, {
-        method: "POST",
-        headers: {
-          "Content-type": "application/json",
-        },
-        body: JSON.stringify(user),
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        localStorage.setItem("token", data.token);
-
-        dispatch({ type: "LOGIN", payload: data.token });
-
+      const success = await actions.login(user.email, user.password);
+      if (success) {
         setMessage("¡Inicio de sesión exitoso! Redirigiendo...");
         setTimeout(() => {
           navigate("/");
         }, 2000);
-      } else if (response.status === 400) {
-        setMessage("El correo electrónico o la contraseña son incorrectos.");
       } else {
-        setMessage("Error al iniciar sesión. Por favor, comunícate con soporte.");
+        setMessage("Correo o contraseña incorrectos.");
       }
     } catch (error) {
-      console.error("Error en la solicitud de login:", error);
-      setMessage("Error de conexión. Por favor, inténtalo de nuevo más tarde.");
+      console.error("Error durante el inicio de sesión:", error);
+      setMessage("Hubo un error. Intenta nuevamente.");
     } finally {
       setLoading(false);
     }
@@ -71,45 +50,41 @@ export const IniciarSesion = () => {
   }
 
   return (
-    <div className="container-fluid">
-      <div className="row py-3">
-        <div className="col-12 col-md-6 d-flex align-items-center">
-          <h1 className="text-center">
-            Ingresa tu correo electrónico y contraseña para iniciar sesión
-          </h1>
-        </div>
-        <div className="col-12 col-md-6">
-          <form onSubmit={handleSubmit} className="border m-2 p-3">
+    <div className="container vh-100 d-flex justify-content-center align-items-center">
+      <div className="row w-100 justify-content-center">
+        <div className="col-12 col-md-6 col-lg-4">
+          <form onSubmit={handleSubmit} className="border p-4 shadow rounded bg-white">
+            <h2 className="text-center mb-4">Iniciar Sesión</h2>
             <div className="form-group mb-3">
               <label htmlFor="email">Correo electrónico:</label>
               <input
                 type="email"
-                placeholder="Ingresa tu correo electrónico"
-                className="form-control border border-dark my-2"
+                placeholder="Tu correo"
+                className="form-control"
                 id="email"
                 name="email"
                 onChange={handleChange}
                 value={user.email}
                 required
-                disabled={loading} 
+                disabled={loading}
               />
             </div>
             <div className="form-group mb-3">
-              <label htmlFor="password" className="">
-                Contraseña:
-              </label>
+              <label htmlFor="password">Contraseña:</label>
               <input
                 type="password"
-                placeholder="Ingresa tu contraseña"
-                className="form-control border-dark"
+                placeholder="Tu contraseña"
+                className="form-control"
                 id="password"
                 name="password"
                 onChange={handleChange}
                 value={user.password}
                 required
-                disabled={loading} 
+                disabled={loading}
               />
-              <Link to="/olvido-su-contraseña">¿Olvidaste tu contraseña?</Link>
+              <div className="mt-2">
+                <Link to="/olvido-su-contraseña">¿Olvidaste tu contraseña?</Link>
+              </div>
             </div>
             {message && (
               <div
@@ -124,11 +99,13 @@ export const IniciarSesion = () => {
             <button type="submit" className="btn btn-success w-100" disabled={loading}>
               {loading ? "Iniciando sesión..." : "Iniciar sesión"}
             </button>
+            <div className="text-center mt-3">
+              <small>
+                ¿No tienes cuenta? <Link to="/registro">Crea una</Link>
+              </small>
+            </div>
           </form>
         </div>
-        <h5 className="text-center my-4">
-          ¿No tienes cuenta? <Link to="/registro">Crea una</Link>
-        </h5>
       </div>
     </div>
   );
