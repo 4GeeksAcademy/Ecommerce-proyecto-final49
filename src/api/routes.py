@@ -75,7 +75,7 @@ def handle_hello():
 
 @api.route('/products', methods=['GET'])
 def get_products():
-    print(">>> Parametros recibidos:", request.args)
+    # print(">>> Parametros recibidos:", request.args)
     query = Product.query
 
     category_id = request.args.get('category_id', type=int)
@@ -598,11 +598,9 @@ def stripe_webhook():
         # endpoint para popular la base ded atos
 @api.route("/populate-user", methods=["GET"])
 def populate_users():
-
     for rol in roles:
         role = Role(role_name=rol)
         db.session.add(role)
-
     for person in users:
         user = User(
             email=person.get("email"),
@@ -612,20 +610,13 @@ def populate_users():
             salt=b64encode(os.urandom(32)).decode("utf-8")
         )
         db.session.add(user)
-
     for cat in categories:
         category = Category(name=cat.get("name"))
         db.session.add(category)
-
     for author in authors:
         new_author = Author(name=author.get("name"))
         db.session.add(new_author)
-
-    
-
     for product in products:
-        
-        
         new_product = Product(
             name=product.get("name"),
             price=product.get("price"),
@@ -636,13 +627,23 @@ def populate_users():
             rating=product.get("rating", 0),
             product_stock=product.get("product_stock", 0),
             category_id=product.get("category_id"),
-            
         )
         db.session.add(new_product)
-
+        for author_id in product.get("author_ids", []):
+            author = Author.query.get(author_id)
+            if author:
+                new_product.authors.append(author)
+    db.session.flush()
+    # Commit all changes to the database
     try:
         db.session.commit()
         return jsonify("Populate success"), 201
     except Exception as error:
         db.session.rollback()
         return jsonify(f"Error: {error.args}"), 500
+
+
+
+
+
+
