@@ -4,7 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
 const initialStateUser = {
-  name: "",      
+  username: "",
   email: "",
   password: "",
 };
@@ -14,14 +14,14 @@ export const Registro = () => {
   const [registered, setRegistered] = useState(false);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    if (registered) {
-      const timer = setTimeout(() => {
-        navigate("/iniciar-sesion");
-      }, 3000);
-      return () => clearTimeout(timer);
-    }
-  }, [registered, navigate]);
+  // useEffect(() => {
+  //   if (registered) {
+  //     const timer = setTimeout(() => {
+  //       navigate("/iniciar-sesion");
+  //     }, 3000);
+  //     return () => clearTimeout(timer);
+  //   }
+  // }, [registered, navigate]);
 
   const handleChange = ({ target }) => {
     setUser({
@@ -30,20 +30,21 @@ export const Registro = () => {
     });
   };
 
-    const handleSubmit = async (event) => {
-       event.preventDefault();
-    
-    
+  const handleSubmit = async (event) => {
+    event.preventDefault();
 
     try {
-      const formData = new FormData();
-      formData.append("email", user.email);
-      formData.append("name", user.name);  
-      formData.append("password", user.password);
+      // const formData = new FormData();
+      // formData.append("email", user.email);
+      // formData.append("name", user.name);
+      // formData.append("password", user.password);
 
       const response = await fetch(`${BACKEND_URL}/register`, {
         method: "POST",
-        body: formData, 
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(user),
       });
 
       const data = await response.json();
@@ -59,23 +60,26 @@ export const Registro = () => {
     }
   };
 
-    return (
-        <div className="container vh-100 d-flex justify-content-center align-items-center">
+  return (
+    <div className="container">
       <div className="row w-100 justify-content-center">
-        <div className="col-12 col-md-6 col-lg-4">
+        <div className="col-12 col-md-6 col-lg-4 mt-5">
           {registered && (
             <div className="alert alert-success text-center">
               ¡Usuario creado exitosamente! Serás redirigido al login...
             </div>
           )}
-          <form className="border p-4 shadow rounded bg-white" onSubmit={handleSubmit}>
+          <form
+            className="border p-4 shadow rounded bg-white"
+            onSubmit={handleSubmit}
+          >
             <h2 className="text-center mb-4">Registro</h2>
             <div className="form-group mb-3">
               <label htmlFor="btnName">Nombre de usuario:</label>
               <input
                 type="text"
-                name="name"
-                value={user.name}
+                name="username"
+                value={user.username}
                 onChange={handleChange}
                 className="form-control"
                 required
@@ -108,7 +112,8 @@ export const Registro = () => {
             </button>
             <div className="text-center mt-3">
               <small>
-                ¿Ya tienes una cuenta? <Link to="/iniciar-sesion">Inicia sesión</Link>
+                ¿Ya tienes una cuenta?{" "}
+                <Link to="/iniciar-sesion">Inicia sesión</Link>
               </small>
             </div>
           </form>
