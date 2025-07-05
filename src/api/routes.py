@@ -17,17 +17,17 @@ from sqlalchemy import func
 # import stripe
 
 
-
-
 # stripe.api_key = os.getenv("STRIPE_SECRET_KEY")
 api = Blueprint('api', __name__)
 
-# ENDPOINT DEL LOGIN 
+# ENDPOINT DEL LOGIN
+
+
 @api.route('/register', methods=['POST'])
 def add_user():
     data = request.get_json()
     email = data.get("email")
-    name = data.get("username")  
+    name = data.get("username")
     password = data.get("password")
     # role_id = data.get("role_id")
 
@@ -75,6 +75,7 @@ def login():
 
     return jsonify({"token": token, "user": user.serialize()}), 200
 
+
 @api.route('/forgot-password', methods=["POST"])
 def forgot_password():
     try:
@@ -95,7 +96,6 @@ def forgot_password():
     except Exception as e:
         print("Error en /forgot-password:", e)
         return jsonify({"msg": "Error interno del servidor"}), 500
-
 
 
 @api.route('/reset-password', methods=["PUT"])
@@ -126,7 +126,12 @@ def handle_password_reset():
 @api.route('/me', methods=["GET"])
 @jwt_required()
 def get_user_info():
+    print(">>> Entró a /api/me")
+
     user_id = get_jwt_identity()
+
+    # línea 131. Validación del usuario autenticado
+    print("Usuario autenticado con ID:", user_id)
     user = User.query.get(user_id)
     if not user:
         return jsonify({'msg': "Usuario no encontrado"}), 404
@@ -186,6 +191,7 @@ def change_email():
 
     return jsonify({"msg": "Correo actualizado correctamente"}), 200
 
+
 @api.route('/products', methods=['GET'])
 def get_products():
     # print(">>> Parametros recibidos:", request.args)
@@ -208,18 +214,21 @@ def get_products():
                 .join(Product.category)
                 .join(Product.authors)
                 .filter(
-                db.or_(
-                    func.unaccent(func.lower(Product.name)).ilike(f'%{search_term}%'),
-                    func.unaccent(func.lower(Product.description)).ilike(f'%{search_term}%'),
-                    func.unaccent(func.lower(Category.name)).ilike(f'%{search_term}%'),
-                    func.unaccent(func.lower(Author.name)).ilike(f'%{search_term}%'),
+                    db.or_(
+                        func.unaccent(func.lower(Product.name)).ilike(
+                            f'%{search_term}%'),
+                        func.unaccent(func.lower(Product.description)
+                                      ).ilike(f'%{search_term}%'),
+                        func.unaccent(func.lower(Category.name)
+                                      ).ilike(f'%{search_term}%'),
+                        func.unaccent(func.lower(Author.name)).ilike(
+                            f'%{search_term}%'),
 
-                 )
+                    )
+                )
             )
-        )
 
-
-    products_list=query.all()
+    products_list = query.all()
 
     if not products_list:
         return jsonify({'message': 'No hay productos'}), 404
@@ -228,7 +237,7 @@ def get_products():
 
 @api.route('/product/<int:id>', methods=['GET'])
 def get_product(id):
-    product=Product.query.get(id)
+    product = Product.query.get(id)
     if not product:
         return jsonify({'error': 'Producto no encontrado'}), 404
     return jsonify(product.serialize()), 200
@@ -236,28 +245,28 @@ def get_product(id):
 
 @api.route('/products', methods=['POST'])
 def create_product():
-    data=request.get_json()
+    data = request.get_json()
 
     category_id = data.get('category_id')
-    category=Category.query.get(data.get('category_id'))
+    category = Category.query.get(data.get('category_id'))
     if not category:
         return jsonify({'error': 'Categoria no valida'}), 400
 
-    author_ids=data.get('author_ids', [])
-    authors=Author.query.filter(Author.id.in_(author_ids)).all()
+    author_ids = data.get('author_ids', [])
+    authors = Author.query.filter(Author.id.in_(author_ids)).all()
 
-    new_product=Product(
-    name=data.get('name'),
-    price=data.get('price'),
-    image_url=data.get('image_url'),
-    is_featured=data.get('is_featured', False),
-    description=data.get('description', ''),
-    detail_images=data.get('detail_images', []),
-    rating=data.get('rating', 0),
-    category_id=category_id,
-    category=category,
-    authors=authors,
-    product_stock=data.get('product_stock', 0)
+    new_product = Product(
+        name=data.get('name'),
+        price=data.get('price'),
+        image_url=data.get('image_url'),
+        is_featured=data.get('is_featured', False),
+        description=data.get('description', ''),
+        detail_images=data.get('detail_images', []),
+        rating=data.get('rating', 0),
+        category_id=category_id,
+        category=category,
+        authors=authors,
+        product_stock=data.get('product_stock', 0)
     )
 
     db.session.add(new_product)
@@ -268,24 +277,25 @@ def create_product():
 
 @api.route('/categories', methods=['GET'])
 def list_categories():
-    categories=Category.query.all()
+    categories = Category.query.all()
     if not categories:
         return jsonify({'message': 'No hay categorías'}), 404
     return jsonify([category.serialize() for category in categories]), 200
 
+
 @api.route('/categories', methods=['POST'])
 def create_category():
-    data=request.get_json()
-    name=data.get('name')
+    data = request.get_json()
+    name = data.get('name')
 
     if not name:
         return jsonify({'error': 'Nombre de la categoria requerido'}), 400
 
-    existing=Category.query.filter_by(name=name).first()
+    existing = Category.query.filter_by(name=name).first()
     if existing:
         return jsonify({'error': 'La categoria ya existe'}), 400
 
-    category=Category(name=name)
+    category = Category(name=name)
     db.session.add(category)
     db.session.commit()
 
@@ -294,7 +304,7 @@ def create_category():
 
 @api.route('/authors', methods=['GET'])
 def list_authors():
-    authors=Author.query.all()
+    authors = Author.query.all()
     if not authors:
         return jsonify({'message': 'No hay autores'}), 404
     return jsonify([author.serialize() for author in authors]), 200
@@ -302,23 +312,25 @@ def list_authors():
 
 @api.route('/authors', methods=['POST'])
 def create_author():
-    data=request.get_json()
-    name=data.get('name')
+    data = request.get_json()
+    name = data.get('name')
 
     if not name:
         return jsonify({'error': 'Nombre del autor requerido'}), 400
 
-    existing=Author.query.filter_by(name=name).first()
+    existing = Author.query.filter_by(name=name).first()
     if existing:
         return jsonify({'error': 'El autor ya existe'}), 409
 
-    author=Author(name=name)
+    author = Author(name=name)
     db.session.add(author)
     db.session.commit()
 
     return jsonify(author.serialize()), 201
 
 # RUTAS CARRITO DE COMPRAS
+
+
 @api.route('/cart/<int:user_id>', methods=['GET'])
 def get_cart(user_id):
     cart_items = CartItem.query.filter_by(user_id=user_id).all()
@@ -345,11 +357,13 @@ def add_to_cart():
     if not user_id or not product_id:
         return jsonify({"msg": "Faltan datos"}), 400
 
-    existing_item = CartItem.query.filter_by(user_id=user_id, product_id=product_id).first()
+    existing_item = CartItem.query.filter_by(
+        user_id=user_id, product_id=product_id).first()
     if existing_item:
         existing_item.quantity += quantity
     else:
-        new_item = CartItem(user_id=user_id, product_id=product_id, quantity=quantity)
+        new_item = CartItem(
+            user_id=user_id, product_id=product_id, quantity=quantity)
         db.session.add(new_item)
 
     db.session.commit()
@@ -375,6 +389,8 @@ def clear_cart(user_id):
     return jsonify({"msg": "Carrito vaciado"}), 200
 
 # CHECKOUT
+
+
 @api.route('/create-checkout-session', methods=['POST'])
 @jwt_required()
 def create_checkout_session():
@@ -391,9 +407,9 @@ def create_checkout_session():
                     'name': item['product_name'],
                     'metadata': {
                         'product_id': item['product_id']
-                 }
+                    }
                 },
-                'unit_amount': int(item['price'] * 100)  
+                'unit_amount': int(item['price'] * 100)
             },
             'quantity': item['quantity'],
         })
@@ -410,6 +426,8 @@ def create_checkout_session():
         return jsonify({'url': session.url})
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
+
 @api.route('/contact-form', methods=["POST"])
 def handleContactForm():
     if not request.is_json:
@@ -423,12 +441,12 @@ def handleContactForm():
 
     if not name or not email or not message:
         return jsonify({"msg": "Some fields are missing"}), 400
-    
+
     try:
         new_message = ContactMessage(name=name, email=email, message=message)
-        
+
         db.session.add(new_message)
-        db.session.commit() 
+        db.session.commit()
 
         print(f"Nuevo mensaje de contacto guardado en DB (PostgreSQL):")
         print(f"  Nombre: {new_message.name}")
@@ -449,18 +467,19 @@ def handleContactForm():
 
     except Exception as error:
         db.session.rollback()
-        return jsonify({"msg": f"Error saving the info in the database: {str(error)}"}), 500 
+        return jsonify({"msg": f"Error saving the info in the database: {str(error)}"}), 500
 
-@api.route ('/get-contactform-info', methods=["GET"])
+
+@api.route('/get-contactform-info', methods=["GET"])
 @jwt_required()
 def getContactForm():
     try:
 
         current_user_claims = get_jwt()
         if not current_user_claims.get("is_admin", False):
-            return jsonify({"msg": "Administration role is required"}),403
+            return jsonify({"msg": "Administration role is required"}), 403
         all_messages = ContactMessage.query.all()
-        
+
         messages_list = []
         for msg in all_messages:
             messages_list.append({
@@ -469,15 +488,16 @@ def getContactForm():
                 "email": msg.email,
                 "message": msg.message,
             })
-        
+
         return jsonify(messages_list), 200
 
     except Exception as error:
         print(f"Error al recuperar mensajes de la base de datos: {error}")
         return jsonify({"msg": f"Failed to retrieve messages: {str(error)}"}), 500
-    
-    #Webhook de Stripe
+
+    # Webhook de Stripe
     from flask import abort
+
 
 @api.route('/webhook', methods=['POST'])
 def stripe_webhook():
@@ -525,6 +545,8 @@ def stripe_webhook():
         print("Orden creada desde webhook Stripe ✅")
 
         # endpoint para popular la base de datos
+
+
 @api.route("/populate-user", methods=["GET"])
 def populate_users():
     for rol in roles:

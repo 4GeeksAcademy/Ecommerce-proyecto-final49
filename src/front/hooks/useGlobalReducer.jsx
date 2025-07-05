@@ -26,7 +26,7 @@ export function StoreProvider({ children }) {
           );
 
           const data = await resp.json();
-          console.log("Respuesta del backend:", data);
+          console.log("Línea 29 - Respuesta del backend:", data);
 
           if (resp.ok && data.token) {
             localStorage.setItem("jwt_token", data.token);
@@ -52,13 +52,14 @@ export function StoreProvider({ children }) {
         dispatch({ type: "ADD_ME", payload: null });
       },
 
-      getUserInfo: async (tokenArg) => {
-        const token = tokenArg || localStorage.getItem("jwt_token");
+      getUserInfo: async () => {
+        // const token = tokenArg || localStorage.getItem("jwt_token");
 
-        if (!token || token === "null" || token === "undefined") {
-          console.warn("Token inválido o ausente en getUserInfo.");
-          return false;
-        }
+        // // if (!token || token === "null" || token === "undefined") {
+        // if (!token) {
+        //   console.warn("Token inválido o ausente en getUserInfo.");
+        //   return false;
+        // }
 
         try {
           const response = await fetch(
@@ -70,18 +71,21 @@ export function StoreProvider({ children }) {
             }
           );
 
+          console.log(response);
+
           if (!response.ok) {
-            if (response.status === 401) {
-              allActions.logout();
-            }
-            throw new Error("Fallo al obtener la información del usuario");
+            //   if (response.status === 401) {
+            //     allActions.logout();
+            //   }
+            //   throw new Error("Fallo al obtener la información del usuario");
+            console.log(response);
           }
           const data = await response.json();
           dispatch({ type: "ADD_ME", payload: data });
           return true;
         } catch (error) {
           console.error("Error al obtener información del usuario:", error);
-          allActions.logout();
+          // allActions.logout();
           return false;
         }
       },

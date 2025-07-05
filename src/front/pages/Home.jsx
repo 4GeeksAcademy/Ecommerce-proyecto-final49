@@ -12,15 +12,15 @@ export const Home = () => {
   const [authors, setAuthors] = useState([]);
   const [selectedCategoryId, setSelectedCategoryId] = useState(null);
   const [selectedAuthorId, setSelectedAuthorId] = useState(null);
-  const [searchText, setSearchText] = useState('');
-  
-const [searchParams] = useSearchParams();
-useEffect(() => {
-  const sB =searchParams.get('search') ?? "";
+  const [searchText, setSearchText] = useState("");
+  console.log(store.token);
+  console.log(store);
+
+  const [searchParams] = useSearchParams();
+  useEffect(() => {
+    const sB = searchParams.get("search") ?? "";
     setSearchText(sB);
   }, [searchParams]);
-
-  
 
   const bkUrl = import.meta.env.VITE_BACKEND_URL;
 
@@ -55,9 +55,9 @@ useEffect(() => {
         if (selectedAuthorId !== null)
           queryParameters.append("author_id", selectedAuthorId);
 
-		if (searchText !== '') {
-			queryParameters.append('search', searchText);
-		}
+        if (searchText !== "") {
+          queryParameters.append("search", searchText);
+        }
 
         const requestUrl = `${bkUrl}/products${
           queryParameters.toString() ? "?" + queryParameters.toString() : ""
@@ -65,7 +65,6 @@ useEffect(() => {
 
         console.log("bkUrl=", bkUrl);
         console.log("lammando a:", requestUrl);
-
 
         const productsResponse = await fetch(requestUrl);
         const productsData = await productsResponse.json();
@@ -77,7 +76,7 @@ useEffect(() => {
         }
       } catch (loadError) {
         console.error("Error al cargar productos filtrados:", loadError);
-		setProducts([]);
+        setProducts([]);
       }
     }
 
@@ -90,10 +89,10 @@ useEffect(() => {
 
   const handleCategorySelect = (categoryId) => {
     setSelectedCategoryId(categoryId);
-    setSearchText('');
-  }
+    setSearchText("");
+  };
 
-//  console.log('productos recibidos:', products);
+  //  console.log('productos recibidos:', products);
 
   return (
     <div className="home-container text-center mt-5">
@@ -103,9 +102,9 @@ useEffect(() => {
           subtitle="Con la compra de mas de $50 el envio es gratis"
           onSearch={handleSearch}
           onCategorySelect={handleCategorySelect}
-		  searchValue={searchText}
+          searchValue={searchText}
           categories={categories}
-		  authors={authors}
+          authors={authors}
         />
 
         {/* <div className="row mb-4">
@@ -146,12 +145,12 @@ useEffect(() => {
           </div>
         </div> */}
 
-        <RecentViews bkUrl={bkUrl}/>
+        <RecentViews bkUrl={bkUrl} />
         <h2>vista recientes</h2>
 
         <h2> Productos destacados</h2>
 
-            <div className="row">
+        <div className="row">
           {products.map((p) => {
             return (
               p.is_featured && (
