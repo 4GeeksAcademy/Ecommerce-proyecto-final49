@@ -30,9 +30,9 @@ export const Navbar = ({ onSearch, searchValue }) => {
 
   return (
     <nav className="navbar navbar-expand-lg navbar-light bg-light">
-      <div className="container-fluid">
+      <div className="container-fluid d-flex align-items-center">
         <button
-          className="navbar-toggler"
+          className="navbar-toggler me-2"
           type="button"
           data-bs-toggle="collapse"
           data-bs-target="#navbarNav"
@@ -55,7 +55,9 @@ export const Navbar = ({ onSearch, searchValue }) => {
               </Link>
             </li>
           </ul>
-          <form className="d-flex me-auto" onSubmit={onSubmitSearch}>
+
+
+          <form className="d-flex search-bar" onSubmit={onSubmitSearch}>
             <input
               name="search"
               type="search"
@@ -70,13 +72,13 @@ export const Navbar = ({ onSearch, searchValue }) => {
               }}
             />
 
-            <button type="submit" className="btn btn-primary">
+            <button type="submit" className="btn btn-primary ms-3">
               Buscar
             </button>
           </form>
         </div>
 
-        <div className="btn-group ms-auto">
+        <div className="btn-group">
           <button
             type="button"
             className="btn border-0"

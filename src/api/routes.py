@@ -128,6 +128,7 @@ def handle_password_reset():
 def get_user_info():
     user_id = get_jwt_identity()
     user = User.query.get(user_id)
+    print(user)
     if not user:
         return jsonify({'msg': "Usuario no encontrado"}), 404
     return jsonify(user.serialize()), 200
