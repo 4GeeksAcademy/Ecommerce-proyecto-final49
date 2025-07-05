@@ -54,8 +54,13 @@ export const Navbar = ({ onSearch, searchValue }) => {
                 Categorías
               </Link>
             </li>
-          </ul>
 
+            <li>
+              <Link className="AllBooks ms-4 navbar-link" to="/books">
+                Libros
+              </Link>
+            </li>
+          </ul>
 
           <form className="d-flex search-bar" onSubmit={onSubmitSearch}>
             <input
