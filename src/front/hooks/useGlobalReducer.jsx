@@ -52,6 +52,7 @@ export function StoreProvider({ children }) {
         dispatch({ type: "ADD_ME", payload: null });
       },
 
+
       getUserInfo: async () => {
         // const token = tokenArg || localStorage.getItem("jwt_token");
 
@@ -60,6 +61,7 @@ export function StoreProvider({ children }) {
         //   console.warn("Token inválido o ausente en getUserInfo.");
         //   return false;
         // }
+
 
         try {
           const response = await fetch(
