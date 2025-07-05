@@ -16,11 +16,14 @@ export function StoreProvider({ children }) {
     const allActions = {
       login: async (email, password) => {
         try {
-          const resp = await fetch(`${import.meta.env.VITE_BACKEND_URL}/login`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ email, password }) 
-          });
+          const resp = await fetch(
+            `${import.meta.env.VITE_BACKEND_URL}/login`,
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ email, password }),
+            }
+          );
 
           const data = await resp.json();
           console.log("Respuesta del backend:", data);
@@ -29,7 +32,7 @@ export function StoreProvider({ children }) {
             localStorage.setItem("jwt_token", data.token);
             dispatch({
               type: "LOGIN",
-              payload: { token: data.token, user_data: data.user_id },
+              payload: { token: data.token, user_data: data.user },
             });
             return true;
           } else {
@@ -51,11 +54,22 @@ export function StoreProvider({ children }) {
 
       getUserInfo: async (tokenArg) => {
         const token = tokenArg || localStorage.getItem("jwt_token");
-        if (!token) return false;
+
+        if (!token || token === "null" || token === "undefined") {
+          console.warn("Token inválido o ausente en getUserInfo.");
+          return false;
+        }
+
         try {
-          const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/me`, {
-            headers: { Authorization: `Bearer ${token}` },
-          });
+          const response = await fetch(
+            `${import.meta.env.VITE_BACKEND_URL}/me`,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
+
           if (!response.ok) {
             if (response.status === 401) {
               allActions.logout();
@@ -96,7 +110,10 @@ export function StoreProvider({ children }) {
             return false;
           }
         } else {
-          dispatch({ type: "ADD_LOCAL_CART_ITEM", payload: product, quantity });
+          dispatch({
+            type: "ADD_LOCAL_CART_ITEM",
+            payload: { product, quantity },
+          });
           return true;
         }
       },
@@ -159,7 +176,9 @@ export function StoreProvider({ children }) {
       getBackendCart: async (tokenArg) => {
         const token = tokenArg || localStorage.getItem("jwt_token");
         if (!token) {
-          console.log("No hay token, no se puede obtener el carrito del backend.");
+          console.log(
+            "No hay token, no se puede obtener el carrito del backend."
+          );
           dispatch({ type: "SET_BACKEND_CART", payload: [] });
           return;
         }

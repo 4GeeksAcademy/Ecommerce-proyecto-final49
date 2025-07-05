@@ -163,7 +163,7 @@ useEffect(() => {
           })}
         </div>
 
-        <h2> categorias destaca </h2>
+        {/* <h2> categorias destaca </h2>
         <div className="row product-grid">
           {products.map((p) => {
             return (
@@ -172,7 +172,7 @@ useEffect(() => {
               </div>
             );
           })}
-        </div>
+        </div> */}
       </div>
     </div>
   );

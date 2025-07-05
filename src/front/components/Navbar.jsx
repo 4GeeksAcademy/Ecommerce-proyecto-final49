@@ -83,10 +83,20 @@ export const Navbar = ({ onSearch, searchValue }) => {
             data-bs-toggle="dropdown"
             aria-expanded="false"
           >
-            <i
-              className="fa-solid fa-user"
-              style={{ color: store.token ? "green" : "black" }}
-            ></i>
+            {store.token ? (
+              <img
+                src="https://e7.pngegg.com/pngimages/340/946/png-clipart-avatar-user-computer-icons-software-developer-avatar-child-face-thumbnail.png"
+                alt="User Avatar"
+                style={{
+                  width: "32px",
+                  height: "32px",
+                  borderRadius: "50%",
+                  objectFit: "cover",
+                }}
+              />
+            ) : (
+              <i className="fa-solid fa-user"></i>
+            )}
           </button>
           <ul className="dropdown-menu dropdown-menu-end">
             {!store.token ? (
