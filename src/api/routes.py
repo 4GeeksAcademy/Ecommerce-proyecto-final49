@@ -3,16 +3,20 @@ This module takes care of starting the API Server, Loading the DB and Adding the
 '''
 from flask import Flask, request, jsonify, url_for, Blueprint
 from api.models import db, User, Product, Category, Author, CartItem, ContactMessage, Order, OrderItem, Role
-from api.utils import generate_sitemap, APIException, send_email
+from api.utils import generate_sitemap, APIException, send_email, set_password, check_password, validate_email
 import cloudinary.uploader as upload
 from werkzeug.security import generate_password_hash, check_password_hash
 from base64 import b64encode
 import os
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
 from datetime import timedelta
-import stripe
+from api.models import db, CartItem, Product, ContactMessage, Order, OrderItem, Role
+# import stripe
 from .data import users, categories, authors, products, roles
-from api.utils import set_password, check_password, validate_email
+from sqlalchemy import func
+import stripe
+
+
 
 
 # stripe.api_key = os.getenv("STRIPE_SECRET_KEY")
@@ -180,6 +184,7 @@ def change_email():
 
 @api.route('/products', methods=['GET'])
 def get_products():
+    # print(">>> Parametros recibidos:", request.args)
     query = Product.query
 
     category_id = request.args.get('category_id', type=int)
@@ -546,12 +551,24 @@ def populate_users():
             detail_images=product.get("detail_images", []),
             rating=product.get("rating", 0),
             product_stock=product.get("product_stock", 0),
-            category_id=product.get("category_id")
+            category_id=product.get("category_id"),
         )
         db.session.add(new_product)
+        for author_id in product.get("author_ids", []):
+            author = Author.query.get(author_id)
+            if author:
+                new_product.authors.append(author)
+    db.session.flush()
+    # Commit all changes to the database
     try:
         db.session.commit()
         return jsonify("Populate success"), 201
     except Exception as error:
         db.session.rollback()
         return jsonify(f"Error: {error.args}"), 500
+
+
+
+
+
+

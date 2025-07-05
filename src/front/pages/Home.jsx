@@ -3,6 +3,7 @@ import useGlobalReducer from "../hooks/useGlobalReducer.jsx";
 import { useSearchParams } from "react-router-dom";
 import Banner from "../components/Banner.jsx";
 import ProductCard from "../components/ProductCard.jsx";
+import RecentViews from "../components/RecentViews.jsx";
 
 export const Home = () => {
   const { store, dispatch } = useGlobalReducer();
@@ -61,6 +62,11 @@ useEffect(() => {
         const requestUrl = `${bkUrl}/products${
           queryParameters.toString() ? "?" + queryParameters.toString() : ""
         }`;
+
+        console.log("bkUrl=", bkUrl);
+        console.log("lammando a:", requestUrl);
+
+
         const productsResponse = await fetch(requestUrl);
         const productsData = await productsResponse.json();
 
@@ -140,9 +146,12 @@ useEffect(() => {
           </div>
         </div> */}
 
+        <RecentViews bkUrl={bkUrl}/>
+        <h2>vista recientes</h2>
+
         <h2> Productos destacados</h2>
 
-            <div className="row ">
+            <div className="row">
           {products.map((p) => {
             return (
               p.is_featured && (
