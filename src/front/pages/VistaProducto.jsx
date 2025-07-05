@@ -238,6 +238,7 @@ export const VistaProducto = () => {
           >
             Agregar al carrito
           </button>
+          <Link to="/cart">Ver carrito</Link>
         </div>
       </div>
     </div>
