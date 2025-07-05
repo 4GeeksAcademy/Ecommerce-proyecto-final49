@@ -5,7 +5,7 @@ export const initialStore = () => {
     const initialCartCount = localCart.reduce((sum, item) => sum + (Number(item.quantity) || 0), 0);
 
     return {
-        message: null,
+        message: null,  
         todos: [
             {
                 id: 1,
