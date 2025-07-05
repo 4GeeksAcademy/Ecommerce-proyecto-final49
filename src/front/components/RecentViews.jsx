@@ -6,6 +6,7 @@ const RecentViews = ({bkUrl}) => {
 
     useEffect(() => {
         const views = JSON.parse(localStorage.getItem('RecentViews')) || [];
+        console.log("recentViews.parsed:", views);
         if (!views.length) return;
 
         Promise.all(
@@ -23,9 +24,9 @@ const RecentViews = ({bkUrl}) => {
     return(
         <>
         <h2> vistos recientemente</h2>
-        <div className="d-flex overflow-auto mb-4">
+        <div className="row mt-5 mb-5">
         {recent.map((product) => (
-            <div key={product.id} className="me-3">
+            <div key={product.id} className="col-12 col-sm-6 col-md-3 mb-4">
                 <ProductCard product={product} />
             </div>
         ))}

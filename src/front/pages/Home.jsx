@@ -83,6 +83,8 @@ export const Home = () => {
     loadFilteredProducts();
   }, [bkUrl, selectedCategoryId, selectedAuthorId, searchText]);
 
+  
+
   const handleSearch = (text) => {
     setSearchText(text);
   };
@@ -97,6 +99,7 @@ export const Home = () => {
   return (
     <div className="home-container text-center mt-5">
       <div className="container text-center mt-5">
+        <div className="mt-5 mb-5">
         <Banner
           title="No te pierdas estas ofertas"
           subtitle="Con la compra de mas de $50 el envio es gratis"
@@ -106,6 +109,7 @@ export const Home = () => {
           categories={categories}
           authors={authors}
         />
+        </div>
 
         {/* <div className="row mb-4">
           <div className="col">
@@ -145,21 +149,28 @@ export const Home = () => {
           </div>
         </div> */}
 
-        <RecentViews bkUrl={bkUrl} />
-        <h2>vista recientes</h2>
+        <RecentViews bkUrl={bkUrl}/>
+        
+        {/* <h2>vista recientes</h2> */}
 
         <h2> Productos destacados</h2>
 
-        <div className="row">
-          {products.map((p) => {
-            return (
-              p.is_featured && (
-                <div key={p.id} className="col-12 col-sm-6 col-md-3 mb-4">
+            <div className="row">
+          {products.filter((p) => p.is_featured)
+          .slice(0, 8).map((p) => (
+
+
+          // )) {
+          //   return (
+          //     p.is_featured && (
+
+                <div key={p.id} className="col-12 col-sm-6 col-md-3 mb-5">
                   <ProductCard product={p} />
                 </div>
-              )
-            );
-          })}
+              ))
+            }
+            {/* );
+          })} */}
         </div>
 
         {/* <h2> categorias destaca </h2>

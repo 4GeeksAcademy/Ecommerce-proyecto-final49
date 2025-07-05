@@ -133,6 +133,7 @@ def get_user_info():
     # línea 131. Validación del usuario autenticado
     print("Usuario autenticado con ID:", user_id)
     user = User.query.get(user_id)
+    print(user)
     if not user:
         return jsonify({'msg': "Usuario no encontrado"}), 404
     return jsonify(user.serialize()), 200

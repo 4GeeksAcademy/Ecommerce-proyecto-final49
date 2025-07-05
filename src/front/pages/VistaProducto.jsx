@@ -21,10 +21,18 @@ export const VistaProducto = () => {
       .then((data) => {
         setProduct(data);
         if (data.image_url) setImgSelected(data.image_url);
+
+const key = "RecentViews";
+const previous = JSON.parse(localStorage.getItem(key)) || [];
+const noDuplicate = previous.filter((productId) => productId !== data.id);
+const next = [data.id, ...noDuplicate].slice(0, 4);
+localStorage.setItem(key, JSON.stringify(next));
+
+
         // Se adicionan las lineas 24 y 25 para evaluar el stock
-        if (data.product_stock < quantity) {
-          setQuantity(data.product_stock > 0 ? 1 : 0);
-        }
+        // if (data.product_stock < quantity) {
+        //   setQuantity(data.product_stock > 0 ? 1 : 0);
+        // }
       })
       .catch((err) => console.error(err));
   }, [id, backendUrl, quantity]);
