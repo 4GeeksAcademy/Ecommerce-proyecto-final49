@@ -32,6 +32,8 @@ import { VistaProducto } from "./pages/VistaProducto";
 import { ConfirmacionCompra } from "./pages/ConfirmacionCompra";
 import { Cart } from "./pages/Cart";
 
+import AllBooks from "./components/AllBooks.jsx"
+
 //vistas admin
 import { Customers } from "./pages/AdminPages/Customers";
 import { Dashboard } from "./pages/AdminPages/Dashboard";
@@ -63,6 +65,7 @@ export const router = createBrowserRouter(
       <Route path="/contactanos" element={<Contacto />} />
       <Route path="/terminos-y-condiciones" element={<TerminosCondiciones />} />
       <Route path="/categorias" element={<Categorias />} />
+         <Route path="/books" element={<AllBooks />} />
       {/* inicio de sesion y manejo de usuario */}
       <Route path="/registro" element={<Registro />} />
       <Route path="/iniciar-sesion" element={<IniciarSesion />} />
