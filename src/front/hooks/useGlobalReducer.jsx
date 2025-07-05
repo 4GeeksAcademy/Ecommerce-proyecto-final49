@@ -96,7 +96,7 @@ export function StoreProvider({ children }) {
             return false;
           }
         } else {
-          dispatch({ type: "ADD_LOCAL_CART_ITEM", payload: product });
+          dispatch({ type: "ADD_LOCAL_CART_ITEM", payload: product, quantity });
           return true;
         }
       },

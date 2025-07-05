@@ -3,16 +3,20 @@ This module takes care of starting the API Server, Loading the DB and Adding the
 '''
 from flask import Flask, request, jsonify, url_for, Blueprint
 from api.models import db, User, Product, Category, Author, CartItem, ContactMessage, Order, OrderItem, Role
-from api.utils import generate_sitemap, APIException, send_email
+from api.utils import generate_sitemap, APIException, send_email, set_password, check_password, validate_email
 import cloudinary.uploader as upload
 from werkzeug.security import generate_password_hash, check_password_hash
 from base64 import b64encode
 import os
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity, get_jwt
 from datetime import timedelta
+from api.models import db, CartItem, Product, ContactMessage, Order, OrderItem, Role
 import stripe
 from .data import users, categories, authors, products, roles
-from api.utils import set_password, check_password, validate_email
+from sqlalchemy import func
+
+
+
 
 
 # stripe.api_key = os.getenv("STRIPE_SECRET_KEY")
@@ -25,6 +29,7 @@ def add_user():
     email = data.get("email")
     name = data.get("username")  
     password = data.get("password")
+    # role_id = data.get("role_id")
 
     if not email or not name or not password:
         return jsonify({"msg": "Faltan campos requeridos"}), 400
@@ -38,6 +43,7 @@ def add_user():
     salt = b64encode(os.urandom(32)).decode("utf-8")
     user = User(email=email, name=name, salt=salt)
     user.password = set_password(password, salt)
+    # user.role_id = role_id
     db.session.add(user)
 
     try:
@@ -62,8 +68,10 @@ def login():
     if not user or not check_password(user.password, password, user.salt):
         return jsonify({"msg": "Credenciales incorrectas"}), 401
 
-    additional_claims = {"role": user.role.name if user.role else "user"}
-    token = create_access_token(identity=user.id, additional_claims=additional_claims)
+    print(user.serialize())
+
+    # additional_claims = {"role": user.role_id if user.role_id else "user"}
+    token = create_access_token(identity=user.id)
 
     return jsonify({"token": token, "user": user.serialize()}), 200
 
@@ -180,6 +188,7 @@ def change_email():
 
 @api.route('/products', methods=['GET'])
 def get_products():
+    # print(">>> Parametros recibidos:", request.args)
     query = Product.query
 
     category_id = request.args.get('category_id', type=int)

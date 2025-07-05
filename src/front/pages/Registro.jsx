@@ -14,14 +14,14 @@ export const Registro = () => {
   const [registered, setRegistered] = useState(false);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    if (registered) {
-      const timer = setTimeout(() => {
-        navigate("/iniciar-sesion");
-      }, 3000);
-      return () => clearTimeout(timer);
-    }
-  }, [registered, navigate]);
+  // useEffect(() => {
+  //   if (registered) {
+  //     const timer = setTimeout(() => {
+  //       navigate("/iniciar-sesion");
+  //     }, 3000);
+  //     return () => clearTimeout(timer);
+  //   }
+  // }, [registered, navigate]);
 
   const handleChange = ({ target }) => {
     setUser({
@@ -34,15 +34,17 @@ export const Registro = () => {
     event.preventDefault();
 
     try {
-      // Usamos FormData porque el backend espera form-data
-      const formData = new FormData();
-      formData.append("email", user.email);
-      formData.append("name", user.username);
-      formData.append("password", user.password);
+      // const formData = new FormData();
+      // formData.append("email", user.email);
+      // formData.append("name", user.name);
+      // formData.append("password", user.password);
 
-      const response = await fetch(`${BACKEND_URL}/api/register`, {
+      const response = await fetch(`${BACKEND_URL}/register`, {
         method: "POST",
-        body: formData,
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(user),
       });
 
       const data = await response.json();
@@ -60,18 +62,19 @@ export const Registro = () => {
   };
 
   return (
-    <div className="container vh-100 d-flex justify-content-center align-items-center">
+    <div className="container">
       <div className="row w-100 justify-content-center">
-        <div className="col-12 col-md-6 col-lg-4">
+        <div className="col-12 col-md-6 col-lg-4 mt-5">
           {registered && (
             <div className="alert alert-success text-center">
               ¡Usuario creado exitosamente! Serás redirigido al login...
             </div>
           )}
-
-          <form className="border p-4 shadow rounded bg-white" onSubmit={handleSubmit}>
+          <form
+            className="border p-4 shadow rounded bg-white"
+            onSubmit={handleSubmit}
+          >
             <h2 className="text-center mb-4">Registro</h2>
-
             <div className="form-group mb-3">
               <label htmlFor="btnName">Nombre de usuario:</label>
               <input
@@ -83,7 +86,6 @@ export const Registro = () => {
                 required
               />
             </div>
-
             <div className="form-group mb-3">
               <label htmlFor="btnEmail">Correo electrónico:</label>
               <input
@@ -95,7 +97,6 @@ export const Registro = () => {
                 required
               />
             </div>
-
             <div className="form-group mb-4">
               <label htmlFor="btnPass">Contraseña:</label>
               <input
@@ -107,14 +108,13 @@ export const Registro = () => {
                 required
               />
             </div>
-
             <button className="btn btn-success w-100" type="submit">
               Registrar
             </button>
-
             <div className="text-center mt-3">
               <small>
-                ¿Ya tienes una cuenta? <Link to="/iniciar-sesion">Inicia sesión</Link>
+                ¿Ya tienes una cuenta?{" "}
+                <Link to="/iniciar-sesion">Inicia sesión</Link>
               </small>
             </div>
           </form>
