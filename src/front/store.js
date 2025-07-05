@@ -22,6 +22,7 @@ export const initialStore = () => {
       },
     ],
     token: null || localStorage.getItem.token,
+    // token: token,
     user: null,
 
     localCart: localCart,
@@ -93,9 +94,10 @@ export default function storeReducer(store, action = {}) {
       );
 
       if (existingItemIndex > -1) {
-        updatedCart[existingItemIndex].quantity =
-          Number(updatedCart[existingItemIndex].quantity || 0) +
-          Number(selectedQuantity || 1);
+        // updatedCart[existingItemIndex].quantity =
+        // Number(updatedCart[existingItemIndex].quantity || 0) +
+        // Number(selectedQuantity || 1);
+        updatedCart[existingItemIndex].quantity = Number(selectedQuantity || 1);
       } else {
         updatedCart.push({
           product_id: product.id,

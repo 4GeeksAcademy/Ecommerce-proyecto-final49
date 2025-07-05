@@ -131,6 +131,9 @@ export const Cart = () => {
           ))}
 
           <hr />
+          <Link to="/" className="btn btn-primary text-white ms-3">
+            Comprar más
+          </Link>
           <div className="cart-summary mt-4 p-3 border rounded bg-light">
             <h4>
               Total: <span className="text-primary">${getTotal()}</span>
