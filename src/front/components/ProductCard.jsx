@@ -40,8 +40,7 @@ return () => {
             <h3 ref={titleRef} className='product-card__name'>{product.name}</h3>
             <p className='product-card__price'>${product.price.toFixed(2)}</p>
             <Link to={`/producto/${product.id}`}>
-            <button className='product-card__button'
-                onClick={() => onAddToCart(product)}
+            <button className='product-card__button'    
             >Ver mas detalles
             </button>
             </Link>

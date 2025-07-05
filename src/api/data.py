@@ -3,93 +3,247 @@ roles = [
     "General"
 ]
 users = [
-    {
-        "email": "jose@gmail.com",
-        "name": "Jose Hernandez",
+
+
+    {"email": "jose@gmail.com",
+     "name": "Jose Hernandez",
+     "password": "123456789",
+     "role_id": 1},
+    {"email": "maria@gmail.com",
+     "name": "Maria Perez",
         "password": "123456789",
-        "role_id": 2
-    },
-    {
-        "email": "maria@gmail.com",
-        "name": "Jose Hernandez",
-        "password": "123456789",
-        "role_id": 2
-    },
-    {
-        "email": "luis@gmail.com",
-        "name": "Luis Miguel",
-        "password": "123456789",
-        "role_id": 2
-    },
-    {
-        "email": "sofia@gmail.com",
-        "name": "Sofia Reyes",
-        "password": "123456789",
-        "role_id": 2
-    }
+        "role_id": 2}
 ]
+
 categories = [
-    {
-        "name": "Ciencia ficción"
-    },
-    {
-        "name": "Fantasía"
-    },
-    {
-        "name": "No ficción"
-    }
+    {"name": "Ciencia ficción"},
+    {"name": "Fantasía"},
+    {"name": "No ficción"},
+    {"name": "Novela histórica"},
+    {"name": "Ensayo"},
+    {"name": "Literatura clásica"},
+    {"name": "Misterio"},
+    {"name": "Autoayuda"}
 ]
 authors = [
-    {
-        "name": "Isaac Asimov",
-    },
-    {
-        "name": "J.R.R. Tolkien",
-    },
-    {
-        "name": "George Orwell",
-    }
+    {"name": "Isaac Asimov"},
+    {"name": "J.R.R. Tolkien"},
+    {"name": "George Orwell"},
+    {"name": "Stephen King"},
+    {"name": "Jane Austen"},
+    {"name": "Yuval Noah Harari"},
+    {"name": "Gabriel García Márquez"},
+    {"name": "Dan Brown"},
+    {"name": "Victor Hugo"},
+    {"name": "Sun Tzu"}
 ]
 products = [
     {
-        "name": "Producto de Ejemplo",
-        "price": 19.99,
-        "image_url": "https://example.com/image.jpg",
+        "name": "Fundación",
+        "price": 15.99,
+        "image_url": "https://covers.openlibrary.org/b/id/9288212-L.jpg",
         "is_featured": True,
-        "description": "Descripción del producto de ejemplo",
-        "detail_images": [
-            "https://example.com/detail1.jpg",
-            "https://example.com/detail2.jpg"
-        ],
-        "rating": 4,
-        "product_stock": 100,
+        "description": "Primera novela de la saga de la Fundación de Isaac Asimov.",
+        "detail_images": [],
+        "rating": 5,
+        "product_stock": 30,
         "category_id": 1
     },
     {
-        "name": "Otro Producto",
-        "price": 29.99,
-        "image_url": "https://example.com/another_image.jpg",
-        "is_featured": False,
-        "description": "Descripción de otro producto",
-        "detail_images": [
-            "https://example.com/detail3.jpg",
-            "https://example.com/detail4.jpg"
-        ],
+        "name": "El Señor de los Anillos: La Comunidad del Anillo",
+        "price": 19.99,
+        "image_url": "https://covers.openlibrary.org/b/id/8231996-L.jpg",
+        "is_featured": True,
+        "description": "Primer volumen de la saga de Tolkien.",
+        "detail_images": [],
         "rating": 5,
-        "product_stock": 50,
+        "product_stock": 25,
         "category_id": 2},
     {
-        "name": "Tercer Producto",
-        "price": 39.99,
-        "image_url": "https://example.com/third_image.jpg",
+        "name": "1984",
+        "price": 12.99,
+        "image_url": "https://covers.openlibrary.org/b/id/153541-L.jpg",
         "is_featured": True,
-        "description": "Descripción del tercer producto",
-        "detail_images": [
-            "https://example.com/detail5.jpg",
-            "https://example.com/detail6.jpg"
-        ],
-        "rating": 3,
-        "product_stock": 75,
+        "description": "Distopía clásica escrita por George Orwell.",
+        "detail_images": [],
+        "rating": 5,
+        "product_stock": 40,
+        "category_id": 1
+    },
+    {
+        "name": "It",
+        "price": 18.75,
+        "image_url": "https://covers.openlibrary.org/b/id/7884861-L.jpg",
+        "is_featured": False,
+        "description": "Terrorífica novela de Stephen King.",
+        "detail_images": [],
+        "rating": 4,
+        "product_stock": 20,
+        "category_id": 7
+    },
+    {
+        "name": "Orgullo y prejuicio",
+        "price": 10.50,
+        "image_url": "https://covers.openlibrary.org/b/id/8221255-L.jpg",
+        "is_featured": True,
+        "description": "Obra maestra de Jane Austen.",
+        "detail_images": [],
+        "rating": 5,
+        "product_stock": 15,
+        "category_id": 6
+    },
+    {
+        "name": "Sapiens: De animales a dioses",
+        "price": 17.99,
+        "image_url": "https://covers.openlibrary.org/b/id/8312161-L.jpg",
+        "is_featured": True,
+        "description": "Historia de la humanidad por Yuval Noah Harari.",
+        "detail_images": [],
+        "rating": 5,
+        "product_stock": 50,
         "category_id": 3
+    },
+    {
+        "name": "Cien años de soledad",
+        "price": 14.99,
+        "image_url": "https://covers.openlibrary.org/b/id/8228691-L.jpg",
+        "is_featured": True,
+        "description": "Obra cumbre del realismo mágico de García Márquez.",
+        "detail_images": [],
+        "rating": 5,
+        "product_stock": 35,
+        "category_id": 6
+    },
+    {
+        "name": "Ángeles y demonios",
+        "price": 13.99,
+        "image_url": "https://covers.openlibrary.org/b/id/240218-L.jpg",
+        "is_featured": False,
+        "description": "Thriller de misterio por Dan Brown.",
+        "detail_images": [],
+        "rating": 4,
+        "product_stock": 22,
+        "category_id": 7
+    },
+    {
+        "name": "Los miserables",
+        "price": 16.99,
+        "image_url": "https://covers.openlibrary.org/b/id/11155842-L.jpg",
+        "is_featured": True,
+        "description": "Clásico histórico de Victor Hugo.",
+        "detail_images": [],
+        "rating": 5,
+        "product_stock": 28,
+        "category_id": 6
+    },
+    {
+        "name": "El arte de la guerra",
+        "price": 9.99,
+        "image_url": "https://covers.openlibrary.org/b/id/8226096-L.jpg",
+        "is_featured": False,
+        "description": "Tratado militar y filosófico de Sun Tzu.",
+        "detail_images": [],
+        "rating": 4,
+        "product_stock": 50,
+        "category_id": 5
+    },
+    {
+        "name": "La guerra de los mundos",
+        "price": 12.49,
+        "image_url": "https://covers.openlibrary.org/b/id/8218694-L.jpg",
+        "is_featured": False,
+        "description": "Clásico de ciencia ficción de H.G. Wells.",
+        "detail_images": [],
+        "rating": 4,
+        "product_stock": 30,
+        "category_id": 1
+    },
+    {
+        "name": "El Hobbit",
+        "price": 13.49,
+        "image_url": "https://covers.openlibrary.org/b/id/8101350-L.jpg",
+        "is_featured": True,
+        "description": "Precuela de El Señor de los Anillos.",
+        "detail_images": [],
+        "rating": 5,
+        "product_stock": 30,
+        "category_id": 2
+    },
+    {
+        "name": "Animal Farm",
+        "price": 9.99,
+        "image_url": "https://covers.openlibrary.org/b/id/8775117-L.jpg",
+        "is_featured": False,
+        "description": "Alegoría política de Orwell.",
+        "detail_images": [],
+        "rating": 4,
+        "product_stock": 20,
+        "category_id": 6
+    },
+    {
+        "name": "Carrie",
+        "price": 10.99,
+        "image_url": "https://covers.openlibrary.org/b/id/8234669-L.jpg",
+        "is_featured": False,
+        "description": "Primera novela publicada por Stephen King.",
+        "detail_images": [],
+        "rating": 4,
+        "product_stock": 18,
+        "category_id": 7
+    },
+    {
+        "name": "Emma",
+        "price": 11.99,
+        "image_url": "https://covers.openlibrary.org/b/id/7222246-L.jpg",
+        "is_featured": False,
+        "description": "Novela de costumbres de Jane Austen.",
+        "detail_images": [],
+        "rating": 4,
+        "product_stock": 16,
+        "category_id": 6
+    },
+    {
+        "name": "Homo Deus",
+        "price": 18.50,
+        "image_url": "https://covers.openlibrary.org/b/id/11123387-L.jpg",
+        "is_featured": False,
+        "description": "Futuro de la humanidad según Harari.",
+        "detail_images": [],
+        "rating": 4,
+        "product_stock": 40,
+        "category_id": 3
+    },
+    {
+        "name": "El coronel no tiene quien le escriba",
+        "price": 10.49,
+        "image_url": "https://covers.openlibrary.org/b/id/8130075-L.jpg",
+        "is_featured": False,
+        "description": "Novela corta de Gabriel García Márquez.",
+        "detail_images": [],
+        "rating": 4,
+        "product_stock": 15,
+        "category_id": 6
+    },
+    {
+        "name": "Notre-Dame de París",
+        "price": 15.75,
+        "image_url": "https://covers.openlibrary.org/b/id/11142332-L.jpg",
+        "is_featured": False,
+        "description": "También conocida como El jorobado de Notre-Dame.",
+        "detail_images": [],
+        "rating": 5,
+        "product_stock": 25,
+        "category_id": 6
+    },
+    {
+        "name": "12 reglas para vivir",
+        "price": 16.95,
+        "image_url": "https://covers.openlibrary.org/b/id/9237916-L.jpg",
+        "is_featured": True,
+        "description": "Guía práctica de Jordan B. Peterson.",
+        "detail_images": [],
+        "rating": 4,
+        "product_stock": 35,
+        "category_id": 8
     }
 ]

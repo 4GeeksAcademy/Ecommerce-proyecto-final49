@@ -30,6 +30,8 @@ export const Registro = () => {
 
     const handleSubmit = async (event) => {
        event.preventDefault();
+    
+    
 
     const formData = new FormData();
     formData.append("name", user.name);
@@ -54,6 +56,37 @@ export const Registro = () => {
             console.error(error);
         }
     };
+
+    // Cambio para mejora 04JUL25
+    //     const payload = {
+    //         name: user.name,
+    //         email: user.email,
+    //         password: user.password,
+    //     };
+
+    //     const url = import.meta.env.VITE_BACKEND_URL;
+    //         try { 
+    //         const response = await fetch(`${url}/register`, {
+    //             method: "POST",
+    //             headers: {
+    //                 "Content-Type": "application/json",
+    //             },
+    //             body: JSON.stringify(payload),
+    //         });
+
+    //         if (response.status === 201) {
+    //             setUser(initialStateUser);
+    //             setRegistered(true); 
+    //         } else {
+    //             const errorData = await response.json();
+    //             alert(`Error al registrar usuario: ${errorData.message || 'El usuario ya existe o faltan datos.'}`);
+    //         }
+    //     } catch (error) {
+    //         alert("Error de red o del servidor. Por favor, inténtalo de nuevo.");
+    //         console.error("Error al enviar la solicitud de registro:", error);
+    //     }
+    // };
+    // Fin cambio para mejora 04JUL25
 
     return (
         <div className="container-fluid d-flex justify-content-center">

@@ -12,16 +12,15 @@ from api.admin import setup_admin
 from api.commands import setup_commands
 from flask_jwt_extended import JWTManager
 from flask_cors import CORS
-# from models import Person
 
 app = Flask(__name__)
 CORS(app, resources={r"/api/*": {"origins": "*"}}, supports_credentials=True)
+# La línea register_blueprint genera duplicidad del /api con el .env
 app.register_blueprint(api, url_prefix="/api")
 
 ENV = "development" if os.getenv("FLASK_DEBUG") == "1" else "production"
 static_file_dir = os.path.join(os.path.dirname(
     os.path.realpath(__file__)), '../dist/')
-# app = Flask(__name__)
 # app.url_map.strict_slashes = False
 
 
@@ -47,9 +46,6 @@ setup_admin(app)
 
 # add the admin
 setup_commands(app)
-
-# Add all endpoints form the API with a "api" prefix
-# app.register_blueprint(api, url_prefix='/api')
 
 # Handle/serialize errors like a JSON object
 

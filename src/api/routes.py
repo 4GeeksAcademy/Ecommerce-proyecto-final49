@@ -593,7 +593,7 @@ def stripe_webhook():
         db.session.commit()
         print("Orden creada desde webhook Stripe ✅")
 
-        # endpoint para popular la base ded atos
+        # endpoint para popular la base de datos
 @api.route("/populate-user", methods=["GET"])
 def populate_users():
     for rol in roles:
@@ -624,9 +624,15 @@ def populate_users():
             detail_images=product.get("detail_images", []),
             rating=product.get("rating", 0),
             product_stock=product.get("product_stock", 0),
-            category_id=product.get("category_id")
+            category_id=product.get("category_id"),
         )
         db.session.add(new_product)
+        for author_id in product.get("author_ids", []):
+            author = Author.query.get(author_id)
+            if author:
+                new_product.authors.append(author)
+    db.session.flush()
+    # Commit all changes to the database
     try:
         db.session.commit()
         return jsonify("Populate success"), 201
