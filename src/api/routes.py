@@ -14,7 +14,7 @@ from api.models import db, CartItem, Product, ContactMessage, Order, OrderItem, 
 # import stripe
 from .data import users, categories, authors, products, roles
 from sqlalchemy import func
-import stripe
+# import stripe
 
 
 
