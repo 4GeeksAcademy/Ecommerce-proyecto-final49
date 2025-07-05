@@ -15,7 +15,9 @@ from flask_cors import CORS
 # from models import Person
 
 app = Flask(__name__)
-CORS(app, resources={r"/api/*": {"origins": "*"}}, supports_credentials=True)
+frontend_origin = os.getenv("FRONTEND_URL", "*")
+CORS(app, resources={r"/api/*": {"origins": frontend_origin}}, supports_credentials=True)
+
 app.register_blueprint(api, url_prefix="/api")
 
 ENV = "development" if os.getenv("FLASK_DEBUG") == "1" else "production"
@@ -41,6 +43,9 @@ else:
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 MIGRATE = Migrate(app, db, compare_type=True)
 db.init_app(app)
+
+with app.app_context():
+    db.create_all()
 
 # add the admin
 setup_admin(app)

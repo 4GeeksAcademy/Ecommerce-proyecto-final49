@@ -63,7 +63,7 @@ def send_email(subject, to, body):
 
     message = MIMEMultipart("alternative")
     message["subject"] = subject
-    message["From"] = "blacklottus.programacion@gmail.com"
+    message["From"] = email_address
     message["to"] = to
 
     html = f"""<html> 
