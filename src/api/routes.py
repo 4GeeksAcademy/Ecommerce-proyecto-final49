@@ -515,7 +515,7 @@ def stripe_webhook():
         db.session.commit()
         print("Orden creada desde webhook Stripe ✅")
 
-        # endpoint para popular la base ded atos
+        # endpoint para popular la base de datos
 @api.route("/populate-user", methods=["GET"])
 def populate_users():
     for rol in roles:
