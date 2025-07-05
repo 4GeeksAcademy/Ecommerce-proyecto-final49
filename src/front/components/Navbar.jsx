@@ -1,8 +1,8 @@
 import React from "react";
 import useGlobalReducer from "../hooks/useGlobalReducer.jsx";
 import { Link, useNavigate } from "react-router-dom";
-import milPaginasLogo from "../assets/img/mil_paginas.png"
-import "../styles/navbar.css"
+import milPaginasLogo from "../assets/img/mil_paginas.png";
+import "../styles/navbar.css";
 
 export const Navbar = ({ onSearch, searchValue }) => {
   const { store, dispatch } = useGlobalReducer();
@@ -50,9 +50,10 @@ export const Navbar = ({ onSearch, searchValue }) => {
         <div className="collapse navbar-collapse" id="navbarNav">
           <ul className="navbar-nav me-auto mb-2 mb-lg-0 order-lg-1">
             <li>
-                <Link className="ms-4 navbar-link" to="/categorias">Categorías</Link>              
+              <Link className="ms-4 navbar-link" to="/categorias">
+                Categorías
+              </Link>
             </li>
-
           </ul>
           <form className="d-flex me-auto" onSubmit={onSubmitSearch}>
             <input
@@ -73,86 +74,7 @@ export const Navbar = ({ onSearch, searchValue }) => {
               Buscar
             </button>
           </form>
-</div>
-
-          {/* {onSearch && (
-        <form
-          className="banner__search d-flex" 
-          onSubmit={(event) => {
-            event.preventDefault();
-            const searcher = event.target.elements.search.value.trim();
-            console.log("navbar, resultado:", searcher)
-            if (searcher.length > 0) {
-              onSearch(searcher);
-            }
-          }}
-        >
-          <input
-            name="search"
-            type="search"
-            placeholder="que estas buscando"
-            className="form-control"
-            value={searchValue}
-            onChange={(event) => onSearch(event.target.value)}
-          />
-
-          <button type="submit" className="btn btn-primary">
-            Buscar
-          </button>
-        </form>
-           )} */}
-          {/* {onSearch && (
-        <form
-          className="banner__search d-flex"
-          onSubmit={(event) => {
-            event.preventDefault();
-            const searcher = event.target.elements.search.value.trim();
-            if (searcher.length > 0) {
-              onSearch(searcher);
-            }
-          }}
-        >
-          <input
-            name="search"
-            type="text"
-            placeholder="que estas buscando"
-            className="form-control"
-            value={searchValue}
-            onChange={(event) => onSearch(event.target.value)}
-          />
-          <button type="submit" className="btn btn-primary">
-            Buscar
-          </button>
-        </form> */}
-          )
-          {/* <div className="input-group">
-              <input
-                className="form-control"
-                type="search"
-                placeholder="Buscar libros, autores, géneros..."
-                aria-label="Search"
-                value={searchValue}
-                onChange={(event) => setSearchValue(event.target.value)}
-                
-              />
-              </div> */}
-          {/* <form
-            className="d-flex mx-0 mx-lg-5 mb-3 my-lg-0 order-lg-2 flex-grow-1"
-            role="search"
-          >
-            <div className="input-group">
-              <input
-                className="form-control"
-                type="search"
-                placeholder="Buscar libros, autores o categorías..."
-                aria-label="Search"
-              />
-              <button className="btn btn-primary" type="submit">
-                <i className="fa-solid fa-magnifying-glass"></i>
-              </button>
-            </div>
-          </form> */}
-        
+        </div>
 
         <div className="btn-group ms-auto">
           <button
