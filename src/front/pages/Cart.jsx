@@ -49,7 +49,7 @@ export const Cart = () => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`, // Muy importante para rutas protegidas
+          Authorization: `Bearer ${token}`, 
         },
         body: JSON.stringify({
           items: displayedCartItems.map((item) => ({
