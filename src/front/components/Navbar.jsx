@@ -1,4 +1,4 @@
-import React from "react";
+import React from "react"; 
 import useGlobalReducer from "../hooks/useGlobalReducer.jsx";
 import { Link, useNavigate } from "react-router-dom";
 import milPaginasLogo from "../assets/img/mil_paginas.png";
@@ -25,6 +25,7 @@ export const Navbar = ({ onSearch, searchValue }) => {
     console.log("Busqueda del navbar:", searchBar);
     if (searchBar) {
       navigate(`/?search=${encodeURIComponent(searchBar)}`);
+      onSearch("");
     }
   }
 
@@ -73,6 +74,7 @@ export const Navbar = ({ onSearch, searchValue }) => {
                 onSearch(event.target.value);
                 if (event.target.value.trim() === "") {
                   navigate(`/`);
+                  onSearch("");
                 }
               }}
             />

@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from "react";
 import useGlobalReducer from "../hooks/useGlobalReducer.jsx";
 import { useSearchParams } from "react-router-dom";
@@ -12,15 +13,15 @@ export const Home = () => {
   const [authors, setAuthors] = useState([]);
   const [selectedCategoryId, setSelectedCategoryId] = useState(null);
   const [selectedAuthorId, setSelectedAuthorId] = useState(null);
-  const [searchText, setSearchText] = useState("");
-  console.log(store.token);
-  console.log(store);
-
-  const [searchParams] = useSearchParams();
-  useEffect(() => {
-    const sB = searchParams.get("search") ?? "";
+  const [searchText, setSearchText] = useState('');
+  
+const [searchParams] = useSearchParams();
+useEffect(() => {
+  const sB =searchParams.get('search') ?? "";
     setSearchText(sB);
   }, [searchParams]);
+
+  
 
   const bkUrl = import.meta.env.VITE_BACKEND_URL;
 
@@ -55,9 +56,9 @@ export const Home = () => {
         if (selectedAuthorId !== null)
           queryParameters.append("author_id", selectedAuthorId);
 
-        if (searchText !== "") {
-          queryParameters.append("search", searchText);
-        }
+		if (searchText !== '') {
+			queryParameters.append('search', searchText);
+		}
 
         const requestUrl = `${bkUrl}/products${
           queryParameters.toString() ? "?" + queryParameters.toString() : ""
@@ -65,6 +66,7 @@ export const Home = () => {
 
         console.log("bkUrl=", bkUrl);
         console.log("lammando a:", requestUrl);
+
 
         const productsResponse = await fetch(requestUrl);
         const productsData = await productsResponse.json();
@@ -76,7 +78,7 @@ export const Home = () => {
         }
       } catch (loadError) {
         console.error("Error al cargar productos filtrados:", loadError);
-        setProducts([]);
+		setProducts([]);
       }
     }
 
@@ -91,10 +93,10 @@ export const Home = () => {
 
   const handleCategorySelect = (categoryId) => {
     setSelectedCategoryId(categoryId);
-    setSearchText("");
-  };
+    setSearchText('');
+  }
 
-  //  console.log('productos recibidos:', products);
+//  console.log('productos recibidos:', products);
 
   return (
     <div className="home-container text-center mt-5">
@@ -105,9 +107,9 @@ export const Home = () => {
           subtitle="Con la compra de mas de $50 el envio es gratis"
           onSearch={handleSearch}
           onCategorySelect={handleCategorySelect}
-          searchValue={searchText}
+		  searchValue={searchText}
           categories={categories}
-          authors={authors}
+		  authors={authors}
         />
         </div>
 
