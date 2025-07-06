@@ -125,7 +125,12 @@ def handle_password_reset():
 @api.route('/me', methods=["GET"])
 @jwt_required()
 def get_user_info():
+    print(">>> Entró a /api/me")
+
     user_id = get_jwt_identity()
+
+    # línea 131. Validación del usuario autenticado
+    print("Usuario autenticado con ID:", user_id)
     user = User.query.get(user_id)
     print(user)
     if not user:
@@ -212,8 +217,8 @@ def get_products():
                     db.or_(
                         func.unaccent(func.lower(Product.name)).ilike(
                             f'%{search_term}%'),
-                        func.unaccent(func.lower(Product.description)).ilike(
-                            f'%{search_term}%'),
+                        func.unaccent(func.lower(Product.description)
+                                      ).ilike(f'%{search_term}%'),
                         func.unaccent(func.lower(Category.name)
                                       ).ilike(f'%{search_term}%'),
                         func.unaccent(func.lower(Author.name)).ilike(

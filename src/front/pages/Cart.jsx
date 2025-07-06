@@ -7,7 +7,10 @@ export const Cart = () => {
   const navigate = useNavigate();
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
-  const displayedCartItems = store.token ? store.backendCart : store.localCart;
+  // const displayedCartItems = store.token ? store.localCart : store.backendCart;
+  const displayedCartItems = store.token ? store.localCart : store.localCart;
+
+  console.log(store);
 
   useEffect(() => {
     if (store.token) {
@@ -128,6 +131,9 @@ export const Cart = () => {
           ))}
 
           <hr />
+          <Link to="/" className="btn btn-primary text-white ms-3">
+            Comprar más
+          </Link>
           <div className="cart-summary mt-4 p-3 border rounded bg-light">
             <h4>
               Total: <span className="text-primary">${getTotal()}</span>
