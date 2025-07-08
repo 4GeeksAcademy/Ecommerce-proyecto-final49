@@ -14,14 +14,14 @@ export const Registro = () => {
   const [registered, setRegistered] = useState(false);
   const navigate = useNavigate();
 
-  // useEffect(() => {
-  //   if (registered) {
-  //     const timer = setTimeout(() => {
-  //       navigate("/iniciar-sesion");
-  //     }, 3000);
-  //     return () => clearTimeout(timer);
-  //   }
-  // }, [registered, navigate]);
+  useEffect(() => {
+    if (registered) {
+      const timer = setTimeout(() => {
+        navigate("/iniciar-sesion");
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [registered, navigate]);
 
   const handleChange = ({ target }) => {
     setUser({

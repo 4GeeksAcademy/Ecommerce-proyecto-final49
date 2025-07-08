@@ -72,14 +72,14 @@
 
 .banner__categories .btn-outline-secondary:hover,
 .banner__categories .btn-outline-secondary:focus {
-  background-color: rgb(18, 53, 53);
+  background-color: rgb(14, 230, 230);
   border-color: black;
   color: beige;
 }
 
 .banner__categories .btn-outline-secondary {
-  background-color: rgb(147, 151, 151);
-  color: rgb(12, 116, 177);
+  /* background-color:  rgb(21, 85, 138); */
+  color: black;
   border-color: rgb(8, 146, 189);
   font-weight: 700;
   line-height: 1.25;

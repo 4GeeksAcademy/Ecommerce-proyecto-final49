@@ -29,9 +29,9 @@ const AllBooks = () => {
   }, []);
 
   return (
-    <div className="container mt-4">
+    <div className="container mt-4 text-center">
       <h1> Todos nuestros libros</h1>
-      <div className="row">
+      <div className="row mx">
         {products.map((book) => (
           <div key={book.id} className="col-12 col-sm-6 col-md-3 mb-4">
             <ProductCard product={book} onAddToCart={null} />
