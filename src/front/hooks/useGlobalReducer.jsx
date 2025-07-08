@@ -52,8 +52,20 @@ export function StoreProvider({ children }) {
         dispatch({ type: "ADD_ME", payload: null });
       },
 
-
       getUserInfo: async () => {
+        console.log("Este es el token en getUserInfo antes del const token:", localStorage.getItem("jwt_token"))
+        // Código nuevo para hacer pruebas para que mantenga el token 06JUL (1) ***
+        const token = localStorage.getItem("jwt_token");
+        console.log("Este es el token en getUserInfo después del const token:", localStorage.getItem("jwt_token"));
+
+        // const token = localStorage.getItem("jwt_token");
+
+        if (!token || token === "null" || token === "undefined") {
+          console.warn("Token inválido o ausente en getUserInfo.");
+          return false;
+        }
+        // Fin código nuevo para hacer pruebas para que mantenga el token 06JUL (1) ***
+
         // const token = tokenArg || localStorage.getItem("jwt_token");
 
         // // if (!token || token === "null" || token === "undefined") {
@@ -61,7 +73,6 @@ export function StoreProvider({ children }) {
         //   console.warn("Token inválido o ausente en getUserInfo.");
         //   return false;
         // }
-
 
         try {
           const response = await fetch(
@@ -75,12 +86,9 @@ export function StoreProvider({ children }) {
 
           console.log(response);
 
-          if (!response.ok) {
-            //   if (response.status === 401) {
-            //     allActions.logout();
-            //   }
-            //   throw new Error("Fallo al obtener la información del usuario");
+          if (!response.ok) { 
             console.log(response);
+
           }
           const data = await response.json();
           dispatch({ type: "ADD_ME", payload: data });
@@ -91,6 +99,7 @@ export function StoreProvider({ children }) {
           return false;
         }
       },
+      // FIN CODIGO ORIGINAL
 
       addToCart: async (product, quantity = 1) => {
         const token = store.token || localStorage.getItem("jwt_token");
@@ -129,7 +138,7 @@ export function StoreProvider({ children }) {
         if (token && store.user) {
           try {
             const response = await fetch(
-              `${import.meta.env.VITE_BACKEND_URL}/api/cart/${itemId}`,
+              `${import.meta.env.VITE_BACKEND_URL}/cart/${itemId}`,
               {
                 method: "DELETE",
                 headers: { Authorization: `Bearer ${token}` },
@@ -154,7 +163,7 @@ export function StoreProvider({ children }) {
         if (token && store.user) {
           try {
             const response = await fetch(
-              `${import.meta.env.VITE_BACKEND_URL}/api/cart/clear`,
+              `${import.meta.env.VITE_BACKEND_URL}/cart/clear`,
               {
                 method: "DELETE",
                 headers: { Authorization: `Bearer ${token}` },
@@ -180,6 +189,7 @@ export function StoreProvider({ children }) {
       },
 
       getBackendCart: async (tokenArg) => {
+
         const token = tokenArg || localStorage.getItem("jwt_token");
         if (!token) {
           console.log(
@@ -190,7 +200,7 @@ export function StoreProvider({ children }) {
         }
         try {
           const response = await fetch(
-            `${import.meta.env.VITE_BACKEND_URL}/api/cart`,
+            `${import.meta.env.VITE_BACKEND_URL}/cart`,
             {
               headers: { Authorization: `Bearer ${token}` },
             }
@@ -230,7 +240,7 @@ export function StoreProvider({ children }) {
         }
         try {
           const response = await fetch(
-            `${import.meta.env.VITE_BACKEND_URL}/api/cart`,
+            `${import.meta.env.VITE_BACKEND_URL}/cart`,
             {
               method: "POST",
               headers: {
@@ -254,24 +264,53 @@ export function StoreProvider({ children }) {
     return allActions;
   }, [store.localCart, dispatch]);
 
+  // Código original comentado para hacer pruebas 06JUL ***
+  // useEffect(() => {
+  //   console.log("Este es el segundo useEffect, y trae el valor de token:", localStorage.getItem("jwt_token"))
+  //   const token = localStorage.getItem("jwt_token");
+  //   if (token && !store.token) {
+  //     dispatch({ type: "LOGIN", payload: { token: token, user_data: null } });
+  //   }
+  //   if (store.token) {
+  //     actions.getUserInfo(store.token);
+  //   } else {
+  //     dispatch({ type: "ADD_ME", payload: null });
+  //   }
+  // }, [store.token, actions]);
+  // Fin código original comentado para hacer pruebas 06JUL ***
+
+  // Código de prueba ***
   useEffect(() => {
     const token = localStorage.getItem("jwt_token");
-    if (token && !store.token) {
-      dispatch({ type: "LOGIN", payload: { token: token, user_data: null } });
-    }
-    if (store.token) {
-      actions.getUserInfo(store.token);
-    } else {
-      dispatch({ type: "ADD_ME", payload: null });
-    }
-  }, [store.token, actions]);
-
-  useEffect(() => {
-    if (actions) {
-      actions.getUserInfo();
-      actions.syncLocalCartWithStore();
+    console.log("useEffect inicial, token encontrado:", token);
+    if (token && token !== "null" && token !== "undefined") {
+      dispatch({ type: "UPDATE_TOKEN", payload: token });
     }
   }, []);
+  // Fin código de prueba ***
+
+  // Código original comentado para hacer pruebas 06JUL ***
+  // useEffect(() => {
+    
+  //   if (actions) {
+  //     actions.getUserInfo();
+  //     actions.syncLocalCartWithStore();
+  //   }
+  // }, []);
+  // Fin código original comentado para hacer pruebas 06JUL ***
+
+  // Código nuevo para hacer pruebas para que mantenga el token 07JUL (4) ***
+    useEffect(() => {
+      if (store.token) {
+        console.log("Token presente en el store. Obteniendo info del usuario...");
+        actions.getUserInfo();
+      } else {
+        dispatch({ type: "ADD_ME", payload: null });
+      }
+
+      actions.syncLocalCartWithStore();
+    }, [store.token]);
+  // Fin código nuevo para hacer pruebas para que mantenga el token 07JUL (4) ***
 
   return (
     <StoreContext.Provider value={{ store, dispatch, actions }}>

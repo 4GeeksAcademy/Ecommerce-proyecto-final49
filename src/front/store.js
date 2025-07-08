@@ -21,8 +21,8 @@ export const initialStore = () => {
         background: null,
       },
     ],
-    token: null || localStorage.getItem.token,
-    // token: token,
+    // token: null || localStorage.getItem.token,
+    token: token,
     user: null,
 
     localCart: localCart,
@@ -52,7 +52,9 @@ export default function storeReducer(store, action = {}) {
       };
 
     case "UPDATE_TOKEN":
-      localStorage.setItem("token", action.payload);
+      // localStorage.setItem("token", action.payload);
+      console.log("UPDATE_TOKEN payload:", action.payload);
+      localStorage.setItem("jwt_token", action.payload);
       return {
         ...store,
         token: action.payload,

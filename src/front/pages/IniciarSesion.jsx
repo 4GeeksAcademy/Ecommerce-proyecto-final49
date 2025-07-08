@@ -51,6 +51,7 @@ export const IniciarSesion = () => {
         }
       );
       const data = await resp.json();
+      console.log("Token desde backend:", data.token);
       if (resp.ok) {
         dispatch({
           type: "UPDATE_TOKEN",

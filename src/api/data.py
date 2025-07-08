@@ -79,13 +79,14 @@ authors = [
     {"name": "Gabriel García Márquez"},
     {"name": "Dan Brown"},
     {"name": "Victor Hugo"},
-    {"name": "Sun Tzu"}
+    {"name": "Sun Tzu"},
+    {"name": "Jordan B Peterson"},
 ]
 products = [
     {
         "name": "Fundación",
         "price": 15.99,
-        "image_url": "https://covers.openlibrary.org/b/id/9288212-L.jpg",
+        "image_url": "https://images.cdn1.buscalibre.com/fit-in/360x360/52/d3/52d3769fb60a4c597eb4c76cca646f1a.jpg",
         "is_featured": True,
         "description": "Primera novela de la saga de la Fundación de Isaac Asimov.",
         "detail_images": [],
@@ -97,7 +98,7 @@ products = [
     {
         "name": "El Señor de los Anillos: La Comunidad del Anillo",
         "price": 19.99,
-        "image_url": "https://covers.openlibrary.org/b/id/8231996-L.jpg",
+        "image_url": "https://www.isliada.org/static/images/2018/08/el-senor-de-los-anillos.jpg",
         "is_featured": True,
         "description": "Primer volumen de la saga de Tolkien.",
         "detail_images": [],
@@ -109,7 +110,7 @@ products = [
     {
         "name": "1984",
         "price": 12.99,
-        "image_url": "https://covers.openlibrary.org/b/id/153541-L.jpg",
+        "image_url": "https://miro.medium.com/v2/resize:fit:1200/1*LTr-PoAlBaNBYcVODU_1IQ.jpeg",
         "is_featured": True,
         "description": "Distopía clásica escrita por George Orwell.",
         "detail_images": [],
@@ -121,7 +122,7 @@ products = [
     {
         "name": "It",
         "price": 18.75,
-        "image_url": "https://covers.openlibrary.org/b/id/7884861-L.jpg",
+        "image_url": "https://images.cdn1.buscalibre.com/fit-in/360x360/03/0a/030a419b5cbfda84843b6b9fdc5d8273.jpg",
         "is_featured": False,
         "description": "Terrorífica novela de Stephen King.",
         "detail_images": [],
@@ -133,7 +134,7 @@ products = [
     {
         "name": "Orgullo y prejuicio",
         "price": 10.50,
-        "image_url": "https://covers.openlibrary.org/b/id/8221255-L.jpg",
+        "image_url": "https://m.media-amazon.com/images/I/812URWFCPOL._SY425_.jpg",
         "is_featured": True,
         "description": "Obra maestra de Jane Austen.",
         "detail_images": [],
@@ -145,7 +146,7 @@ products = [
     {
         "name": "Sapiens: De animales a dioses",
         "price": 17.99,
-        "image_url": "https://covers.openlibrary.org/b/id/8312161-L.jpg",
+        "image_url": "https://m.media-amazon.com/images/I/616SZzMK37L._SL1500_.jpg",
         "is_featured": True,
         "description": "Historia de la humanidad por Yuval Noah Harari.",
         "detail_images": [],
@@ -157,7 +158,7 @@ products = [
     {
         "name": "Cien años de soledad",
         "price": 14.99,
-        "image_url": "https://covers.openlibrary.org/b/id/8228691-L.jpg",
+        "image_url": "https://images.librotea.com/uploads/media/2014/04/14/cien-anos-de-soledad-t-d.jpeg",
         "is_featured": True,
         "description": "Obra cumbre del realismo mágico de García Márquez.",
         "detail_images": [],
@@ -169,7 +170,7 @@ products = [
     {
         "name": "Ángeles y demonios",
         "price": 13.99,
-        "image_url": "https://covers.openlibrary.org/b/id/240218-L.jpg",
+        "image_url": "https://assets.lectulandia.com/b/Dan%20Brown/Angeles%20y%20demonios%20(197)/big.jpg",
         "is_featured": False,
         "description": "Thriller de misterio por Dan Brown.",
         "detail_images": [],
@@ -181,7 +182,7 @@ products = [
     {
         "name": "Los miserables",
         "price": 16.99,
-        "image_url": "https://covers.openlibrary.org/b/id/11155842-L.jpg",
+        "image_url": "https://m.media-amazon.com/images/I/71OsAlMcW-L._SL1500_.jpg",
         "is_featured": True,
         "description": "Clásico histórico de Victor Hugo.",
         "detail_images": [],
@@ -193,7 +194,7 @@ products = [
     {
         "name": "El arte de la guerra",
         "price": 9.99,
-        "image_url": "https://covers.openlibrary.org/b/id/8226096-L.jpg",
+        "image_url": "https://http2.mlstatic.com/D_NQ_NP_670824-MLM85838535565_062025-O-libro-original-tarot-el-arte-de-la-guerra-estuche-sun-t.webp",
         "is_featured": False,
         "description": "Tratado militar y filosófico de Sun Tzu.",
         "detail_images": [],
@@ -205,7 +206,7 @@ products = [
     {
         "name": "La guerra de los mundos",
         "price": 12.49,
-        "image_url": "https://covers.openlibrary.org/b/id/8218694-L.jpg",
+        "image_url": "https://proassetspdlcom.cdnstatics2.com/usuaris/libros/thumbs/446ee0ce-6ae8-4b87-81ce-b4b307dc1c68/d_295_510/portada_la-guerra-de-los-mundos-integral_hitotsu-yokoshima_202506131108.webp",
         "is_featured": False,
         "description": "Clásico de ciencia ficción de H.G. Wells.",
         "detail_images": [],
@@ -217,7 +218,7 @@ products = [
     {
         "name": "El Hobbit",
         "price": 13.49,
-        "image_url": "https://covers.openlibrary.org/b/id/8101350-L.jpg",
+        "image_url": "https://th.bing.com/th/id/R.0468ea1ac317a6f896ecab60f3ab801f?rik=YlesNaHw178DNQ&amp;pid=ImgRaw&amp;r=0",
         "is_featured": True,
         "description": "Precuela de El Señor de los Anillos.",
         "detail_images": [],
@@ -227,9 +228,9 @@ products = [
         "author_ids": [2],
     },
     {
-        "name": "Animal Farm",
+        "name": "Rebelión en la granja",
         "price": 9.99,
-        "image_url": "https://covers.openlibrary.org/b/id/8775117-L.jpg",
+        "image_url": "https://losresumenes.com/wp-content/uploads/2024/01/George-Orwell-Rebelion-en-la-granja.-Resumen-y-analisis.jpg",
         "is_featured": False,
         "description": "Alegoría política de Orwell.",
         "detail_images": [],
@@ -241,7 +242,7 @@ products = [
     {
         "name": "Carrie",
         "price": 10.99,
-        "image_url": "https://covers.openlibrary.org/b/id/8234669-L.jpg",
+        "image_url": "https://cdn1.booknode.com/book_cover/5031/full/carrie-5030936.jpg",
         "is_featured": False,
         "description": "Primera novela publicada por Stephen King.",
         "detail_images": [],
@@ -253,7 +254,7 @@ products = [
     {
         "name": "Emma",
         "price": 11.99,
-        "image_url": "https://covers.openlibrary.org/b/id/7222246-L.jpg",
+        "image_url": "https://tse1.mm.bing.net/th/id/OIP.QSQaWQlJh2giLYbj2qYgaQHaKn?r=0&amp;rs=1&amp;pid=ImgDetMain&amp;o=7&amp;rm=3",
         "is_featured": False,
         "description": "Novela de costumbres de Jane Austen.",
         "detail_images": [],
@@ -265,7 +266,7 @@ products = [
     {
         "name": "Homo Deus",
         "price": 18.50,
-        "image_url": "https://covers.openlibrary.org/b/id/11123387-L.jpg",
+        "image_url": "https://www.marcialpons.es/media/img/portadas/2016/10/11/9788499926711.jpg",
         "is_featured": False,
         "description": "Futuro de la humanidad según Harari.",
         "detail_images": [],
@@ -277,7 +278,7 @@ products = [
     {
         "name": "El coronel no tiene quien le escriba",
         "price": 10.49,
-        "image_url": "https://covers.openlibrary.org/b/id/8130075-L.jpg",
+        "image_url": "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1167484006i/23875.jpg",
         "is_featured": False,
         "description": "Novela corta de Gabriel García Márquez.",
         "detail_images": [],
@@ -289,7 +290,7 @@ products = [
     {
         "name": "Inferno",
         "price": 14.29,
-        "image_url": "https://covers.openlibrary.org/b/id/8184861-L.jpg",
+        "image_url": "https://images.cdn1.buscalibre.com/fit-in/360x360/64/ca/64ca5c8ca10c572b20454ad89147debd.jpg",
         "is_featured": True,
         "description": "Otra entrega de la saga de Robert Langdon.",
         "detail_images": [],
@@ -301,7 +302,7 @@ products = [
     {
         "name": "Notre-Dame de París",
         "price": 15.75,
-        "image_url": "https://covers.openlibrary.org/b/id/11142332-L.jpg",
+        "image_url": "https://http2.mlstatic.com/D_NQ_NP_950236-MLU70778482528_082023-O.webp",
         "is_featured": False,
         "description": "También conocida como El jorobado de Notre-Dame.",
         "detail_images": [],
@@ -313,14 +314,14 @@ products = [
     {
         "name": "12 reglas para vivir",
         "price": 16.95,
-        "image_url": "https://covers.openlibrary.org/b/id/9237916-L.jpg",
+        "image_url": "https://tse4.mm.bing.net/th/id/OIP.VGs8ZvdGGMU3RRVQdf-MTAAAAA?r=0&amp;rs=1&amp;pid=ImgDetMain&amp;o=7&amp;rm=3",
         "is_featured": True,
         "description": "Guía práctica de Jordan B. Peterson.",
         "detail_images": [],
         "rating": 4,
         "product_stock": 35,
         "category_id": 10,
-        "author_ids": [10],
+        "author_ids": [11],
         }
 
 ]

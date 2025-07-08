@@ -1,7 +1,7 @@
 .product-card {
   background: rgb(202, 212, 214);
   border: 1px solid black;
-  border-radius: 4px;
+  border-radius: 8px;
   text-align: center;
   padding: 15px;
   box-shadow: 0 4px 8px rgb(21, 85, 138);
@@ -22,12 +22,14 @@
 
 .product-card__image {
   width: 100%;
+  height: auto;
   max-height: 250px;
   /* object-fit: contain; */
-  height: 250px;
-  object-fit: cover;
-  border-radius: 8px;
+  /* height: 250px; */
+  object-fit: contain;
+  border-radius: 25px;
   flex-shrink: 0;
+  display: block;
 }
 
 .product-card__name {

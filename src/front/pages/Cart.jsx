@@ -10,8 +10,6 @@ export const Cart = () => {
   // const displayedCartItems = store.token ? store.localCart : store.backendCart;
   const displayedCartItems = store.token ? store.localCart : store.localCart;
 
-  console.log(store);
-
   useEffect(() => {
     if (store.token) {
       actions.getBackendCart();

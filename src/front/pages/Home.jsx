@@ -1,5 +1,7 @@
+
 import React, { useEffect, useState } from "react";
 import useGlobalReducer from "../hooks/useGlobalReducer.jsx";
+import { useSearchAndFilter } from "../hooks/useSearchAndFilter";
 import { useSearchParams } from "react-router-dom";
 import Banner from "../components/Banner.jsx";
 import ProductCard from "../components/ProductCard.jsx";
@@ -12,15 +14,15 @@ export const Home = () => {
   const [authors, setAuthors] = useState([]);
   const [selectedCategoryId, setSelectedCategoryId] = useState(null);
   const [selectedAuthorId, setSelectedAuthorId] = useState(null);
-  const [searchText, setSearchText] = useState("");
-  console.log(store.token);
-  console.log(store);
+  const [searchText, setSearchText] = useState('');
 
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   useEffect(() => {
-    const sB = searchParams.get("search") ?? "";
+    const sB = searchParams.get('search') ?? "";
     setSearchText(sB);
   }, [searchParams]);
+
+
 
   const bkUrl = import.meta.env.VITE_BACKEND_URL;
 
@@ -55,16 +57,16 @@ export const Home = () => {
         if (selectedAuthorId !== null)
           queryParameters.append("author_id", selectedAuthorId);
 
-        if (searchText !== "") {
-          queryParameters.append("search", searchText);
+        if (searchText !== '') {
+          queryParameters.append('search', searchText);
         }
 
-        const requestUrl = `${bkUrl}/products${
-          queryParameters.toString() ? "?" + queryParameters.toString() : ""
-        }`;
+        const requestUrl = `${bkUrl}/products${queryParameters.toString() ? "?" + queryParameters.toString() : ""
+          }`;
 
-        console.log("bkUrl=", bkUrl);
-        console.log("lammando a:", requestUrl);
+        // console.log("bkUrl=", bkUrl);
+        // console.log("lammando a:", requestUrl);
+
 
         const productsResponse = await fetch(requestUrl);
         const productsData = await productsResponse.json();
@@ -83,7 +85,7 @@ export const Home = () => {
     loadFilteredProducts();
   }, [bkUrl, selectedCategoryId, selectedAuthorId, searchText]);
 
-  
+
 
   const handleSearch = (text) => {
     setSearchText(text);
@@ -91,8 +93,13 @@ export const Home = () => {
 
   const handleCategorySelect = (categoryId) => {
     setSelectedCategoryId(categoryId);
-    setSearchText("");
-  };
+    setSearchText('');
+  }
+
+  const isFiltering = Boolean(searchText || selectedCategoryId !== null || selectedAuthorId !== null);
+  const displayedProducts = isFiltering ? products : products.filter(p => p.is_featured).slice(0, 8);
+
+
 
   //  console.log('productos recibidos:', products);
 
@@ -100,15 +107,15 @@ export const Home = () => {
     <div className="home-container text-center mt-5">
       <div className="container text-center mt-5">
         <div className="mt-5 mb-5">
-        <Banner
-          title="No te pierdas estas ofertas"
-          subtitle="Con la compra de mas de $50 el envio es gratis"
-          onSearch={handleSearch}
-          onCategorySelect={handleCategorySelect}
-          searchValue={searchText}
-          categories={categories}
-          authors={authors}
-        />
+          <Banner
+            title="No te pierdas estas ofertas"
+            subtitle="Con la compra de mas de $50 el envio es gratis"
+            onSearch={handleSearch}
+            onCategorySelect={handleCategorySelect}
+            searchValue={searchText}
+            categories={categories}
+            authors={authors}
+          />
         </div>
 
         {/* <div className="row mb-4">
@@ -149,41 +156,62 @@ export const Home = () => {
           </div>
         </div> */}
 
-        <RecentViews bkUrl={bkUrl}/>
         
+
         {/* <h2>vista recientes</h2> */}
 
         <h2> Productos destacados</h2>
 
-            <div className="row">
-          {products.filter((p) => p.is_featured)
-          .slice(0, 8).map((p) => (
+        <div className="row">
 
-
-          // )) {
-          //   return (
-          //     p.is_featured && (
-
-                <div key={p.id} className="col-12 col-sm-6 col-md-3 mb-5">
-                  <ProductCard product={p} />
-                </div>
-              ))
-            }
-            {/* );
-          })} */}
-        </div>
-
-        {/* <h2> categorias destaca </h2>
-        <div className="row product-grid">
-          {products.map((p) => {
-            return (
-              <div key={p.id} className="col-12 col-sm-6 col-md-3 mb-4">
-                <ProductCard product={p} />
+          { displayedProducts.map((p) => (
+            <div key={p.id} className="col=12 col-sm-6 col-md-3 mb-5">
+              <ProductCard product={p}/>
               </div>
-            );
-          })}
-        </div> */}
-      </div>
-    </div>
+          ))}
+</div>
+<RecentViews bkUrl={bkUrl} />
+</div>
+</div>
   );
 };
+
+
+
+
+
+
+
+
+
+//           {/* {/* {products.filter((p) => p.is_featured)
+//           .slice(0, 8).map((p) => (
+
+
+//           // )) {
+//           //   return (
+//           //     p.is_featured && (
+
+//                 <div key={p.id} className="col-12 col-sm-6 col-md-3 mb-5">
+//                   <ProductCard product={p} />
+//                 </div>
+//               ))
+//             }
+//             {/* );
+//           })} */}
+//         {/* </div> */}
+
+//         {/* <h2> categorias destaca </h2>
+//         <div className="row product-grid">
+//           {products.map((p) => {
+//             return (
+//               <div key={p.id} className="col-12 col-sm-6 col-md-3 mb-4">
+//                 <ProductCard product={p} />
+//               </div>
+//             );
+//           })}
+//         </div> */}
+// //       </div>
+// //     </div> */}
+// //   );
+// // }; */}
