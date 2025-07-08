@@ -172,7 +172,7 @@ localStorage.setItem(key, JSON.stringify(next));
 
         {/*Bloque descripción del producto y precio*/}
         <div className="col-12 col-md-6 col-lg-3 py-4 description_font_size d-flex flex-column">
-          <Link to="/" className="text-decoration-none small_font_size">
+          <Link to="/" className="text-decoration-none fs-7">
             Ver más productos
           </Link>
           <p className="py-3 mb-0">
@@ -231,7 +231,8 @@ localStorage.setItem(key, JSON.stringify(next));
           <button
             type="button"
             className="btn btn-success w-100"
-            onClick={() => handleBuyNow()}
+            onClick={() => navigate('/cart')}
+            //onClick={() => handleBuyNow()}
             //disabled={product.stock <= 0}
           >
             Comprar ahora
@@ -246,7 +247,6 @@ localStorage.setItem(key, JSON.stringify(next));
           >
             Agregar al carrito
           </button>
-          <Link to="/cart">Ver carrito</Link>
         </div>
       </div>
     </div>

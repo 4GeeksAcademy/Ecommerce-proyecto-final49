@@ -1,4 +1,4 @@
-import React from "react"; 
+import React from "react";
 import useGlobalReducer from "../hooks/useGlobalReducer.jsx";
 import { Link, useNavigate } from "react-router-dom";
 import milPaginasLogo from "../assets/img/mil_paginas.png";
@@ -123,21 +123,7 @@ export const Navbar = ({ onSearch, searchValue }) => {
               </>
             ) : (
               <>
-                <li>
-                  <Link className="dropdown-item" to="/perfil">
-                    Mi perfil
-                  </Link>
-                </li>
-                <li>
-                  <Link className="dropdown-item" to="/favoritos">
-                    Favoritos
-                  </Link>
-                </li>
-                <li>
-                  <Link className="dropdown-item" to="/historial-de-compras">
-                    Mi historial de compras
-                  </Link>
-                </li>
+
               </>
             )}
             {store.token && (
