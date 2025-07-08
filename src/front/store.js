@@ -53,6 +53,7 @@ export default function storeReducer(store, action = {}) {
 
     case "UPDATE_TOKEN":
       // localStorage.setItem("token", action.payload);
+      console.log("UPDATE_TOKEN payload:", action.payload);
       localStorage.setItem("jwt_token", action.payload);
       return {
         ...store,

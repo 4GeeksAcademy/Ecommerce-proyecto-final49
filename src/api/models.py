@@ -92,6 +92,7 @@ class Product(db.Model):
     detail_images: Mapped[list] = mapped_column(JSON, nullable=True)
     rating: Mapped[int] = mapped_column(Integer, nullable=True)
     product_stock: Mapped[int] = mapped_column(Integer, nullable=False)
+    
 
     category_id: Mapped[int] = mapped_column(
         ForeignKey('category.id'), nullable=False)
