@@ -156,7 +156,7 @@ export const Home = () => {
           </div>
         </div> */}
 
-        
+
 
         {/* <h2>vista recientes</h2> */}
 
@@ -164,15 +164,15 @@ export const Home = () => {
 
         <div className="row">
 
-          { displayedProducts.map((p) => (
+          {displayedProducts.map((p) => (
             <div key={p.id} className="col=12 col-sm-6 col-md-3 mb-5">
-              <ProductCard product={p}/>
-              </div>
+              <ProductCard product={p} />
+            </div>
           ))}
-</div>
-<RecentViews bkUrl={bkUrl} />
-</div>
-</div>
+        </div>
+        <RecentViews bkUrl={bkUrl} />
+      </div>
+    </div>
   );
 };
 
