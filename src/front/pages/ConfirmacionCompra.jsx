@@ -8,16 +8,16 @@ export const ConfirmacionCompra = () => {
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
   useEffect(() => {
-    const paymentId = searchParams.get("payment_intent");
-    console.log("PaymentIntent recibido en URL:", paymentId);
+    const sessionId = searchParams.get("session_id");
+    console.log("Session ID recibido en URL:", sessionId);
 
-    if (paymentId) {
+    if (sessionId) {
       // Código para validar la url 07JUL ***
-      const fullUrl = `${backendUrl}/verifica-pago/${paymentId}`;
+      const fullUrl = `${backendUrl}/verifica-pago/${sessionId}`;
       console.log("Consultando al backend:", fullUrl);
       // Fin código para validar la url 07JUL ***
 
-      fetch(`${backendUrl}/verifica-pago/${paymentId}`)
+      fetch(`${backendUrl}/verifica-pago/${sessionId}`)
         .then((response) => response.json())
         .then((data) => setDatosPago(data))
         .catch((err) => console.error("Error al verificar el pago:", err));

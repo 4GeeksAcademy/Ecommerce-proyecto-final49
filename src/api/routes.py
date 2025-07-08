@@ -9,7 +9,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from base64 import b64encode
 import os
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
-from datetime import timedelta
+from datetime import timedelta, datetime, timezone
 import stripe
 from .data import users, categories, authors, products, roles
 from sqlalchemy import func
@@ -425,12 +425,14 @@ def create_checkout_session():
             payment_method_types=['card'],
             line_items=line_items,
             mode='payment',                                                                                                                                                                                                                                                                                                                                                                                                 
-            success_url=f"{os.getenv('FRONTEND_URL')}/confirmacion?payment_intent={{CHECKOUT_SESSION:PAYMENT_INTENT}}",
+            # success_url=f"{os.getenv('FRONTEND_URL')}/confirmacion?payment_intent={{CHECKOUT_SESSION:PAYMENT_INTENT}}",
+            success_url=f"{os.getenv('FRONTEND_URL')}/confirmacion?session_id={{CHECKOUT_SESSION_ID}}",
             cancel_url=os.getenv("FRONTEND_URL") + '/cancel',
             metadata={'user_id': user_id}
         )
         return jsonify({'url': session.url})
     except Exception as e:
+        print("Error verificando pago:", str(e))
         return jsonify({'error': str(e)}), 500
 
 
@@ -501,7 +503,6 @@ def getContactForm():
         return jsonify({"msg": f"Failed to retrieve messages: {str(error)}"}), 500
 
 # Webhook de Stripe
-
 @api.route('/webhook', methods=['POST'])
 def stripe_webhook():
     payload = request.data
@@ -534,23 +535,79 @@ def stripe_webhook():
         db.session.commit()
 
         for item in line_items['data']:
+            # Código original comentado 07JUL ***
+            # order_item = OrderItem(
+            #     order_id=new_order.id,
+            #     product_id=item['price']['product'],
+            #     product_name=item['description'],
+            #     product_description="",
+            #     quantity=item['quantity'],
+            #     price=item['amount_total'] / 100
+            # Fin código original comentado 07JUL ***
+
+            # Código nuevo de prueba ***
+            stripe_product_id = item['price']['product']
+            product = Product.query.filter_by(stripe_product_id=stripe_product_id).first()
+            if product is None:
+                # Producto no encontrado en la base de datos
+                print(f"Producto con Stripe ID {stripe_product_id} no encontrado en DB")
+                continue  # O maneja como prefieras
+
             order_item = OrderItem(
                 order_id=new_order.id,
-                product_id=item['price']['product'],
+                product_id=product.id,
                 product_name=item['description'],
                 product_description="",
                 quantity=item['quantity'],
                 price=item['amount_total'] / 100
+            # Fin código nuevo de prueba ***
+
             )
             db.session.add(order_item)
 
         db.session.commit()
-        print("Orden creada desde webhook Stripe ✅")
+        print("Orden creada desde webhook Stripe")
 
-@api.route('/verifica-pago/<string:payment_intent>', methods=['GET'])
-def verificar_pago(payment_intent):
+        # Vaciar carrito del usuario
+        CartItem.query.filter_by(user_id=user_id).delete()
+        db.session.commit()
+
+        # Envío de Email de confirmación
+        user = User.query.get(user_id)
+        if user:
+            subject = "Confirmación de compra en tu tienda"
+            body = f"""
+            <h2>Hola {user.name},</h2>
+            <p>Gracias por tu compra. Aquí tienes el detalle de tu pedido:</p>
+            <ul>
+            """
+            for item in line_items['data']:
+                body += f"<li>{item['description']} x {item['quantity']} - ${item['amount_total'] / 100:.2f}</li>"
+            body += f"""
+            </ul>
+            <p><strong>Total: ${total_amount:.2f} USD</strong></p>
+            <p>Estado del pago: {session['payment_status']}</p>
+            <p>Referencia: {session['payment_intent']}</p>
+            <p>Fecha: {datetime.fromtimestamp(session['created'], tz=timezone.utc).strftime('%Y-%m-%d %H:%M:%S UTC')}</p>
+            <p>¡Gracias por comprar en nuestra librería, que vuelvas!</p>
+            """
+
+            print("payment_intent:", session.get('payment_intent'))
+
+            email_sent = send_email(subject, user.email, body)
+            if email_sent:
+                print(f"Email de confirmación enviado a {user.email}")
+            else:
+                print("Error al enviar el email de confirmación")
+
+@api.route('/verifica-pago/<string:session_id>', methods=['GET'])
+def verificar_pago(session_id):
     try:
-        payment = stripe.PaymentIntent.retrieve(payment_intent)
+        # payment = stripe.PaymentIntent.retrieve(sessionId)
+        session = stripe.checkout.Session.retrieve(session_id)
+        payment_intent_id = session.payment_intent
+        payment = stripe.PaymentIntent.retrieve(payment_intent_id)
+
         return jsonify({
             "status": payment.status,
             "payment_method": payment.payment_method_types[0],
