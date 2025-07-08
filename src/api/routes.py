@@ -1,7 +1,7 @@
 '''
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 '''
-from flask import Flask, request, jsonify, url_for, Blueprint
+from flask import Flask, request, jsonify, url_for, Blueprint, abort
 from api.models import db, User, Product, Category, Author, CartItem, ContactMessage, Order, OrderItem, Role
 from api.utils import generate_sitemap, APIException, send_email, set_password, check_password, validate_email
 import cloudinary.uploader as upload
@@ -10,14 +10,12 @@ from base64 import b64encode
 import os
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
 from datetime import timedelta
-from api.models import db, CartItem, Product, ContactMessage, Order, OrderItem, Role
-# import stripe
+import stripe
 from .data import users, categories, authors, products, roles
 from sqlalchemy import func
-# import stripe
 
 
-# stripe.api_key = os.getenv("STRIPE_SECRET_KEY")
+stripe.api_key = os.getenv("STRIPE_SECRET_KEY")
 api = Blueprint('api', __name__)
 
 # ENDPOINT DEL LOGIN
@@ -71,7 +69,13 @@ def login():
     print(user.serialize())
 
     # additional_claims = {"role": user.role_id if user.role_id else "user"}
-    token = create_access_token(identity=user.id)
+    # Código original comentado porque el subject debe ser string 07JUL ***
+    # token = create_access_token(identity=user.id)
+    # Fin código original comentado porque el subject debe ser string 07JUL ***
+
+    # Código nuevo para solucionar el string en el subject 07JUL ***
+    token = create_access_token(identity=str(user.id))
+    # Fin código nuevo para solucionar el string en el subject 07JUL ***
 
     return jsonify({"token": token, "user": user.serialize()}), 200
 
@@ -126,14 +130,16 @@ def handle_password_reset():
 @api.route('/me', methods=["GET"])
 @jwt_required()
 def get_user_info():
-    print(">>> Entró a /api/me")
+    print("Entró a /api/me")
+
+    print("HEADERS:", dict(request.headers))
 
     user_id = get_jwt_identity()
-
-    # línea 131. Validación del usuario autenticado
     print("Usuario autenticado con ID:", user_id)
+
     user = User.query.get(user_id)
-    print(user)
+    print("Usuario cargado desde la DB:", user)
+
     if not user:
         return jsonify({'msg': "Usuario no encontrado"}), 404
     return jsonify(user.serialize()), 200
@@ -191,7 +197,7 @@ def change_email():
     db.session.commit()
 
     return jsonify({"msg": "Correo actualizado correctamente"}), 200
-
+                                                                                                                                                                                                                                                                                                                                                                                                                                    
 
 @api.route('/products', methods=['GET'])
 def get_products():
@@ -233,7 +239,7 @@ def get_products():
 
     if not products_list:
         return jsonify({'message': 'No hay productos'}), 404
-    return jsonify([product.serialize() for product in products_list]), 200
+    return jsonify([product.serialize() for product in products_list]), 200                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
 
 
 @api.route('/product/<int:id>', methods=['GET'])
@@ -242,7 +248,7 @@ def get_product(id):
     if not product:
         return jsonify({'error': 'Producto no encontrado'}), 404
     return jsonify(product.serialize()), 200
-
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
 
 @api.route('/products', methods=['POST'])
 def create_product():
@@ -275,14 +281,13 @@ def create_product():
 
     return jsonify(new_product.serialize()), 201
 
-
 @api.route('/categories', methods=['GET'])
 def list_categories():
     categories = Category.query.all()
     if not categories:
         return jsonify({'message': 'No hay categorías'}), 404
     return jsonify([category.serialize() for category in categories]), 200
-
+                                                     
 
 @api.route('/categories', methods=['POST'])
 def create_category():
@@ -300,8 +305,8 @@ def create_category():
     db.session.add(category)
     db.session.commit()
 
-    return jsonify(category.serialize()), 201
-
+    return jsonify(category.serialize()), 201                                                                                                                             
+                                                                                                                             
 
 @api.route('/authors', methods=['GET'])
 def list_authors():
@@ -328,11 +333,12 @@ def create_author():
     db.session.commit()
 
     return jsonify(author.serialize()), 201
-
+                                                                                                                                                 
+                                                                                                                                                                                                                                                                                                                                                  
 # RUTAS CARRITO DE COMPRAS
-
-
+                                                                                                                                                                                                     
 @api.route('/cart/<int:user_id>', methods=['GET'])
+@jwt_required()
 def get_cart(user_id):
     cart_items = CartItem.query.filter_by(user_id=user_id).all()
     result = []
@@ -370,7 +376,7 @@ def add_to_cart():
     db.session.commit()
     return jsonify({"msg": "Producto agregado al carrito"}), 201
 
-
+                                                                                                                                                                                                                                                                                              
 @api.route('/cart/<int:item_id>', methods=['DELETE'])
 def delete_cart_item(item_id):
     item = CartItem.query.get(item_id)
@@ -378,7 +384,7 @@ def delete_cart_item(item_id):
         return jsonify({"msg": "Item no encontrado"}), 404
     db.session.delete(item)
     db.session.commit()
-    return jsonify({"msg": "Item eliminado del carrito"}), 200
+    return jsonify({"msg": "Item eliminado del carrito"}), 200                                                                                                                                                                                                                                                                                                 
 
 
 @api.route('/cart/clear/<int:user_id>', methods=['DELETE'])
@@ -390,7 +396,6 @@ def clear_cart(user_id):
     return jsonify({"msg": "Carrito vaciado"}), 200
 
 # CHECKOUT
-
 
 @api.route('/create-checkout-session', methods=['POST'])
 @jwt_required()
@@ -419,8 +424,8 @@ def create_checkout_session():
         session = stripe.checkout.Session.create(
             payment_method_types=['card'],
             line_items=line_items,
-            mode='payment',
-            success_url=os.getenv("FRONTEND_URL") + '/success',
+            mode='payment',                                                                                                                                                                                                                                                                                                                                                                                                 
+            success_url=f"{os.getenv('FRONTEND_URL')}/confirmacion?payment_intent={{CHECKOUT_SESSION:PAYMENT_INTENT}}",
             cancel_url=os.getenv("FRONTEND_URL") + '/cancel',
             metadata={'user_id': user_id}
         )
@@ -469,13 +474,12 @@ def handleContactForm():
     except Exception as error:
         db.session.rollback()
         return jsonify({"msg": f"Error saving the info in the database: {str(error)}"}), 500
-
+        
 
 @api.route('/get-contactform-info', methods=["GET"])
 @jwt_required()
 def getContactForm():
     try:
-
         current_user_claims = get_jwt()
         if not current_user_claims.get("is_admin", False):
             return jsonify({"msg": "Administration role is required"}), 403
@@ -496,9 +500,7 @@ def getContactForm():
         print(f"Error al recuperar mensajes de la base de datos: {error}")
         return jsonify({"msg": f"Failed to retrieve messages: {str(error)}"}), 500
 
-    # Webhook de Stripe
-    from flask import abort
-
+# Webhook de Stripe
 
 @api.route('/webhook', methods=['POST'])
 def stripe_webhook():
@@ -524,7 +526,7 @@ def stripe_webhook():
 
         # Recuperar los items de la sesión
         line_items = stripe.checkout.Session.list_line_items(session['id'])
-        total_amount = session['amount_total'] / 100  # en dólares
+        total_amount = session['amount_total'] / 100
 
         # Crear la orden
         new_order = Order(user_id=user_id, total=total_amount)
@@ -534,7 +536,7 @@ def stripe_webhook():
         for item in line_items['data']:
             order_item = OrderItem(
                 order_id=new_order.id,
-                product_id=item['price']['product'],  # requiere validación
+                product_id=item['price']['product'],
                 product_name=item['description'],
                 product_description="",
                 quantity=item['quantity'],
@@ -545,9 +547,22 @@ def stripe_webhook():
         db.session.commit()
         print("Orden creada desde webhook Stripe ✅")
 
-        # endpoint para popular la base de datos
+@api.route('/verifica-pago/<string:payment_intent>', methods=['GET'])
+def verificar_pago(payment_intent):
+    try:
+        payment = stripe.PaymentIntent.retrieve(payment_intent)
+        return jsonify({
+            "status": payment.status,
+            "payment_method": payment.payment_method_types[0],
+            "amount": payment.amount / 100,
+            "currency": payment.currency,
+            "created": payment.created
+        }), 200
+    except Exception as e:
+        print("Error verificando pago:", str(e))
+        return jsonify({"msg": "Error al verificar el pago"}), 500
 
-
+# endpoint para popular la base de datos
 @api.route("/populate-user", methods=["GET"])
 def populate_users():
     for rol in roles:

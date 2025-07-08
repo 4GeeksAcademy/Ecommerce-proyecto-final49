@@ -64,8 +64,8 @@ useEffect(() => {
           queryParameters.toString() ? "?" + queryParameters.toString() : ""
         }`;
 
-        console.log("bkUrl=", bkUrl);
-        console.log("lammando a:", requestUrl);
+        // console.log("bkUrl=", bkUrl);
+        // console.log("lammando a:", requestUrl);
 
 
         const productsResponse = await fetch(requestUrl);

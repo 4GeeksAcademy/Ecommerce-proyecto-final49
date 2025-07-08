@@ -30,6 +30,26 @@ app.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET_KEY")
 app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(days=7)
 
 jwt = JWTManager(app)
+# Manejadores de errores de JWT 07JUL ***
+
+
+@jwt.unauthorized_loader
+def unauthorized_callback(error):
+    print("❌ [JWT] Token ausente o mal formado:", error)
+    return jsonify({"msg": "Token ausente o mal formado", "error": error}), 401
+
+
+@jwt.invalid_token_loader
+def invalid_token_callback(error):
+    print("❌ [JWT] Token inválido:", error)
+    return jsonify({"msg": "Token inválido", "error": error}), 422
+
+
+@jwt.expired_token_loader
+def expired_token_callback(jwt_header, jwt_payload):
+    print("❌ [JWT] Token expirado")
+    return jsonify({"msg": "Token expirado"}), 401
+# Fin manejadores de errores de JWT 07JUL ***
 
 
 # database condiguration
