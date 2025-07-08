@@ -48,6 +48,7 @@ export const Registro = () => {
       });
 
       const data = await response.json();
+
       if (response.ok) {
         setUser(initialStateUser);
         setRegistered(true);
