@@ -22,11 +22,11 @@ export const VistaProducto = () => {
         setProduct(data);
         if (data.image_url) setImgSelected(data.image_url);
 
-const key = "RecentViews";
-const previous = JSON.parse(localStorage.getItem(key)) || [];
-const noDuplicate = previous.filter((productId) => productId !== data.id);
-const next = [data.id, ...noDuplicate].slice(0, 4);
-localStorage.setItem(key, JSON.stringify(next));
+        const key = "RecentViews";
+        const previous = JSON.parse(localStorage.getItem(key)) || [];
+        const noDuplicate = previous.filter((productId) => productId !== data.id);
+        const next = [data.id, ...noDuplicate].slice(0, 4);
+        localStorage.setItem(key, JSON.stringify(next));
 
 
         // Se adicionan las lineas 24 y 25 para evaluar el stock
@@ -65,7 +65,7 @@ localStorage.setItem(key, JSON.stringify(next));
       alert("No hay suficiente stock para la cantidad seleccionada.");
       return;
     }
-    
+
     if (addingToCart) return;
     setAddingToCart(true);
 
@@ -86,7 +86,7 @@ localStorage.setItem(key, JSON.stringify(next));
       alert("No hay suficiente stock para la cantidad seleccionada.");
       return;
     }
-    
+
     if (!product) {
       alert("Producto no disponible para comprar.");
       return;
@@ -172,8 +172,8 @@ localStorage.setItem(key, JSON.stringify(next));
 
         {/*Bloque descripción del producto y precio*/}
         <div className="col-12 col-md-6 col-lg-3 py-4 description_font_size d-flex flex-column">
-          <Link to="/" className="text-decoration-none small_font_size">
-            Ver más productos
+          <Link to="/" className="text-decoration-none fs-5">
+            Seguir comprando
           </Link>
           <p className="py-3 mb-0">
             <strong>{product.description}</strong>
@@ -208,19 +208,19 @@ localStorage.setItem(key, JSON.stringify(next));
 
           {/*Selector de cantidad*/}
           <div className="d-flex align-items-center justify-content-center my-3 ">
-            <button 
-              type="button" 
-              className="btn btn-outline-secondary" 
-              onClick={() => handleQuantityChange(-1)} 
+            <button
+              type="button"
+              className="btn btn-outline-secondary"
+              onClick={() => handleQuantityChange(-1)}
               disabled={quantity <= 1}
             >
               -
             </button>
             <span className="mx-3 fs-5">{quantity}</span>
-            <button 
-              type="button" 
-              className="btn btn-outline-secondary" 
-              onClick={() => handleQuantityChange(1)} 
+            <button
+              type="button"
+              className="btn btn-outline-secondary"
+              onClick={() => handleQuantityChange(1)}
               disabled={quantity >= product.product_stock || product.product_stock === 0}
             >
               +
@@ -231,8 +231,9 @@ localStorage.setItem(key, JSON.stringify(next));
           <button
             type="button"
             className="btn btn-success w-100"
-            onClick={() => handleBuyNow()}
-            //disabled={product.stock <= 0}
+            onClick={() => navigate('/cart')}
+          // onClick={() => handleBuyNow()}
+          //disabled={product.stock <= 0}
           >
             Comprar ahora
           </button>
@@ -242,11 +243,11 @@ localStorage.setItem(key, JSON.stringify(next));
             type="button"
             className="btn btn-primary w-100"
             onClick={() => handleAddToCart()}
-            //disabled={product.stock <= 0}
+          //disabled={product.stock <= 0}
           >
             Agregar al carrito
           </button>
-          <Link to="/cart">Ver carrito</Link>
+          {/* <Link to="/cart">Ver carrito</Link> */}
         </div>
       </div>
     </div>

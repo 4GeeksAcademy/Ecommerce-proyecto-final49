@@ -123,7 +123,7 @@ export const Navbar = ({ onSearch, searchValue }) => {
               </>
             ) : (
               <>
-                <li>
+                {/* <li>
                   <Link className="dropdown-item" to="/perfil">
                     Mi perfil
                   </Link>
@@ -137,7 +137,7 @@ export const Navbar = ({ onSearch, searchValue }) => {
                   <Link className="dropdown-item" to="/historial-de-compras">
                     Mi historial de compras
                   </Link>
-                </li>
+                </li> */}
               </>
             )}
             {store.token && (
