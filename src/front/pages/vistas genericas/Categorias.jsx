@@ -53,7 +53,8 @@ export const Categorias = () => {
         <div className="col-12 col-md-12 col-lg-12 d-flex justify-content-center py-3">
 
           {/* Menú desplegable */}
-          <div className="dropdown">
+
+          {/* <div className="dropdown">
             <button
               className="btn btn-white border dropdown-toggle"
               type="button"
@@ -75,7 +76,27 @@ export const Categorias = () => {
                 </li>
               ))}
             </ul>
-          </div>
+          </div> */}
+
+
+
+          <nav className="banner__categories">
+            {categories.map((category) => (
+              <button
+                key={category.id}
+                onClick={() => handleCategorySelect(category)
+                }
+
+                className="btn btn-outline-secondary me-2 mb-2"
+              >
+                {category.name}
+              </button>
+            ))}
+          </nav>
+
+
+
+
         </div>
 
         <hr />
