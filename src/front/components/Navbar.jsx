@@ -107,7 +107,6 @@ export const Navbar = ({ onSearch, searchValue }) => {
               <i className="fa-solid fa-user"></i>
             )}
           </button>
-
           <ul className="dropdown-menu dropdown-menu-end">
             {!store.token ? (
               <>

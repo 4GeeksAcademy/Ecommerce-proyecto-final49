@@ -32,7 +32,7 @@ export function StoreProvider({ children }) {
             localStorage.setItem("jwt_token", data.token);
             dispatch({
               type: "LOGIN",
-              payload: { token: data.token, user_data: data.user_id },
+              payload: { token: data.token, user_data: data.user },
             });
             return true;
           } else {
