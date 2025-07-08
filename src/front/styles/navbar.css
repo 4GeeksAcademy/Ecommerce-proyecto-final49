@@ -1,0 +1,15 @@
+.navbar-link {
+    color:inherit;
+    text-decoration: none;
+}
+
+.search-bar {
+    position: absolute;
+    margin: 0 auto;
+    max-width: 400px;
+    display: flex;
+    left: 40%;
+    align-items: center;
+    width: 100%;
+    /* transform: translateX(-50) */
+}
